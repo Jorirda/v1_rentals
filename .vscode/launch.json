@@ -1,0 +1,168 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "$R7DVD0Q",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$R7DVD0Q",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "$R7DVD0Q (profile mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$R7DVD0Q",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "$R7DVD0Q (release mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$R7DVD0Q",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "$RMA8GXN",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$RMA8GXN",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "$RMA8GXN (profile mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$RMA8GXN",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "$RMA8GXN (release mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$RMA8GXN",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "$ROGI5DE",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$ROGI5DE",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "$ROGI5DE (profile mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$ROGI5DE",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "$ROGI5DE (release mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$ROGI5DE",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "$RW4K0UM",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$RW4K0UM",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "$RW4K0UM (profile mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$RW4K0UM",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "$RW4K0UM (release mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$RW4K0UM",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Car-Rental-App-Flutter",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$R7HMNDJ\\Car-Rental-App-Flutter",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Car-Rental-App-Flutter (profile mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$R7HMNDJ\\Car-Rental-App-Flutter",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Car-Rental-App-Flutter (release mode)",
+            "cwd": "$Recycle.Bin\\S-1-5-21-2614666955-3335269042-3254897455-1001\\$R7HMNDJ\\Car-Rental-App-Flutter",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "beginner",
+            "cwd": "Users\\total\\AndroidStudioProjects\\beginner",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "beginner (profile mode)",
+            "cwd": "Users\\total\\AndroidStudioProjects\\beginner",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "beginner (release mode)",
+            "cwd": "Users\\total\\AndroidStudioProjects\\beginner",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Car",
+            "cwd": "Users\\total\\AndroidStudioProjects\\Car",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Car (profile mode)",
+            "cwd": "Users\\total\\AndroidStudioProjects\\Car",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Car (release mode)",
+            "cwd": "Users\\total\\AndroidStudioProjects\\Car",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "rent_car",
+            "cwd": "Users\\total\\AndroidStudioProjects\\rent_car",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "rent_car (profile mode)",
+            "cwd": "Users\\total\\AndroidStudioProjects\\rent_car",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "rent_car (release mode)",
+            "cwd": "Users\\total\\AndroidStudioProjects\\rent_car",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

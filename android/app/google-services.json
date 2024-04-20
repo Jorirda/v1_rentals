@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "748103159391",
-    "project_id": "v1rentals",
-    "storage_bucket": "v1rentals.appspot.com"
+    "project_number": "334896733266",
+    "project_id": "v1-rentals-test",
+    "storage_bucket": "v1-rentals-test.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:748103159391:android:6831ee92b96588e75395ea",
+        "mobilesdk_app_id": "1:334896733266:android:37e882c7d0d7ffc3e7538b",
         "android_client_info": {
           "package_name": "com.example.v1_rentals"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAf5s-s01bEv4JeWPXYMWgGrYv86lFrFxI"
+          "current_key": "AIzaSyBB_ZoA9p8xtCDiqAe_BYRlkeJTp_wN5RY"
         }
       ],
       "services": {

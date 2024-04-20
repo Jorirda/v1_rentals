@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAf5s-s01bEv4JeWPXYMWgGrYv86lFrFxI',
-    appId: '1:748103159391:android:6831ee92b96588e75395ea',
-    messagingSenderId: '748103159391',
-    projectId: 'v1rentals',
-    storageBucket: 'v1rentals.appspot.com',
+    apiKey: 'AIzaSyBB_ZoA9p8xtCDiqAe_BYRlkeJTp_wN5RY',
+    appId: '1:334896733266:android:37e882c7d0d7ffc3e7538b',
+    messagingSenderId: '334896733266',
+    projectId: 'v1-rentals-test',
+    storageBucket: 'v1-rentals-test.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBR2Gg_l_KRw9aHVybhywf1DM5GOGgoIlg',
-    appId: '1:748103159391:ios:1fe363acf9f5ed415395ea',
-    messagingSenderId: '748103159391',
-    projectId: 'v1rentals',
-    storageBucket: 'v1rentals.appspot.com',
+    apiKey: 'AIzaSyD8c2_1nXuqkH3YTo7X3Ysgwn6Tb49owNM',
+    appId: '1:334896733266:ios:728fcd09c4000300e7538b',
+    messagingSenderId: '334896733266',
+    projectId: 'v1-rentals-test',
+    storageBucket: 'v1-rentals-test.appspot.com',
     iosBundleId: 'com.example.v1Rentals',
   );
+
 }
