@@ -68,12 +68,57 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.car_rental),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
+            icon: Icon(Icons.library_books),
             label: 'Bookings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Account',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        onTap: _onItemTapped,
+        unselectedItemColor: Colors.grey,
+      ),
+    );
+  }
+}
+
+class VendorMainScreen extends StatefulWidget {
+  const VendorMainScreen({super.key});
+
+  @override
+  _VendorMainScreenState createState() => _VendorMainScreenState();
+}
+
+class _VendorMainScreenState extends State<VendorMainScreen> {
+  int _selectedIndex = 0;
+
+  static final List<Widget> _screens = <Widget>[
+    const HomeScreen(),
+    const AccountScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),

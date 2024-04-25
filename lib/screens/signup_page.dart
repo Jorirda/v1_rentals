@@ -14,23 +14,17 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // final TextEditingController _passwordController = TextEditingController();
   UserType _selectedUserType = UserType.client;
 
-  // Custom User
   late TextEditingController _fullnameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late TextEditingController _phoneNumController;
   late TextEditingController _addressController;
-
-  //Client
   late TextEditingController _dateOfBirthController;
   late TextEditingController _expiryDateController;
   late TextEditingController _driverLicenseNumberController;
   late TextEditingController _issuingCountryController;
-
-  //Vendor
   late TextEditingController _businessNameController;
   late TextEditingController _businessRegNumController;
   late TextEditingController _taxIdentificationNumController;
@@ -74,34 +68,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      CustomUser user = _selectedUserType == UserType.client
-          ? Client(
-              userId: '', // Set to empty string initially
-              email: _emailController.text,
-              password: _passwordController.text,
-              userType: _selectedUserType,
-              fullname: _fullnameController.text,
-              phoneNum: _phoneNumController.text,
-              address: _addressController.text,
-              dateOfBirth: _dateOfBirthController.text,
-              driverLicenseNumber: _driverLicenseNumberController.text,
-              issuingCountryState: _issuingCountryController.text,
-              expiryDate: _expiryDateController.text,
-              createdAt: DateTime.now(),
-            )
-          : Vendor(
-              userId: '', // Set to empty string initially
-              email: _emailController.text,
-              password: _passwordController.text,
-              userType: _selectedUserType,
-              fullname: _fullnameController.text,
-              phoneNum: _phoneNumController.text,
-              address: _addressController.text,
-              businessName: _businessNameController.text,
-              regNum: _businessRegNumController.text,
-              tinNum: _taxIdentificationNumController.text,
-              createdAt: DateTime.now(),
-            );
+      CustomUser user = CustomUser(
+        userId: '', // Set to empty string initially
+        email: _emailController.text,
+        password: _passwordController.text,
+        userType: _selectedUserType,
+        fullname: _fullnameController.text,
+        phoneNum: _phoneNumController.text,
+        address: _addressController.text,
+        dateOfBirth: _dateOfBirthController.text,
+        driverLicenseNumber: _driverLicenseNumberController.text,
+        issuingCountryState: _issuingCountryController.text,
+        expiryDate: _expiryDateController.text,
+        businessName: _businessNameController.text,
+        regNum: _businessRegNumController.text,
+        tinNum: _taxIdentificationNumController.text,
+        createdAt: DateTime.now(),
+      );
 
       try {
         String userId = await AuthService().signUp(user);
@@ -151,7 +134,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 10,
                 ),
                 Text(
-                  'Sign Up!',
+                  'Create Account',
                   style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -160,7 +143,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 // Welcome Text
                 const Text(
-                  ' Select a type and Register below with your details!',
+                  ' Select a type and register below with your details.',
                   style: TextStyle(
                     fontSize: 15,
                   ),
@@ -214,6 +197,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: const Text('Sign Up'),
                   ),
                 ),
+
+                const SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'I am already a member!',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+
+                    //Switch to Login page
+                    GestureDetector(
+                      onTap: widget.showLogin,
+                      child: Text(
+                        'Log in now',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),

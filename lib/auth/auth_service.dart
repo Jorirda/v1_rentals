@@ -6,7 +6,6 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Sign up with email and password
   Future<String> signUp(CustomUser user) async {
     try {
       UserCredential userCredential =
@@ -19,18 +18,8 @@ class AuthService {
 
       // Set the userId before saving to Firestore
       user.userId = userId;
-
-      if (user.userType == UserType.client) {
-        await _firestore
-            .collection('clients')
-            .doc(userId)
-            .set((user as Client).toMap());
-      } else {
-        await _firestore
-            .collection('vendors')
-            .doc(userId)
-            .set((user as Vendor).toMap());
-      }
+      // Save user data to Firestore
+      await _firestore.collection('users').doc(userId).set(user.toMap());
 
       return userId;
     } catch (e) {
@@ -38,33 +27,21 @@ class AuthService {
     }
   }
 
-  // Get user data from Firestore
   Future<CustomUser> getUserData(String userId) async {
     try {
-      DocumentSnapshot userSnapshot;
-      CustomUser user;
+      DocumentSnapshot userSnapshot =
+          await _firestore.collection('users').doc(userId).get();
 
-      // Check if the user is a client
-      userSnapshot = await _firestore.collection('clients').doc(userId).get();
-      if (userSnapshot.exists) {
-        user = Client.fromMap(userSnapshot.data()! as Map<String, dynamic>);
-        return user;
+      if (!userSnapshot.exists) {
+        throw Exception('User not found!');
       }
 
-      // Check if the user is a vendor
-      userSnapshot = await _firestore.collection('vendors').doc(userId).get();
-      if (userSnapshot.exists) {
-        user = Vendor.fromMap(userSnapshot.data()! as Map<String, dynamic>);
-        return user;
-      }
-
-      throw Exception('User not found!');
+      return CustomUser.fromMap(userSnapshot.data()! as Map<String, dynamic>);
     } catch (e) {
       throw e;
     }
   }
 
-  // Sign in with email and password
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -73,7 +50,6 @@ class AuthService {
     }
   }
 
-  // Sign out
   Future<void> signOut() async {
     try {
       await _auth.signOut();

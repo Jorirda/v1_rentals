@@ -20,7 +20,7 @@ class _AccountScreenState extends State<AccountScreen> {
     _user = FirebaseAuth.instance.currentUser;
     if (_user != null) {
       FirebaseFirestore.instance
-          .collection(_user!.uid == '' ? 'clients' : 'vendors')
+          .collection('users')
           .where(FieldPath.documentId, isEqualTo: _user!.uid)
           .get()
           .then((QuerySnapshot querySnapshot) {
@@ -93,8 +93,16 @@ class _AccountScreenState extends State<AccountScreen> {
                 onPress: () {},
                 textColor: null,
               ),
+
               AccountMenuWidget(
-                title: 'Billing Details',
+                title: 'Rent History',
+                icon: Icons.car_rental_rounded,
+                onPress: () {},
+                textColor: null,
+              ),
+
+              AccountMenuWidget(
+                title: 'Payment Details',
                 icon: Icons.wallet,
                 onPress: () {},
                 textColor: null,
@@ -198,7 +206,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Stream<DocumentSnapshot> _getUserDataStream(User? user) {
     if (user != null) {
       return FirebaseFirestore.instance
-          .collection(user.uid == '' ? 'clients' : 'vendors')
+          .collection('users')
           .doc(user.uid)
           .snapshots();
     } else {

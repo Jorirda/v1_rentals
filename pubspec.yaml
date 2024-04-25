@@ -40,6 +40,8 @@ dependencies:
   firebase_auth: ^4.19.2
   firebase_storage: ^11.7.2
   cloud_firestore: ^4.17.0
+  tencent_map_flutter: ^0.0.2
+  google_maps_flutter: ^2.6.1
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +68,22 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/v1-rentals-logo.png
+    - assets/images/default_avatar.png
+    - assets/rec-images/audi-logo.png
+    - assets/rec-images/dodge-logo.png
+    - assets/rec-images/ford-logo.png
+    - assets/rec-images/bmw-logo.png
+    - assets/rec-images/honda-logo.png
+    - assets/rec-images/hyundai-logo.png
+    - assets/rec-images/isuzu-logo.png
+    - assets/rec-images/suzuki-logo.png
+    - assets/rec-images/mazda-logo.png
+    - assets/rec-images/suzuki-logo.png
+    - assets/rec-images/mercedez-logo.png
+    - assets/rec-images/mitsubishi-logo.png
+    - assets/rec-images/nissan-logo.png
+    - assets/rec-images/toyota-logo.png
+    - assets/rec-images/kia-logo.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

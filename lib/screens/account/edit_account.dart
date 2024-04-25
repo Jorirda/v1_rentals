@@ -37,7 +37,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
     if (_user != null) {
       FirebaseFirestore.instance
-          .collection(_user.uid == '' ? 'clients' : 'vendors')
+          .collection('users')
           .doc(_user.uid)
           .get()
           .then((DocumentSnapshot documentSnapshot) {
@@ -53,14 +53,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         }
       });
     }
-  }
-
-  void _cancelUploadTask() {
-    // Cancel the upload task if it exists
-    firebase_storage.FirebaseStorage.instance
-        .ref('profile_pictures/${_user!.uid}.jpg')
-        .putFile(_image)
-        .cancel();
   }
 
   Future<void> _getImageFromGallery() async {
@@ -102,7 +94,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     try {
       if (_user != null) {
         await FirebaseFirestore.instance
-            .collection(_user.uid == '' ? 'clients' : 'vendors')
+            .collection('users')
             .doc(_user.uid)
             .update({
           'fullname': _fullNameController.text,
