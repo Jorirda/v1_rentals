@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth.dart';
-import 'package:v1_rentals/screens/account_page.dart';
+import 'package:v1_rentals/screens/account/account_page.dart';
 import 'package:v1_rentals/screens/bookings_page.dart';
 import 'package:v1_rentals/screens/home_page.dart';
 import 'package:v1_rentals/screens/search_page.dart';
@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 0, 157, 255)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 0, 157, 255)),
         useMaterial3: true,
       ),
       home: const AuthenticationWrapper(),
@@ -35,6 +35,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -79,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         onTap: _onItemTapped,
         unselectedItemColor: Colors.grey,
       ),
