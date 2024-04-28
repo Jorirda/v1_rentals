@@ -40,8 +40,10 @@ dependencies:
   firebase_auth: ^4.19.2
   firebase_storage: ^11.7.2
   cloud_firestore: ^4.17.0
-  tencent_map_flutter: ^0.0.2
-  google_maps_flutter: ^2.6.1
+  http: ^1.2.1
+
+  # google_maps_flutter: ^2.6.1
+  # geolocator: ^11.0.0
 
 dev_dependencies:
   flutter_test:

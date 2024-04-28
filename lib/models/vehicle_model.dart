@@ -3,7 +3,6 @@ import 'package:v1_rentals/models/user_model.dart';
 
 class Vehicle {
   String id;
-
   String brand;
   String type;
   int seats;
@@ -14,21 +13,22 @@ class Vehicle {
   String overview;
   String imageUrl;
   bool available;
-  CustomUser vendor;
+  String vendorId; // Reference to the vendor's user ID
 
-  Vehicle(
-      {required this.id,
-      required this.brand,
-      required this.type,
-      required this.seats,
-      required this.fuelType,
-      required this.transmission,
-      required this.pricePerDay,
-      required this.overview,
-      required this.imageUrl,
-      required this.available,
-      required this.color,
-      required this.vendor});
+  Vehicle({
+    required this.id,
+    required this.brand,
+    required this.type,
+    required this.seats,
+    required this.fuelType,
+    required this.transmission,
+    required this.pricePerDay,
+    required this.overview,
+    required this.imageUrl,
+    required this.available,
+    required this.color,
+    required this.vendorId, // Change to vendorId
+  });
 
   // Convert DocumentSnapshot to Vehicle object
   factory Vehicle.fromMap(DocumentSnapshot doc) {
@@ -41,11 +41,11 @@ class Vehicle {
       fuelType: data['fuelType'] ?? '',
       transmission: data['transmission'] ?? '',
       color: data['color'] ?? '',
-      pricePerDay: (data['pricePerDay'] ?? 0.0).toDouble(),
+      pricePerDay: data['pricePerDay'] ?? '',
       overview: data['overview'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       available: data['available'] ?? false,
-      vendor: CustomUser.fromMap(data['vendor']),
+      vendorId: data['vendorId'] ?? '', // Update to vendorId
     );
   }
 
@@ -62,7 +62,7 @@ class Vehicle {
       'overview': overview,
       'imageUrl': imageUrl,
       'available': available,
-      'vendor': vendor.toMap(),
+      'vendorId': vendorId, // Update to vendorId
     };
   }
 }

@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
+import 'package:v1_rentals/models/vehicle_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,12 +17,14 @@ class _HomeScreenState extends State<HomeScreen> {
   CustomUser? _currentUser;
   final AuthService _authService = AuthService();
   List<RecommendModel> recommendBrands = [];
+  List<Vehicle> vehicles = [];
 
   @override
   void initState() {
     super.initState();
     _loadCurrentUser();
     _getInitialInfo();
+    _loadVehicles();
   }
 
   void _getInitialInfo() {
@@ -38,6 +42,21 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       print('Error loading current user: $e');
+    }
+  }
+
+  Future<void> _loadVehicles() async {
+    try {
+      // Retrieve the collection 'vehicles' from Firestore
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('vehicles').get();
+      // Convert the retrieved documents to Vehicle objects and store them in the 'vehicles' list
+      setState(() {
+        vehicles =
+            querySnapshot.docs.map((doc) => Vehicle.fromMap(doc)).toList();
+      });
+    } catch (e) {
+      print('Error loading vehicles: $e');
     }
   }
 
@@ -188,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Text(
-                    'Top Rated Cars',
+                    'All Vehicles in Collection',
                     style: TextStyle(
                       fontSize: 18,
                       // fontWeight: FontWeight.w600,
@@ -200,6 +219,88 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(
                 height: 10,
+              ),
+              // Display the list of vehicles
+              // Display the list of vehicles horizontally
+              Container(
+                height: 260, // Set a fixed height for the ListView
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: vehicles.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.all(8),
+                      width: 280,
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                              ),
+                              child: Image.network(
+                                vehicles[index].imageUrl,
+                                width: 280,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    vehicles[index].brand,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Divider(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(Icons.car_rental),
+                                          SizedBox(width: 4),
+                                          Text(vehicles[index].type),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.energy_savings_leaf),
+                                          SizedBox(width: 4),
+                                          Text(vehicles[index].transmission),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.monetization_on),
+                                          SizedBox(width: 4),
+                                          Text(
+                                              '${vehicles[index].pricePerDay}/Day'),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

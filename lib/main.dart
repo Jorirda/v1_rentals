@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth.dart';
 import 'package:v1_rentals/screens/account/account_page.dart';
-import 'package:v1_rentals/screens/bookings_page.dart';
+import 'package:v1_rentals/screens/clients/bookings_page.dart';
 import 'package:v1_rentals/screens/home_page.dart';
 import 'package:v1_rentals/screens/search_page.dart';
+import 'package:v1_rentals/screens/vendors/fleet_sreen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -68,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.car_rental),
+            icon: Icon(Icons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
@@ -101,6 +102,7 @@ class _VendorMainScreenState extends State<VendorMainScreen> {
 
   static final List<Widget> _screens = <Widget>[
     const HomeScreen(),
+    const FleetScreen(),
     const AccountScreen(),
   ];
 
@@ -119,6 +121,10 @@ class _VendorMainScreenState extends State<VendorMainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.car_rental),
+            label: 'Fleet',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),

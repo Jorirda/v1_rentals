@@ -1,7 +1,7 @@
 enum UserType { client, vendor }
 
 class CustomUser {
-  String? userId;
+  String? userId; // Make userId nullable
   String fullname;
   String email;
   String password;
@@ -38,7 +38,7 @@ class CustomUser {
     this.businessName,
     this.regNum,
     this.tinNum,
-    this.imageURL, // Initialize imageURL
+    this.imageURL,
   });
 
   Map<String, dynamic> toMap() {
@@ -80,24 +80,30 @@ class CustomUser {
     };
   }
 
-  factory CustomUser.fromMap(Map<String, dynamic> map) {
+  factory CustomUser.fromMap(Map<String, dynamic>? map) {
+    if (map == null) {
+      throw ArgumentError('Map cannot be null');
+    }
+
     return CustomUser(
-      userId: map['userId'],
-      fullname: map['fullname'],
-      email: map['email'],
-      password: map['password'],
-      phoneNum: map['phoneNum'],
-      address: map['address'],
+      userId: map['userId'] as String?,
+      fullname: map['fullname'] as String,
+      email: map['email'] as String,
+      password: map['password'] as String,
+      phoneNum: map['phoneNum'] as String,
+      address: map['address'] as String,
       userType: map['userType'] == 'client' ? UserType.client : UserType.vendor,
-      createdAt: DateTime.parse(map['createdAt']), // Parse ISO 8601 format
-      dateOfBirth: map['dateOfBirth'],
-      driverLicenseNumber: map['driverLicenseNumber'],
-      issuingCountryState: map['issuingCountryState'],
-      expiryDate: map['expiryDate'],
-      businessName: map['businessName'],
-      regNum: map['regNum'],
-      tinNum: map['tinNum'],
-      imageURL: map['imageURL'], // Initialize imageURL
+      createdAt:
+          DateTime.parse(map['createdAt'] as String), // Parse ISO 8601 format
+      dateOfBirth: map['dateOfBirth'] as String?,
+      driverLicenseNumber: map['driverLicenseNumber'] as String?,
+      issuingCountryState: map['issuingCountryState'] as String?,
+      expiryDate: map['expiryDate'] as String?,
+      businessName: map['businessName'] as String?,
+      regNum: map['regNum'] as String?,
+      tinNum: map['tinNum'] as String?,
+      imageURL: map['imageURL']
+          as String?, // Initialize imageURL with null if not present
     );
   }
 }

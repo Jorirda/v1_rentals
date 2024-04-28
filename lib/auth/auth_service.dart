@@ -42,6 +42,20 @@ class AuthService {
     }
   }
 
+  Future<CustomUser?> getCurrentUser() async {
+    try {
+      User? firebaseUser = _auth.currentUser;
+      if (firebaseUser != null) {
+        CustomUser userData = await getUserData(firebaseUser.uid);
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
