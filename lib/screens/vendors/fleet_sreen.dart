@@ -4,7 +4,7 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart'; // Import your Vehicle model here
 import 'package:v1_rentals/screens/vendors/add_vehicle.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
-import 'package:v1_rentals/screens/vendors/vehicle_details.dart';
+import 'package:v1_rentals/screens/vendors/vendor_vehicle_details.dart';
 
 class FleetScreen extends StatelessWidget {
   const FleetScreen({Key? key});
@@ -107,10 +107,9 @@ class FleetScreen extends StatelessWidget {
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
-                                      image:
-                                          NetworkImage(vehicle.imageUrl ?? ''),
-                                      fit: BoxFit.fitWidth,
-                                    ),
+                                        image: NetworkImage(
+                                            vehicle.imageUrl ?? ''),
+                                        fit: BoxFit.cover),
                                   ),
                                 ),
                                 Padding(

@@ -56,6 +56,30 @@ class AuthService {
     }
   }
 
+  Future<void> getVendorInfo(String vendorId) async {
+    try {
+      DocumentSnapshot vendorSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(vendorId)
+          .get();
+
+      if (vendorSnapshot.exists) {
+        // Convert the vendor's document snapshot to a CustomUser object
+        CustomUser vendor =
+            CustomUser.fromMap(vendorSnapshot.data() as Map<String, dynamic>?);
+
+        // Now you have access to the vendor's information
+        print('Vendor Name: ${vendor.fullname}');
+        print('Vendor Email: ${vendor.email}');
+        // Display other vendor details as needed
+      } else {
+        print('Vendor not found!');
+      }
+    } catch (error) {
+      print('Error fetching vendor information: $error');
+    }
+  }
+
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);

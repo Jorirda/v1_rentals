@@ -34,7 +34,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
         title: Text('Vehicle Details'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(.0),
         child: ListView(
           children: [
             Container(
@@ -55,37 +55,76 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Colors.grey,
                     ),
             ),
-            ListTile(
-              title: Text('Brand'),
-              subtitle: Text(_vehicle.brand),
+            SizedBox(
+              height: 20,
             ),
+            Divider(),
             ListTile(
-              title: Text('Type'),
+              title: Text('Overview',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary)),
+              subtitle: Text(_vehicle.overview),
+            ),
+            Divider(),
+            ListTile(
+              title: Text(
+                'Brand',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+              subtitle: Text(
+                _vehicle.brand,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Type',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.type),
             ),
+            Divider(),
             ListTile(
-              title: Text('Seats'),
+              title: Text('Seats',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.seats.toString()),
             ),
+            Divider(),
             ListTile(
-              title: Text('Fuel Type'),
-              subtitle: Text(_vehicle.fuelType),
-            ),
-            ListTile(
-              title: Text('Transmission'),
-              subtitle: Text(_vehicle.transmission),
-            ),
-            ListTile(
-              title: Text('Price Per Day'),
-              subtitle: Text(_vehicle.pricePerDay),
-            ),
-            ListTile(
-              title: Text('Color'),
+              title: Text('Color',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.color),
             ),
+            Divider(),
             ListTile(
-              title: Text('Overview'),
-              subtitle: Text(_vehicle.overview),
+              title: Text('Fuel Type',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary)),
+              subtitle: Text(_vehicle.fuelType),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Transmission',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary)),
+              subtitle: Text(_vehicle.transmission),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('Price Per Day',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary)),
+              subtitle: Text(_vehicle.pricePerDay),
             ),
           ],
         ),

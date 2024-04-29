@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -227,6 +228,32 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
     }
   }
 
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete this vehicle?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteVehicle();
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<String> _uploadImageToStorage(File imageFile) async {
     try {
       // Create a reference to the location you want to upload to in Firebase Storage
@@ -283,45 +310,57 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
     super.dispose();
   }
 
+  void _showImagePickerModal() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.camera),
+              title: Text('Take Photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _getImageFromCamera();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo),
+              title: Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _getImageFromGallery();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Vehicle'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                _showDeleteConfirmationDialog();
+              },
+              icon: Icon(
+                Icons.delete,
+                color: Colors.red,
+              ))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
             GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.camera),
-                          title: Text('Take Photo'),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _getImageFromCamera();
-                          },
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.photo),
-                          title: Text('Choose from Gallery'),
-                          onTap: () {
-                            Navigator.pop(context);
-                            _getImageFromGallery();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+              onTap: _showImagePickerModal,
               child: Container(
                 height: 200,
                 width: double.infinity,
@@ -346,78 +385,83 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                           )),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _showImagePickerModal,
+              child: Text('Edit Photo'),
+            ),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _brandController,
-              decoration: InputDecoration(labelText: 'Brand'),
+              decoration: InputDecoration(
+                  labelText: 'Brand',
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  hintStyle: TextStyle(fontWeight: FontWeight.bold)),
             ),
             TextFormField(
               controller: _typeController,
-              decoration: InputDecoration(labelText: 'Type'),
+              decoration: InputDecoration(
+                  labelText: 'Type',
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  hintStyle: TextStyle(fontWeight: FontWeight.bold)),
             ),
             TextFormField(
               controller: _seatsController,
-              decoration: InputDecoration(labelText: 'Seats'),
+              decoration: InputDecoration(
+                  labelText: 'Seats',
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  hintStyle: TextStyle(fontWeight: FontWeight.bold)),
               keyboardType: TextInputType.number,
             ),
             TextFormField(
               controller: _fuelTypeController,
-              decoration: InputDecoration(labelText: 'Fuel Type'),
+              decoration: InputDecoration(
+                labelText: 'Fuel Type',
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
             ),
             TextFormField(
               controller: _transmissionController,
-              decoration: InputDecoration(labelText: 'Transmission'),
+              decoration: InputDecoration(
+                labelText: 'Transmission',
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
             ),
             TextFormField(
               controller: _pricePerDayController,
-              decoration: InputDecoration(labelText: 'Price Per Day'),
+              decoration: InputDecoration(
+                labelText: 'Price Per Day',
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
               keyboardType: TextInputType.number,
             ),
             TextFormField(
               controller: _colorController,
-              decoration: InputDecoration(labelText: 'Color'),
+              decoration: InputDecoration(
+                labelText: 'Color',
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
             ),
             TextFormField(
               controller: _overviewController,
-              decoration: InputDecoration(labelText: 'Overview'),
+              decoration: InputDecoration(
+                labelText: 'Overview',
+                labelStyle:
+                    TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
               maxLines: null,
             ),
             const SizedBox(height: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Confirm Changes'),
-                          content: Text(
-                              'Are you sure you want to apply new changes to this vehicle?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                _submitForm();
-                              },
-                              child: Text('Save'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: Text('Save Changes'),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white),
-                ),
                 SizedBox(height: 10), // Add some space between the buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -434,7 +478,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                             foregroundColor: Colors.white),
                       ),
                     ),
-                    SizedBox(width: 10), // Add space between buttons
+                    const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
@@ -442,9 +486,9 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Confirm Deletion'),
+                                title: Text('Confirm Changes'),
                                 content: Text(
-                                    'Are you sure you want to delete this vehicle?'),
+                                    'Are you sure you want to apply new changes to this vehicle?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
@@ -454,21 +498,21 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      _deleteVehicle();
+                                      _submitForm();
                                     },
-                                    child: Text('Delete'),
+                                    child: Text('Save'),
                                   ),
                                 ],
                               );
                             },
                           );
                         },
+                        child: Text('Save Changes'),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
+                            backgroundColor: Colors.green,
                             foregroundColor: Colors.white),
-                        child: Text('Delete Vehicle'),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],

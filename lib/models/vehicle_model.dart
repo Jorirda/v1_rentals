@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:v1_rentals/models/user_model.dart';
 
 class Vehicle {
   String id;
@@ -27,7 +26,7 @@ class Vehicle {
     required this.imageUrl,
     required this.available,
     required this.color,
-    required this.vendorId, // Change to vendorId
+    required this.vendorId,
   });
 
   // Convert DocumentSnapshot to Vehicle object
@@ -45,7 +44,7 @@ class Vehicle {
       overview: data['overview'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       available: data['available'] ?? false,
-      vendorId: data['vendorId'] ?? '', // Update to vendorId
+      vendorId: data['vendorId'] ?? '',
     );
   }
 
@@ -62,7 +61,7 @@ class Vehicle {
       'overview': overview,
       'imageUrl': imageUrl,
       'available': available,
-      'vendorId': vendorId, // Update to vendorId
+      'vendorId': vendorId,
     };
   }
 }
