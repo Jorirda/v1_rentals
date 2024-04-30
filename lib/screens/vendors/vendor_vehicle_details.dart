@@ -124,7 +124,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
-              subtitle: Text(_vehicle.pricePerDay),
+              subtitle: Text(_vehicle.pricePerDay.toString()),
             ),
           ],
         ),

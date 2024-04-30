@@ -45,7 +45,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
     _seatsController.text = widget.vehicle.seats.toString();
     _fuelTypeController.text = widget.vehicle.fuelType;
     _transmissionController.text = widget.vehicle.transmission;
-    _pricePerDayController.text = widget.vehicle.pricePerDay;
+    _pricePerDayController.text = widget.vehicle.pricePerDay.toString();
     _colorController.text = widget.vehicle.color;
     _overviewController.text = widget.vehicle.overview;
     _vehicle = widget.vehicle;
@@ -107,7 +107,8 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
           seats: int.parse(_seatsController.text),
           fuelType: _fuelTypeController.text,
           transmission: _transmissionController.text,
-          pricePerDay: _pricePerDayController.text,
+          pricePerDay: double.parse(_pricePerDayController.text),
+          rating: 4.8,
           color: _colorController.text,
           overview: _overviewController.text,
           imageUrl: imageUrl,

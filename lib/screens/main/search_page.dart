@@ -61,11 +61,17 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: TextField(
           controller: _searchController,
           decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.grey[300],
             hintText: 'Search rentals',
-            border: InputBorder.none,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide.none),
+            prefixIcon: Icon(Icons.search),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
                     icon: Icon(Icons.clear),
@@ -77,6 +83,13 @@ class _SearchScreenState extends State<SearchScreen> {
             _handleSearch();
           },
         ),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'))
+        ],
       ),
       body: _searchQuery.isNotEmpty
           ? GridView.builder(
@@ -165,9 +178,12 @@ class _SearchScreenState extends State<SearchScreen> {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Divider(),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
                     'Recent Searches',
                     style: TextStyle(
@@ -181,9 +197,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemCount: _recentSearches.length,
                     itemBuilder: (context, index) {
                       return ListTile(
+                        leading: const Icon(Icons.search),
                         title: Text(_recentSearches[index]),
                         trailing: IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.clear),
                           onPressed: () {
                             setState(() {
                               _recentSearches.removeAt(index);

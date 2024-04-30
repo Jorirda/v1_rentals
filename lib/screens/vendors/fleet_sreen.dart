@@ -149,7 +149,7 @@ class FleetScreen extends StatelessWidget {
                                               Icon(Icons.monetization_on),
                                               SizedBox(width: 4),
                                               Text(
-                                                  '${vehicle.pricePerDay}/Day'),
+                                                  '${vehicle.pricePerDay.toString()}/Day'),
                                             ],
                                           ),
                                         ],

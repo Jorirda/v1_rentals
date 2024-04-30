@@ -7,7 +7,8 @@ class Vehicle {
   int seats;
   String fuelType;
   String transmission;
-  String pricePerDay;
+  double pricePerDay;
+  double rating;
   String color;
   String overview;
   String imageUrl;
@@ -22,6 +23,7 @@ class Vehicle {
     required this.fuelType,
     required this.transmission,
     required this.pricePerDay,
+    required this.rating,
     required this.overview,
     required this.imageUrl,
     required this.available,
@@ -40,7 +42,8 @@ class Vehicle {
       fuelType: data['fuelType'] ?? '',
       transmission: data['transmission'] ?? '',
       color: data['color'] ?? '',
-      pricePerDay: data['pricePerDay'] ?? '',
+      pricePerDay: (data['pricePerDay'] ?? 0).toDouble(),
+      rating: (data['rating'] ?? 0).toDouble(),
       overview: data['overview'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
       available: data['available'] ?? false,
@@ -58,6 +61,7 @@ class Vehicle {
       'transmission': transmission,
       'color': color,
       'pricePerDay': pricePerDay,
+      'rating': rating,
       'overview': overview,
       'imageUrl': imageUrl,
       'available': available,

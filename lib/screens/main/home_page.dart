@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
@@ -78,15 +79,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CircleAvatar(
-                      radius: 25,
+                      radius: 40,
                       backgroundColor: Colors.grey,
                       child: _currentUser?.imageURL != null
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(45),
                               child: Image.network(
                                 _currentUser!.imageURL!,
-                                width: 50,
-                                height: 50,
+                                width: 90,
+                                height: 90,
                                 fit: BoxFit.cover,
                               ),
                             )
@@ -95,39 +96,48 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: const TextStyle(fontSize: 18),
                             ),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.location_on_sharp),
-                          padding: EdgeInsets.zero,
-                        ),
-                        Text(
-                          'Bridgetown, Barbados',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          // Toggle between dark_mode and light_mode
-                          setState(() {
-                            isDarkMode = !isDarkMode;
-                          });
-                        },
-                        icon: isDarkMode
-                            ? Icon(Icons.dark_mode)
-                            : Icon(Icons.light_mode),
-                        color: Colors.black,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 40),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.location_on_sharp),
+                            padding: EdgeInsets.zero,
+                            color: Colors.red,
+                          ),
+                          Text(
+                            'Bridgetown, Barbados',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.grey[200],
+                    //     borderRadius: BorderRadius.circular(10),
+                    //   ),
+                    //   child: IconButton(
+                    //     onPressed: () {
+                    //       // Toggle between dark_mode and light_mode
+                    //       setState(() {
+                    //         isDarkMode = !isDarkMode;
+                    //       });
+                    //     },
+                    //     icon: isDarkMode
+                    //         ? Icon(
+                    //             Icons.dark_mode,
+                    //             color: Theme.of(context).colorScheme.primary,
+                    //           )
+                    //         : const Icon(
+                    //             Icons.light_mode,
+                    //             color: Color.fromARGB(255, 255, 230, 0),
+                    //           ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -148,10 +158,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const Text(
-                      'Search for your favorite vehicle.',
+                      'Search for your favorite vehicle',
                       style: TextStyle(
                         fontSize: 15,
-                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -160,35 +171,58 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 10,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SearchScreen(vehicles),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Icon(Icons.search, color: Colors.red),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SearchScreen(vehicles),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 15),
+                                child: Icon(Icons.search, color: Colors.red),
+                              ),
+                              Text('Search for vehicles',
+                                  style: TextStyle(color: Colors.grey)),
+                            ],
+                          ),
                         ),
-                        Text('Search for vehicles',
-                            style: TextStyle(color: Colors.grey)),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          // Toggle between dark_mode and light_mode
+                        },
+                        icon: const Icon(Icons.filter_list_sharp),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(
@@ -199,13 +233,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   margin:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Text(
-                    'Recommended Brands',
-                    style: TextStyle(
-                      fontSize: 18,
-                      // fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Recommended Brands',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        'View All',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -268,13 +315,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   margin:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Text(
-                    'All Vehicles in Collection',
-                    style: TextStyle(
-                      fontSize: 18,
-                      // fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'All Vehicles in Collection',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        'View All',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -325,13 +385,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      vehicles[index].brand,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          vehicles[index].brand,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              fontWeight: FontWeight.bold),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              vehicles[index].rating.toString(),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            const Icon(
+                                              Icons.star,
+                                              color: Colors.yellow,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                     const Divider(),
                                     const SizedBox(
@@ -343,16 +426,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            const Icon(Icons.directions_car),
-                                            const SizedBox(width: 4),
-                                            Text(vehicles[index].type),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
                                             const Icon(Icons.settings),
                                             const SizedBox(width: 4),
-                                            Text(vehicles[index].transmission),
+                                            Text(
+                                              vehicles[index].transmission,
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
+                                            ),
                                           ],
                                         ),
                                         Row(
@@ -360,7 +442,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const Icon(Icons.monetization_on),
                                             const SizedBox(width: 4),
                                             Text(
-                                                '${vehicles[index].pricePerDay}/Day'),
+                                              '${vehicles[index].pricePerDay}/Day',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15),
+                                            ),
                                           ],
                                         ),
                                       ],

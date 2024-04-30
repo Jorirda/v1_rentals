@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
@@ -8,7 +8,7 @@ import 'package:v1_rentals/models/vehicle_model.dart';
 class CarDetailsScreen extends StatefulWidget {
   final Vehicle vehicle;
 
-  const CarDetailsScreen(this.vehicle, {Key? key}) : super(key: key);
+  const CarDetailsScreen(this.vehicle, {super.key});
 
   @override
   _CarDetailsScreenState createState() => _CarDetailsScreenState();
@@ -16,28 +16,60 @@ class CarDetailsScreen extends StatefulWidget {
 
 class _CarDetailsScreenState extends State<CarDetailsScreen> {
   String _vendorFullName = '';
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Car Details'),
+        title: const Text('Car Details'),
         centerTitle: true,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.favorite_outline))
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+              },
+              icon: isFavorite
+                  ? Icon(Icons.favorite_outline)
+                  : Icon(
+                      Icons.favorite,
+                      color: Colors.red,
+                    ))
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Display vehicle details
-            Text(
-              widget.vehicle.brand,
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.vehicle.brand,
+                  style: const TextStyle(
+                      fontSize: 25, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      widget.vehicle.rating.toString(),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.star,
+                      color: Colors.yellow,
+                    ),
+                  ],
+                ),
+              ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -50,97 +82,97 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     fit: BoxFit.cover),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             const Text(
               'Overview',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
               widget.vehicle.overview,
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             const Text(
               'Features',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
                           color: Colors.grey[200], // Grey background color
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: Icon(Icons.directions_car),
+                        child: const Icon(Icons.directions_car),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(widget.vehicle.type),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
                           color: Colors.grey[200], // Grey background color
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: Icon(Icons.event_seat),
+                        child: const Icon(Icons.event_seat),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text('${widget.vehicle.seats} seats'),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
                           color: Colors.grey[200], // Grey background color
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: Icon(Icons.local_gas_station),
+                        child: const Icon(Icons.local_gas_station),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(widget.vehicle.fuelType),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
                           color: Colors.grey[200], // Grey background color
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: Icon(Icons.settings),
+                        child: const Icon(Icons.settings),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(widget.vehicle.transmission),
                     ],
                   ),
@@ -151,18 +183,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
             const SizedBox(height: 30),
             // Use FutureBuilder to fetch vendor's full name asynchronously
 
-            Text(
+            const Text(
               'Vendor',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             FutureBuilder(
               future: AuthService().getUserData(widget.vehicle.vendorId),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 } else if (snapshot.hasError) {
@@ -180,41 +212,43 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       ),
                       Text(
                         vendor.fullname,
-                        style: TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 15),
                       ),
                       Expanded(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Column(
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.all(8),
+                                    padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                       color: Colors
                                           .grey[200], // Grey background color
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                    child: Icon(Icons.chat),
+                                    child: const Icon(Icons.chat),
                                   ),
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                 ],
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Column(
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.all(8),
+                                    padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
                                       color: Colors
                                           .grey[200], // Grey background color
                                       borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                    child: Icon(Icons.phone),
+                                    child: const Icon(Icons.phone),
                                   ),
                                   const SizedBox(height: 4),
                                 ],
@@ -232,7 +266,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         ),
       ),
       bottomSheet: Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
@@ -240,7 +274,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 1,
               blurRadius: 5,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -251,21 +285,22 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const Text(
                   'Price', // Label text
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 14,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.attach_money), // Icon to the left of the price
-                    SizedBox(width: 8),
+                    const Icon(
+                        Icons.attach_money), // Icon to the left of the price
+                    const SizedBox(width: 8),
                     Text(
                       '${widget.vehicle.pricePerDay}/Day', // Replace with actual price value
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
@@ -274,16 +309,17 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 ),
               ],
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             ElevatedButton(
               onPressed: () {
                 // Add your booking logic here
               },
               style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white),
-              child: Text('Book Now'),
+              child: const Text('Book Now'),
             ),
           ],
         ),
