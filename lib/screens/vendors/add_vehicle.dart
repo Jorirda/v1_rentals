@@ -19,14 +19,17 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late TextEditingController _brandController;
-  late TextEditingController _typeController;
+
   late TextEditingController _seatsController;
-  late TextEditingController _fuelTypeController;
-  late TextEditingController _transmissionController;
+
   late TextEditingController _pricePerDayController;
   late TextEditingController _colorController;
   late TextEditingController _overviewController;
   late TextEditingController _imageUrlController;
+
+  late CarType _selectedCarType;
+  late FuelType _selectedFuelType;
+  late TransmissionType _selectedTransmissionType;
 
   File? _pickedImage;
 
@@ -34,10 +37,10 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   void initState() {
     super.initState();
     _brandController = TextEditingController();
-    _typeController = TextEditingController();
+    _selectedCarType = CarType.sedan;
     _seatsController = TextEditingController();
-    _fuelTypeController = TextEditingController();
-    _transmissionController = TextEditingController();
+    _selectedFuelType = FuelType.gasoline;
+    _selectedTransmissionType = TransmissionType.automatic;
     _pricePerDayController = TextEditingController();
     _colorController = TextEditingController();
     _overviewController = TextEditingController();
@@ -47,10 +50,9 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   @override
   void dispose() {
     _brandController.dispose();
-    _typeController.dispose();
+
     _seatsController.dispose();
-    _fuelTypeController.dispose();
-    _transmissionController.dispose();
+
     _pricePerDayController.dispose();
     _colorController.dispose();
     _overviewController.dispose();
@@ -106,10 +108,10 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
           final newVehicle = Vehicle(
             id: vehicleId, // Assign the same document ID
             brand: _brandController.text,
-            type: _typeController.text,
+            carType: CarType.suv,
             seats: int.parse(_seatsController.text),
-            fuelType: _fuelTypeController.text,
-            transmission: _transmissionController.text,
+            fuelType: FuelType.gasoline,
+            transmission: TransmissionType.automatic,
             pricePerDay: double.parse(_pricePerDayController.text),
             rating: 4.8,
             color: _colorController.text,
@@ -213,7 +215,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                           )
                         : Image.file(
                             _pickedImage!,
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                           ),
                   ),
                 ),
@@ -259,15 +261,29 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  controller: _typeController,
-                  decoration: InputDecoration(labelText: 'Type'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a type';
+                // Car Type Dropdown
+
+                DropdownButtonFormField<CarType>(
+                  decoration: InputDecoration(
+                    labelText: 'Car Type', // Label for the dropdown field
+                  ),
+                  value: _selectedCarType, // The current selected value
+                  onChanged: (CarType? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedCarType = newValue;
+                      });
                     }
-                    return null;
                   },
+                  items: CarType.values.map((CarType value) {
+                    return DropdownMenuItem<CarType>(
+                      value: value,
+                      child: Text(value
+                          .toString()
+                          .split('.')
+                          .last), // Display the enum value
+                    );
+                  }).toList(),
                 ),
                 TextFormField(
                   controller: _seatsController,
@@ -280,13 +296,55 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  controller: _fuelTypeController,
-                  decoration: InputDecoration(labelText: 'Fuel Type'),
+
+                // Fuel Type Dropdown
+                DropdownButtonFormField<FuelType>(
+                  decoration: InputDecoration(
+                    labelText: 'Fuel Type', // Label for the dropdown field
+                  ),
+                  value: _selectedFuelType, // The current selected value
+                  onChanged: (FuelType? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedFuelType = newValue;
+                      });
+                    }
+                  },
+                  items: FuelType.values.map((FuelType value) {
+                    return DropdownMenuItem<FuelType>(
+                      value: value,
+                      child: Text(value
+                          .toString()
+                          .split('.')
+                          .last), // Display the enum value
+                    );
+                  }).toList(),
                 ),
-                TextFormField(
-                  controller: _transmissionController,
-                  decoration: InputDecoration(labelText: 'Transmission'),
+
+                // Transmission Type Dropdown
+                DropdownButtonFormField<TransmissionType>(
+                  decoration: InputDecoration(
+                    labelText:
+                        'Transmission Type', // Label for the dropdown field
+                  ),
+                  value:
+                      _selectedTransmissionType, // The current selected value
+                  onChanged: (TransmissionType? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _selectedTransmissionType = newValue;
+                      });
+                    }
+                  },
+                  items: TransmissionType.values.map((TransmissionType value) {
+                    return DropdownMenuItem<TransmissionType>(
+                      value: value,
+                      child: Text(value
+                          .toString()
+                          .split('.')
+                          .last), // Display the enum value
+                    );
+                  }).toList(),
                 ),
                 TextFormField(
                   controller: _pricePerDayController,

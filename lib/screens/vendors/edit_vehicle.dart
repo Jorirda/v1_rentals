@@ -24,13 +24,14 @@ class EditVehicleScreen extends StatefulWidget {
 
 class _EditVehicleScreenState extends State<EditVehicleScreen> {
   late TextEditingController _brandController = TextEditingController();
-  late TextEditingController _typeController = TextEditingController();
   late TextEditingController _seatsController = TextEditingController();
-  late TextEditingController _fuelTypeController = TextEditingController();
-  late TextEditingController _transmissionController = TextEditingController();
   late TextEditingController _pricePerDayController = TextEditingController();
   late TextEditingController _colorController = TextEditingController();
   late TextEditingController _overviewController = TextEditingController();
+
+  late CarType _selectedCarType;
+  late FuelType _selectedFuelType;
+  late TransmissionType _selectedTransmissionType;
 
   File? _pickedImage;
   bool _updating = false; // Track whether data is being updated
@@ -41,10 +42,10 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
 
     //Initialize text controllers with the vehicle's data
     _brandController.text = widget.vehicle.brand;
-    _typeController.text = widget.vehicle.type;
+    _selectedCarType = widget.vehicle.carType;
     _seatsController.text = widget.vehicle.seats.toString();
-    _fuelTypeController.text = widget.vehicle.fuelType;
-    _transmissionController.text = widget.vehicle.transmission;
+    _selectedFuelType = widget.vehicle.fuelType;
+    _selectedTransmissionType = widget.vehicle.transmission;
     _pricePerDayController.text = widget.vehicle.pricePerDay.toString();
     _colorController.text = widget.vehicle.color;
     _overviewController.text = widget.vehicle.overview;
@@ -103,10 +104,10 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         final updatedVehicle = Vehicle(
           id: widget.vehicle.id,
           brand: _brandController.text,
-          type: _typeController.text,
+          carType: _selectedCarType,
           seats: int.parse(_seatsController.text),
-          fuelType: _fuelTypeController.text,
-          transmission: _transmissionController.text,
+          fuelType: _selectedFuelType,
+          transmission: _selectedTransmissionType,
           pricePerDay: double.parse(_pricePerDayController.text),
           rating: 4.8,
           color: _colorController.text,
@@ -301,10 +302,9 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
   @override
   void dispose() {
     _brandController.dispose();
-    _typeController.dispose();
+
     _seatsController.dispose();
-    _fuelTypeController.dispose();
-    _transmissionController.dispose();
+
     _pricePerDayController.dispose();
     _colorController.dispose();
     _overviewController.dispose();
@@ -400,13 +400,28 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                       TextStyle(color: Theme.of(context).colorScheme.primary),
                   hintStyle: TextStyle(fontWeight: FontWeight.bold)),
             ),
-            TextFormField(
-              controller: _typeController,
+            DropdownButtonFormField<CarType>(
               decoration: InputDecoration(
-                  labelText: 'Type',
+                  labelText: 'Car Type',
                   labelStyle:
-                      TextStyle(color: Theme.of(context).colorScheme.primary),
-                  hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                      TextStyle(color: Theme.of(context).colorScheme.primary)),
+              value: _selectedCarType, // The current selected value
+              onChanged: (CarType? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _selectedCarType = newValue;
+                  });
+                }
+              },
+              items: CarType.values.map((CarType value) {
+                return DropdownMenuItem<CarType>(
+                  value: value,
+                  child: Text(value
+                      .toString()
+                      .split('.')
+                      .last), // Display the enum value
+                );
+              }).toList(),
             ),
             TextFormField(
               controller: _seatsController,
@@ -417,21 +432,58 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                   hintStyle: TextStyle(fontWeight: FontWeight.bold)),
               keyboardType: TextInputType.number,
             ),
-            TextFormField(
-              controller: _fuelTypeController,
+            // Fuel Type Dropdown
+            DropdownButtonFormField<FuelType>(
               decoration: InputDecoration(
-                labelText: 'Fuel Type',
-                labelStyle:
-                    TextStyle(color: Theme.of(context).colorScheme.primary),
-              ),
+                  labelText: 'Fuel Type',
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary)),
+              value: _selectedFuelType, // The current selected value
+              onChanged: (FuelType? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _selectedFuelType = newValue;
+                  });
+                }
+              },
+              items: FuelType.values.map((FuelType value) {
+                return DropdownMenuItem<FuelType>(
+                  value: value,
+                  child: Text(value
+                      .toString()
+                      .split('.')
+                      .last), // Display the enum value
+                );
+              }).toList(),
             ),
-            TextFormField(
-              controller: _transmissionController,
+
+            // Transmission Type Dropdown
+            DropdownButtonFormField<TransmissionType>(
               decoration: InputDecoration(
-                labelText: 'Transmission',
-                labelStyle:
-                    TextStyle(color: Theme.of(context).colorScheme.primary),
-              ),
+                  labelText: 'Transmission Type',
+                  labelStyle: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary) // Label for the dropdown field
+                  ),
+
+              value: _selectedTransmissionType, // The current selected value
+              onChanged: (TransmissionType? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _selectedTransmissionType = newValue;
+                  });
+                }
+              },
+              items: TransmissionType.values.map((TransmissionType value) {
+                return DropdownMenuItem<TransmissionType>(
+                  value: value,
+                  child: Text(value
+                      .toString()
+                      .split('.')
+                      .last), // Display the enum value
+                );
+              }).toList(),
             ),
             TextFormField(
               controller: _pricePerDayController,

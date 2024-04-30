@@ -73,13 +73,13 @@ class FleetScreen extends StatelessWidget {
                               vertical: 8, horizontal: 16),
                           child: Text(
                             'Vehicle ${index + 1}', // You can customize the header text as needed
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Material(
@@ -125,6 +125,7 @@ class FleetScreen extends StatelessWidget {
                                           fontSize: 18,
                                         ),
                                       ),
+                                      Divider(),
                                       SizedBox(height: 8),
                                       Row(
                                         mainAxisAlignment:
@@ -134,14 +135,15 @@ class FleetScreen extends StatelessWidget {
                                             children: [
                                               Icon(Icons.car_rental),
                                               SizedBox(width: 4),
-                                              Text(vehicle.type),
+                                              Text(vehicle.getCarTypeString()),
                                             ],
                                           ),
                                           Row(
                                             children: [
-                                              Icon(Icons.energy_savings_leaf),
+                                              Icon(Icons.settings),
                                               SizedBox(width: 4),
-                                              Text(vehicle.transmission),
+                                              Text(vehicle
+                                                  .getTransmissionTypeString()),
                                             ],
                                           ),
                                           Row(

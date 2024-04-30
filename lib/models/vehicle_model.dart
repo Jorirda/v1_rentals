@@ -1,12 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum CarType {
+  suv,
+  sedan,
+  truck,
+  van,
+  electric,
+  hybrid,
+  hatchback,
+  sports,
+  luxury,
+  convertible
+}
+
+enum TransmissionType {
+  automatic,
+  manual,
+}
+
+enum FuelType {
+  gasoline,
+  diesel,
+  electric,
+  hybrid,
+}
+
 class Vehicle {
   String id;
   String brand;
-  String type;
+  CarType carType;
   int seats;
-  String fuelType;
-  String transmission;
+  FuelType fuelType;
+  TransmissionType transmission;
   double pricePerDay;
   double rating;
   String color;
@@ -18,7 +43,7 @@ class Vehicle {
   Vehicle({
     required this.id,
     required this.brand,
-    required this.type,
+    required this.carType,
     required this.seats,
     required this.fuelType,
     required this.transmission,
@@ -37,10 +62,13 @@ class Vehicle {
     return Vehicle(
       id: doc.id,
       brand: data['brand'] ?? '',
-      type: data['type'] ?? '',
+      carType: CarType.values
+          .firstWhere((e) => e.toString() == 'CarType.${data['carType']}'),
       seats: data['seats'] ?? 0,
-      fuelType: data['fuelType'] ?? '',
-      transmission: data['transmission'] ?? '',
+      fuelType: FuelType.values
+          .firstWhere((e) => e.toString() == 'FuelType.${data['fuelType']}'),
+      transmission: TransmissionType.values.firstWhere(
+          (e) => e.toString() == 'TransmissionType.${data['transmission']}'),
       color: data['color'] ?? '',
       pricePerDay: (data['pricePerDay'] ?? 0).toDouble(),
       rating: (data['rating'] ?? 0).toDouble(),
@@ -55,10 +83,10 @@ class Vehicle {
   Map<String, dynamic> toMap() {
     return {
       'brand': brand,
-      'type': type,
+      'carType': carType.toString().split('.').last,
       'seats': seats,
-      'fuelType': fuelType,
-      'transmission': transmission,
+      'fuelType': fuelType.toString().split('.').last,
+      'transmission': transmission.toString().split('.').last,
       'color': color,
       'pricePerDay': pricePerDay,
       'rating': rating,
@@ -67,5 +95,17 @@ class Vehicle {
       'available': available,
       'vendorId': vendorId,
     };
+  }
+
+  String getCarTypeString() {
+    return carType.toString().split('.').last;
+  }
+
+  String getFuelTypeString() {
+    return fuelType.toString().split('.').last;
+  }
+
+  String getTransmissionTypeString() {
+    return transmission.toString().split('.').last;
   }
 }

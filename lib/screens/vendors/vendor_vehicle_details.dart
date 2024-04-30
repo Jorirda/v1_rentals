@@ -84,7 +84,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
-              subtitle: Text(_vehicle.type),
+              subtitle: Text(_vehicle.carType.toString().split('.').last),
             ),
             Divider(),
             ListTile(
@@ -108,7 +108,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
-              subtitle: Text(_vehicle.fuelType),
+              subtitle: Text(_vehicle.fuelType.toString().split('.').last),
             ),
             Divider(),
             ListTile(
@@ -116,7 +116,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
-              subtitle: Text(_vehicle.transmission),
+              subtitle: Text(_vehicle.transmission.toString().split('.').last),
             ),
             Divider(),
             ListTile(

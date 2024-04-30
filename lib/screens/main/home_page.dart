@@ -7,6 +7,7 @@ import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/clients/car_details.dart';
+import 'package:v1_rentals/screens/main/filter_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -215,7 +216,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: IconButton(
                         onPressed: () {
-                          // Toggle between dark_mode and light_mode
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FilterScreen(),
+                            ),
+                          );
                         },
                         icon: const Icon(Icons.filter_list_sharp),
                         color: Colors.white,
@@ -429,7 +435,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const Icon(Icons.settings),
                                             const SizedBox(width: 4),
                                             Text(
-                                              vehicles[index].transmission,
+                                              vehicles[index]
+                                                  .getTransmissionTypeString(),
                                               style: TextStyle(
                                                   color: Theme.of(context)
                                                       .colorScheme

@@ -152,14 +152,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                   Row(
                                     children: [
                                       const Icon(Icons.settings),
-                                      const SizedBox(width: 4),
-                                      Text(_searchResults[index].transmission),
+                                      Text(_searchResults[index]
+                                          .getTransmissionTypeString()),
                                     ],
                                   ),
                                   Row(
                                     children: [
                                       const Icon(Icons.monetization_on),
-                                      const SizedBox(width: 4),
                                       Text(
                                           '${_searchResults[index].pricePerDay}/Day'),
                                     ],
