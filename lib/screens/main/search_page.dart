@@ -181,14 +181,14 @@ class _SearchScreenState extends State<SearchScreen> {
                   height: 10,
                 ),
                 const Divider(),
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
                     'Recent Searches',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                 ),
                 Expanded(
