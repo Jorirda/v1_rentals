@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1_rentals/auth/auth_page.dart';
 import 'package:v1_rentals/main.dart';
+import 'package:v1_rentals/widgets/splash_screen.dart';
 
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({
@@ -16,7 +17,7 @@ class AuthenticationWrapper extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Show loading indicator or splash screen while checking authentication state
-          return const CircularProgressIndicator();
+          return SplashScreen();
         } else {
           if (snapshot.hasData) {
             // User is logged in, return the main screen
@@ -26,7 +27,7 @@ class AuthenticationWrapper extends StatelessWidget {
                   (context, AsyncSnapshot<DocumentSnapshot> userDataSnapshot) {
                 if (userDataSnapshot.connectionState ==
                     ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+                  return SplashScreen();
                 } else {
                   if (userDataSnapshot.hasData &&
                       userDataSnapshot.data != null) {

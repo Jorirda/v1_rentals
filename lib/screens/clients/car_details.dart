@@ -14,22 +14,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     with SingleTickerProviderStateMixin {
   bool isFavorite = false;
   late TabController tabController;
+  late List<Map<String, dynamic>> features;
 
   @override
   void initState() {
-    tabController = TabController(length: 2, vsync: this);
     super.initState();
-  }
+    tabController = TabController(length: 2, vsync: this);
 
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    List<Map<String, dynamic>> features = [
+    features = [
       {
         'title': 'Car Type',
         'icon': Icons.directions_car,
@@ -51,285 +43,304 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
         'subtitle': widget.vehicle.getTransmissionTypeString(),
       },
     ];
+  }
 
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                expandedHeight: 350.0,
-                floating: false,
-                pinned: true,
-                flexibleSpace: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                        ),
-                        child: Image.network(
-                          widget.vehicle.imageUrl ?? '',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: AppBar(
-                        centerTitle: true,
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        actions: [
+      backgroundColor: Colors.grey[100],
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 350.0,
+            pinned: true,
+            stretch: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: ClipRRect(
+                child: Image.network(
+                  widget.vehicle.imageUrl ?? '',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    isFavorite = !isFavorite;
+                  });
+                },
+                icon: isFavorite
+                    ? Icon(Icons.favorite, color: Colors.red)
+                    : Icon(Icons.favorite_outline, color: Colors.white),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Add your action here
+                },
+                icon: Icon(Icons.share, color: Colors.white),
+              ),
+            ],
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '\$${widget.vehicle.pricePerDay}/Day',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                                color: Colors.red),
+                          ),
                           Row(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isFavorite = !isFavorite;
-                                      });
-                                    },
-                                    icon: isFavorite
-                                        ? Icon(Icons.favorite_outline)
-                                        : Icon(
-                                            Icons.favorite,
-                                            color: Colors.red,
-                                          ),
-                                  ),
+                              Text(
+                                widget.vehicle.rating.toString(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: IconButton(
-                                    onPressed: () {
-                                      // Add your action here
-                                    },
-                                    icon: Icon(Icons.share),
-                                  ),
-                                ),
+                              const SizedBox(width: 4),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.yellow,
                               ),
                             ],
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 10),
+                      Text(
+                        widget.vehicle.brand,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        widget.vehicle.overview,
+                        maxLines: 3,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              widget.vehicle.brand,
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  widget.vehicle.rating.toString(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.yellow,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'About Vehicle',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          widget.vehicle.overview,
-                          maxLines: 3,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
+                Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: TabBar(
+                    unselectedLabelColor: Colors.grey,
+                    labelColor: Colors.black,
+                    indicatorColor: Theme.of(context).colorScheme.primary,
+                    indicatorWeight: 2,
+                    controller: tabController,
+                    tabs: const [
+                      Tab(text: 'Features'),
+                      Tab(text: 'Reviews'),
+                    ],
                   ),
+                ),
 
-                  Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: TabBar(
-                      unselectedLabelColor: Colors.grey,
-                      labelColor: Colors.black,
-                      indicatorColor: Theme.of(context).colorScheme.primary,
-                      indicatorWeight: 2,
-                      controller: tabController,
-                      tabs: [
-                        Tab(
-                          text: 'Features',
-                        ),
-                        Tab(
-                          text: 'Reviews',
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.width,
-                    child: TabBarView(
-                      controller: tabController,
-                      children: [
-                        SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GridView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 8.0,
-                                    mainAxisSpacing: 8.0,
-                                  ),
-                                  itemCount: features.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      leading: Icon(
-                                        features[index]['icon'],
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                SizedBox(
+                  height: (features.length / 2).ceil() *
+                      150.0, // calculates the height dynamically based on the number of features in your list. Adjust the 120.0 value according to your UI requirements.
+                  child: TabBarView(
+                    controller: tabController,
+                    children: [
+                      SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Wrap(
+                                spacing: 16.0,
+                                runSpacing: 16.0,
+                                children: features.map((feature) {
+                                  return SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 2 -
+                                            24,
+                                    child: Card(
+                                      elevation: 3,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
-                                      title: Text(
-                                        features[index]['title'],
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 15),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              feature['icon'],
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              feature['title'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              feature['subtitle'],
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      subtitle:
-                                          Text(features[index]['subtitle']),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ),
                         ),
-                        Center(
-                          child: Text('Tab 2 Content'),
+                      ),
+                      Center(
+                        child: Text('Tab 2 Content'),
+                      ),
+                    ],
+                  ),
+                ),
+                // Card with vendor information
+                Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.all(16.0),
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          // backgroundImage: NetworkImage(
+                          //     widget.vehicle.vendorImageUrl ?? ''),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Vendor Name',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Vendor Business Name',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 16),
-                  // Add additional content here
-                ]),
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 100, // Adjust height as needed
-              color: Colors.white,
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Price', // Label text
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons
-                                .attach_money), // Icon to the left of the price
-                            const SizedBox(width: 8),
-                            Text(
-                              '${widget.vehicle.pricePerDay}/Day', // Replace with actual price value
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add your booking logic here
-                      },
-                      style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 32),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          foregroundColor: Colors.white),
-                      child: const Text('Book Now'),
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: Container(
+        height: 100, // Adjust height as needed
+        color: Colors.white,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.storefront),
+                  ),
+                  const Text(
+                    'Store',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.chat_outlined),
+                  ),
+                  const Text(
+                    'Chat',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () {
+                  // Add your booking logic here
+                },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text('Book Now'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

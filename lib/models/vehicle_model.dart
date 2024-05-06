@@ -28,6 +28,7 @@ enum FuelType {
 class Vehicle {
   String id;
   String brand;
+  String modelYear;
   CarType carType;
   int seats;
   FuelType fuelType;
@@ -54,6 +55,7 @@ class Vehicle {
     required this.available,
     required this.color,
     required this.vendorId,
+    required this.modelYear,
   });
 
   // Convert DocumentSnapshot to Vehicle object
@@ -62,6 +64,7 @@ class Vehicle {
     return Vehicle(
       id: doc.id,
       brand: data['brand'] ?? '',
+      modelYear: data['modelYear'] ?? '',
       carType: CarType.values
           .firstWhere((e) => e.toString() == 'CarType.${data['carType']}'),
       seats: data['seats'] ?? 0,
@@ -83,6 +86,7 @@ class Vehicle {
   Map<String, dynamic> toMap() {
     return {
       'brand': brand,
+      'modelYear': modelYear,
       'carType': carType.toString().split('.').last,
       'seats': seats,
       'fuelType': fuelType.toString().split('.').last,

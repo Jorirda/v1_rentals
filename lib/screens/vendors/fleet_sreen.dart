@@ -29,7 +29,7 @@ class FleetScreen extends StatelessWidget {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(20),
         child: FutureBuilder<CustomUser?>(
           future: AuthService().getCurrentUser(),
           builder: (context, snapshot) {

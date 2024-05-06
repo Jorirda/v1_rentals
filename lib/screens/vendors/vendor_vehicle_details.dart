@@ -34,7 +34,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
         title: Text('Vehicle Details'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(.0),
+        padding: const EdgeInsets.all(8),
         child: ListView(
           children: [
             Container(
@@ -47,7 +47,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
               child: _vehicle.imageUrl != null
                   ? Image.network(
                       _vehicle.imageUrl,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                     )
                   : const Icon(
                       Icons.image_not_supported,
@@ -76,6 +76,18 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
               ),
               subtitle: Text(
                 _vehicle.brand,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text(
+                'Model Year',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+              subtitle: Text(
+                _vehicle.modelYear,
               ),
             ),
             Divider(),

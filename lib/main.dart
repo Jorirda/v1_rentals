@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth.dart';
 import 'package:v1_rentals/screens/account/account_page.dart';
 import 'package:v1_rentals/screens/clients/bookings_page.dart';
+import 'package:v1_rentals/screens/clients/favorites_page.dart';
 import 'package:v1_rentals/screens/main/home_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
 import 'package:v1_rentals/screens/vendors/fleet_sreen.dart';
@@ -47,6 +48,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static final List<Widget> _screens = <Widget>[
     const HomeScreen(),
+    const FavoriteScreen(),
     const BookingScreen(),
     const AccountScreen()
   ];
@@ -66,6 +68,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favorites',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.library_books),

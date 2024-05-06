@@ -5,7 +5,7 @@ import 'package:v1_rentals/screens/clients/car_details.dart';
 class SearchScreen extends StatefulWidget {
   final List<Vehicle> vehicles;
 
-  const SearchScreen(this.vehicles, {Key? key}) : super(key: key);
+  const SearchScreen(this.vehicles, {super.key});
 
   @override
   _SearchScreenState createState() => _SearchScreenState();

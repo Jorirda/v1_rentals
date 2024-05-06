@@ -1,17 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/clients/car_details.dart';
 import 'package:v1_rentals/screens/main/filter_page.dart';
+import 'package:v1_rentals/screens/main/location_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -52,10 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadVehicles() async {
     try {
-      // Retrieve the collection 'vehicles' from Firestore
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('vehicles').get();
-      // Convert the retrieved documents to Vehicle objects and store them in the 'vehicles' list
       setState(() {
         vehicles =
             querySnapshot.docs.map((doc) => Vehicle.fromMap(doc)).toList();
@@ -73,11 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
                       radius: 40,
@@ -98,47 +98,50 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(right: 40),
+                      padding: const EdgeInsets.only(right: 10, left: 20),
                       child: Row(
                         children: [
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LocationScreen(),
+                                ),
+                              );
+                            },
                             icon: Icon(Icons.location_on_sharp),
                             padding: EdgeInsets.zero,
                             color: Colors.red,
                           ),
-                          Text(
-                            'Bridgetown, Barbados',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.bold),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LocationScreen(),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Bridgetown, Barbados',
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    // Container(
-                    //   decoration: BoxDecoration(
-                    //     color: Colors.grey[200],
-                    //     borderRadius: BorderRadius.circular(10),
-                    //   ),
-                    //   child: IconButton(
-                    //     onPressed: () {
-                    //       // Toggle between dark_mode and light_mode
-                    //       setState(() {
-                    //         isDarkMode = !isDarkMode;
-                    //       });
-                    //     },
-                    //     icon: isDarkMode
-                    //         ? Icon(
-                    //             Icons.dark_mode,
-                    //             color: Theme.of(context).colorScheme.primary,
-                    //           )
-                    //         : const Icon(
-                    //             Icons.light_mode,
-                    //             color: Color.fromARGB(255, 255, 230, 0),
-                    //           ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -219,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => FilterScreen(),
+                              builder: (context) => FilterPage(),
                             ),
                           );
                         },
@@ -230,7 +233,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(
                 height: 15,
               ),
@@ -262,7 +264,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-
               SizedBox(
                 height: 100,
                 child: ListView.separated(
@@ -312,7 +313,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-
               const SizedBox(
                 height: 30,
               ),
@@ -344,11 +344,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-
-              // Display the list of vehicles
-
               SizedBox(
-                height: 240, // Set a fixed height for the ListView
+                height: 240,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: vehicles.length,
@@ -374,18 +371,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16),
-                                ),
-                                child: Image.network(
-                                  vehicles[index].imageUrl,
-                                  width: 280,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                              _buildVehicleImage(vehicles[
+                                  index]), // Use the method to build image
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
@@ -474,5 +461,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildVehicleImage(Vehicle vehicle) {
+    if (vehicle.imageUrl != null && vehicle.imageUrl.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+        child: Image.network(
+          vehicle.imageUrl!,
+          width: 280,
+          height: 120,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      return Container(
+        width: 280,
+        height: 120,
+        color: Colors.grey, // Default color for placeholder image
+        child: Icon(
+          Icons.image, // You can change this icon as needed
+          size: 50,
+          color: Colors.white,
+        ),
+      );
+    }
   }
 }

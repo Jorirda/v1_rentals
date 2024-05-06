@@ -24,6 +24,7 @@ class EditVehicleScreen extends StatefulWidget {
 
 class _EditVehicleScreenState extends State<EditVehicleScreen> {
   late TextEditingController _brandController = TextEditingController();
+  late TextEditingController _modelYearController = TextEditingController();
   late TextEditingController _seatsController = TextEditingController();
   late TextEditingController _pricePerDayController = TextEditingController();
   late TextEditingController _colorController = TextEditingController();
@@ -42,6 +43,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
 
     //Initialize text controllers with the vehicle's data
     _brandController.text = widget.vehicle.brand;
+    _modelYearController.text = widget.vehicle.modelYear;
     _selectedCarType = widget.vehicle.carType;
     _seatsController.text = widget.vehicle.seats.toString();
     _selectedFuelType = widget.vehicle.fuelType;
@@ -104,6 +106,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         final updatedVehicle = Vehicle(
           id: widget.vehicle.id,
           brand: _brandController.text,
+          modelYear: _modelYearController.text,
           carType: _selectedCarType,
           seats: int.parse(_seatsController.text),
           fuelType: _selectedFuelType,
@@ -396,6 +399,15 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
               controller: _brandController,
               decoration: InputDecoration(
                   labelText: 'Brand',
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                  hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _modelYearController,
+              decoration: InputDecoration(
+                  labelText: 'Model Year',
                   labelStyle:
                       TextStyle(color: Theme.of(context).colorScheme.primary),
                   hintStyle: TextStyle(fontWeight: FontWeight.bold)),

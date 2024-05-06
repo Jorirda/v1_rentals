@@ -19,7 +19,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late TextEditingController _brandController;
-
+  late TextEditingController _modelYearController;
   late TextEditingController _seatsController;
 
   late TextEditingController _pricePerDayController;
@@ -37,6 +37,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   void initState() {
     super.initState();
     _brandController = TextEditingController();
+    _modelYearController = TextEditingController();
     _selectedCarType = CarType.sedan;
     _seatsController = TextEditingController();
     _selectedFuelType = FuelType.gasoline;
@@ -50,9 +51,8 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   @override
   void dispose() {
     _brandController.dispose();
-
+    _modelYearController.dispose();
     _seatsController.dispose();
-
     _pricePerDayController.dispose();
     _colorController.dispose();
     _overviewController.dispose();
@@ -108,6 +108,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
           final newVehicle = Vehicle(
             id: vehicleId, // Assign the same document ID
             brand: _brandController.text,
+            modelYear: _modelYearController.text,
             carType: CarType.suv,
             seats: int.parse(_seatsController.text),
             fuelType: FuelType.gasoline,
@@ -257,6 +258,17 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a brand';
+                    }
+                    return null;
+                  },
+                ),
+
+                TextFormField(
+                  controller: _modelYearController,
+                  decoration: InputDecoration(labelText: 'Model Year'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a Model Year';
                     }
                     return null;
                   },
