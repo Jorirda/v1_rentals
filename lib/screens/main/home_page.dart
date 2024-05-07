@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
@@ -17,7 +19,10 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true; // Keep state alive across tab switches
+
   CustomUser? _currentUser;
   final AuthService _authService = AuthService();
   List<RecommendModel> recommendBrands = [];
@@ -31,7 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _getInitialInfo();
     _loadVehicles();
   }
-
+  Future<void> _onRefresh() async {
+    await _loadCurrentUser();
+    _getInitialInfo();
+    await _loadVehicles();
+  }
   void _getInitialInfo() {
     recommendBrands = RecommendModel.getRecommendedBrands();
   }
@@ -65,9 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Needed for AutomaticKeepAliveClientMixin
     return Scaffold(
-      body: SafeArea(
+        body: SafeArea(
+        child: RefreshIndicator(
+        onRefresh: _onRefresh,
         child: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(), // Ensure scrollability
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -222,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   //         Navigator.push(
                   //           context,
                   //           MaterialPageRoute(
-                  //             builder: (context) => FilterPage(vehicles),
+                  //             builder: (context) => FilterPage(),
                   //           ),
                   //         );
                   //       },
@@ -419,36 +432,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(
-                                              Icons.settings,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
+                                            const Icon(Icons.settings),
                                             const SizedBox(width: 4),
                                             Text(
                                               vehicles[index]
                                                   .getTransmissionTypeString(),
                                               style: TextStyle(
-                                                  fontWeight: FontWeight.w600),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
                                             ),
                                           ],
                                         ),
                                         Row(
                                           children: [
-                                            Icon(
-                                              Icons.monetization_on,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
+                                            const Icon(Icons.monetization_on),
                                             const SizedBox(width: 4),
                                             Text(
                                               '${vehicles[index].pricePerDay}/Day',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 15,
-                                                  color: Colors.red),
+                                                  fontSize: 15),
                                             ),
                                           ],
                                         ),
@@ -469,6 +473,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 
@@ -479,24 +484,42 @@ class _HomeScreenState extends State<HomeScreen> {
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
-        child: Image.network(
-          vehicle.imageUrl!,
+        child: CachedNetworkImage(
+          imageUrl: vehicle.imageUrl!,
+          cacheManager: CustomCacheManager.instance,  // Use the custom cache manager
           width: 280,
           height: 120,
           fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            width: 280,
+            height: 120,
+            color: Colors.grey,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
         ),
       );
     } else {
       return Container(
         width: 280,
         height: 120,
-        color: Colors.grey, // Default color for placeholder image
-        child: Icon(
-          Icons.image, // You can change this icon as needed
-          size: 50,
-          color: Colors.white,
-        ),
+        color: Colors.grey,
+        child: const Icon(Icons.image, size: 50, color: Colors.white),
       );
     }
   }
+}
+
+class CustomCacheManager {
+  static const key = 'customCacheKey';
+
+  static final CacheManager instance = CacheManager(
+    Config(
+      key,
+      stalePeriod: const Duration(days: 30),  // Longer cache duration
+      maxNrOfCacheObjects: 100,               // Increase max number of cached objects
+      repo: JsonCacheInfoRepository(databaseName: key),
+      fileService: HttpFileService(),
+    ),
+  );
 }
