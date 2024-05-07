@@ -17,16 +17,22 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     with SingleTickerProviderStateMixin {
   bool isFavorite = false;
   late TabController tabController;
-  late List<Map<String, dynamic>> features;
   CustomUser? vendor;
+  late List<Map<String, dynamic>> features;
+
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 2, vsync: this);
     fetchVendorInfo();
+    initializeFeatures();
+  }
+
+  // Method to initialize features
+  void initializeFeatures() {
     features = [
       {
-        'title': 'Car Type',
+        'title': 'Type',
         'icon': Icons.directions_car,
         'subtitle': widget.vehicle.getCarTypeString(),
       },
@@ -36,12 +42,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
         'subtitle': '${widget.vehicle.seats} seats',
       },
       {
-        'title': 'Fuel Type',
+        'title': 'Fuel ',
         'icon': Icons.local_gas_station,
         'subtitle': widget.vehicle.getFuelTypeString(),
       },
       {
-        'title': 'Transmission Type',
+        'title': 'Transmission ',
         'icon': Icons.settings,
         'subtitle': widget.vehicle.getTransmissionTypeString(),
       },
@@ -59,6 +65,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     } catch (e) {
       print('Error fetching vendor information: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
   }
 
   // Widget to display vendor information
@@ -124,12 +136,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
       // Show loading indicator or placeholder while fetching vendor information
       return CircularProgressIndicator();
     }
-  }
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -280,138 +286,79 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                         maxLines: 3,
                         style: TextStyle(color: Colors.grey),
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: TabBar(
-                    unselectedLabelColor: Colors.grey,
-                    labelColor: Colors.black,
-                    indicatorColor: Theme.of(context).colorScheme.primary,
-                    indicatorWeight: 2,
-                    controller: tabController,
-                    tabs: const [
-                      Tab(text: 'Features'),
-                      Tab(text: 'Reviews'),
+                      SizedBox(height: 20),
+                      Divider(),
+                      SizedBox(height: 10),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: features.map((feature) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: SizedBox(
+                                height: 100,
+                                width: 120,
+                                child: Card(
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          feature['icon'],
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          feature['title'],
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          feature['subtitle'],
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(),
                     ],
                   ),
                 ),
 
-                SizedBox(
-                  height: (features.length / 2).ceil() *
-                      150.0, // calculates the height dynamically based on the number of features in your list. Adjust the 120.0 value according to your UI requirements.
-                  child: TabBarView(
-                    controller: tabController,
-                    children: [
-                      SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Wrap(
-                                spacing: 16.0,
-                                runSpacing: 16.0,
-                                children: features.map((feature) {
-                                  return SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 2 -
-                                            24,
-                                    child: Card(
-                                      elevation: 3,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 15),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              feature['icon'],
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                            SizedBox(height: 8),
-                                            Text(
-                                              feature['title'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
-                                              feature['subtitle'],
-                                              style: TextStyle(
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Center(
-                        child: Text('Tab 2 Content'),
-                      ),
-                    ],
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text(
+                    'Vendor',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
-                // Card with vendor information
-                // Card(
-                //   color: Colors.white,
-                //   margin: const EdgeInsets.all(16.0),
-                //   elevation: 3,
-                //   shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(10),
-                //   ),
-                //   child: const Padding(
-                //     padding: const EdgeInsets.all(16.0),
-                //     child: Row(
-                //       children: [
-                //         CircleAvatar(
-                //           radius: 30,
-                //           // backgroundImage: NetworkImage(
-                //           //     widget.vehicle.vendorImageUrl ?? ''),
-                //         ),
-                //         const SizedBox(width: 16),
-                //         Expanded(
-                //           child: Column(
-                //             crossAxisAlignment: CrossAxisAlignment.start,
-                //             children: [
-                //               Text(
-                //                 'Vendor Name',
-                //                 style: TextStyle(
-                //                   fontWeight: FontWeight.bold,
-                //                   fontSize: 16,
-                //                 ),
-                //               ),
-                //               const SizedBox(height: 8),
-                //               Text(
-                //                 'Vendor Business Name',
-                //                 style: TextStyle(
-                //                   color: Colors.grey,
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
                 buildVendorInfo(), // Display vendor information widget
               ],
             ),
