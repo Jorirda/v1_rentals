@@ -76,7 +76,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
   void initializeFeatures() {
     features = [
       {
-        'title': 'Type',
+        'title': 'Category',
         'icon': Icons.directions_car,
         'subtitle': widget.vehicle.getCarTypeString(),
       },

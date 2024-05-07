@@ -6,7 +6,7 @@ import 'package:v1_rentals/screens/main/filter_page.dart';
 class SearchScreen extends StatefulWidget {
   final List<Vehicle> vehicles;
 
-  const SearchScreen(this.vehicles, {super.key});
+  const SearchScreen(this.vehicles, {Key? key}) : super(key: key);
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -17,10 +17,12 @@ class _SearchScreenState extends State<SearchScreen> {
   String _searchQuery = '';
   List<Vehicle> _searchResults = [];
   List<String> _recentSearches = [];
+
   @override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchQueryChanged);
+    _recentSearches = ['Toyota', 'Honda', 'Ford']; // Initial recent searches
   }
 
   @override
@@ -58,6 +60,29 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  void _openFilterPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FilterPage(
+          initialCarType: null, // Initial values for filters
+          initialFuelType: null,
+          initialTransmissionType: null,
+          initialPriceRange: const RangeValues(0, 1000),
+        ),
+      ),
+    );
+
+    // Handle the result from the FilterPage
+    if (result != null) {
+      setState(() {
+        // Update filter settings based on the result
+        // You can use the result map to access filter values
+        // For example: result['carType'], result['fuelType'], etc.
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,8 +95,9 @@ class _SearchScreenState extends State<SearchScreen> {
             fillColor: Colors.grey[300],
             hintText: 'Search rentals',
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide.none),
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
+            ),
             prefixIcon: Icon(Icons.search),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
@@ -93,24 +119,18 @@ class _SearchScreenState extends State<SearchScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => FilterPage(widget.vehicles),
-                    ),
-                  );
-                },
+                onPressed: _openFilterPage, // Open FilterPage
                 icon: const Icon(Icons.filter_list_sharp),
                 color: Colors.white,
               ),
             ),
           ),
           TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'))
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancel'),
+          )
         ],
       ),
       body: _searchQuery.isNotEmpty
@@ -146,7 +166,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           child: Image.network(
                             _searchResults[index].imageUrl,
-                            width: double.infinity, // Use full width
+                            width: double.infinity,
                             height: 130,
                             fit: BoxFit.cover,
                           ),
@@ -208,9 +228,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Text(
                     'Recent Searches',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
                 Expanded(

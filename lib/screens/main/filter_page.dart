@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
-import 'package:v1_rentals/screens/main/search_page.dart';
 
 class FilterPage extends StatefulWidget {
-  const FilterPage(
-    this.vehicles, {
-    super.key,
-  });
-  final List<Vehicle> vehicles;
+  const FilterPage({
+    Key? key,
+    required this.initialCarType,
+    required this.initialFuelType,
+    required this.initialTransmissionType,
+    required this.initialPriceRange,
+  }) : super(key: key);
+
+  final CarType? initialCarType;
+  final FuelType? initialFuelType;
+  final TransmissionType? initialTransmissionType;
+  final RangeValues initialPriceRange;
+
   @override
   _FilterPageState createState() => _FilterPageState();
 }
 
 class _FilterPageState extends State<FilterPage> {
-  CarType? _selectedCarType;
+  late CarType? _selectedCarType;
+  late FuelType? _selectedFuelType;
+  late TransmissionType? _selectedTransmissionType;
+  late RangeValues _priceRange;
 
-  FuelType? _selectedFuelType;
-  TransmissionType? _selectedTransmissionType;
-  RangeValues _priceRange = const RangeValues(0, 1000);
+  @override
+  void initState() {
+    super.initState();
+    _selectedCarType = widget.initialCarType;
+    _selectedFuelType = widget.initialFuelType;
+    _selectedTransmissionType = widget.initialTransmissionType;
+    _priceRange = widget.initialPriceRange;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,52 +47,19 @@ class _FilterPageState extends State<FilterPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Car Brand',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
-              ),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a brand';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Model Year',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
-              ),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a brand';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              Text(
                 'Car Type',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
               DropdownButtonFormField<CarType>(
                 value: _selectedCarType,
                 onChanged: (CarType? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _selectedCarType = newValue;
-                    });
-                  }
+                  setState(() {
+                    _selectedCarType = newValue;
+                  });
                 },
                 items: CarType.values.map((CarType value) {
                   return DropdownMenuItem<CarType>(
@@ -90,18 +72,17 @@ class _FilterPageState extends State<FilterPage> {
               Text(
                 'Fuel Type',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
               DropdownButtonFormField<FuelType>(
                 value: _selectedFuelType,
                 onChanged: (FuelType? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _selectedFuelType = newValue;
-                    });
-                  }
+                  setState(() {
+                    _selectedFuelType = newValue;
+                  });
                 },
                 items: FuelType.values.map((FuelType value) {
                   return DropdownMenuItem<FuelType>(
@@ -114,18 +95,17 @@ class _FilterPageState extends State<FilterPage> {
               Text(
                 'Transmission Type',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
               DropdownButtonFormField<TransmissionType>(
                 value: _selectedTransmissionType,
                 onChanged: (TransmissionType? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _selectedTransmissionType = newValue;
-                    });
-                  }
+                  setState(() {
+                    _selectedTransmissionType = newValue;
+                  });
                 },
                 items: TransmissionType.values.map((TransmissionType value) {
                   return DropdownMenuItem<TransmissionType>(
@@ -138,9 +118,10 @@ class _FilterPageState extends State<FilterPage> {
               Text(
                 'Price per Day Range',
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,11 +161,14 @@ class _FilterPageState extends State<FilterPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Reset button functionality
+                    Navigator.pop(
+                        context); // Pop the FilterPage to reset filters
                   },
                   child: Text('Reset'),
                   style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.red),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -194,24 +178,17 @@ class _FilterPageState extends State<FilterPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Apply button functionality
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SearchScreen(
-                          widget.vehicles.where((vehicle) {
-                            // Apply filtering logic here based on selected filters
-
-                            return vehicle.carType == _selectedCarType &&
-                                vehicle.pricePerDay >= _priceRange.start &&
-                                vehicle.pricePerDay <= _priceRange.end;
-                          }).toList(),
-                        ),
-                      ),
-                    );
+                    Navigator.pop(context, {
+                      'carType': _selectedCarType,
+                      'fuelType': _selectedFuelType,
+                      'transmissionType': _selectedTransmissionType,
+                      'priceRange': _priceRange,
+                    }); // Pass updated filter settings back to SearchScreen
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
                   child: const Text('Apply'),
                 ),
               ),
