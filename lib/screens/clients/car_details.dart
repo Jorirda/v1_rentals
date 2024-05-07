@@ -76,7 +76,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
   void initializeFeatures() {
     features = [
       {
-        'title': 'Category',
+        'title': 'Type',
         'icon': Icons.directions_car,
         'subtitle': widget.vehicle.getCarTypeString(),
       },
@@ -230,7 +230,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -266,23 +265,300 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: ClipRRect(
-                child: widget.vehicle.imageUrl != null
-                    ? CachedNetworkImage(
-                  imageUrl: widget.vehicle.imageUrl!,
+                child: Image.network(
+                  widget.vehicle.imageUrl ?? '',
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.error_outline),
-                  cacheManager: CustomCacheManager.instance,
-                )
-                    : Container(color: Colors.grey),
+                ),
               ),
             ),
-            // Other actions...
+            actions: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset:
+                        Offset(0, 3), // changes the position of the shadow
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: () async {
+                      await toggleFavorite(widget.vehicle.id);
+                    },
+                    icon: isFavorite
+                        ? Icon(Icons.favorite, color: Colors.red)
+                        : Icon(Icons.favorite_outline),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset:
+                        Offset(0, 3), // changes the position of the shadow
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      // Add your action here
+                    },
+                    icon: Icon(Icons.share, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           ),
-          // SliverList implementation remains the same...
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '\$${widget.vehicle.pricePerDay}/Day',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                                color: Colors.red),
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                widget.vehicle.rating.toString(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 20,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        widget.vehicle.brand,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        widget.vehicle.overview,
+                        maxLines: 3,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      SizedBox(height: 20),
+                      Divider(),
+                      SizedBox(height: 10),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: features.map((feature) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: SizedBox(
+                                height: 100,
+                                width: 120,
+                                child: Card(
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          feature['icon'],
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          feature['title'],
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          feature['subtitle'],
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(),
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text(
+                    'Vendor',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                buildVendorInfo(), // Display vendor information widget
+              ],
+            ),
+          ),
         ],
       ),
-      // Bottom navigation bar remains the same...
+      bottomNavigationBar: Container(
+        height: 100, // Adjust height as needed
+        color: Colors.white,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.storefront),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const Text(
+                    'Store',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.phone,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  const Text(
+                    'Call',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.chat_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  const Text(
+                    'Chat',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Add your booking logic here
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 32),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Book Now'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
+}
+class CustomCacheManager {
+  static const key = 'customCacheKey';
+
+  static final CacheManager instance = CacheManager(
+    Config(
+      key,
+      stalePeriod: const Duration(days: 15),  // Adjust the cache duration as needed
+      maxNrOfCacheObjects: 100,  // Adjust the max number of objects
+      repo: JsonCacheInfoRepository(databaseName: key),
+      fileService: HttpFileService(),
+    ),
+  );
 }
