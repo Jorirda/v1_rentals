@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen(this.showSignUp, {super.key});
+  const LoginScreen(this.showSignUp, {Key? key}) : super(key: key);
 
   final VoidCallback showSignUp;
 
@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   var _isAuthenticating = false;
+  bool _obscureText = true;
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
@@ -52,8 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: Expanded(
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -128,25 +129,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.white),
-                            borderRadius: BorderRadius.circular(12)),
+                          color: Colors.white,
+                          border: Border.all(color: Colors.white),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20),
-                          child: TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: 'Password',
-                              border: InputBorder.none,
-                              icon: Icon(Icons.password_rounded),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              return null;
-                            },
+                          child: Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: _obscureText,
+                                decoration: const InputDecoration(
+                                  hintText: 'Password',
+                                  border: InputBorder.none,
+                                  icon: Icon(Icons.password_rounded),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your password';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       ),

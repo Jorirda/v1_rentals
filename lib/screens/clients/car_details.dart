@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
@@ -26,6 +28,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     tabController = TabController(length: 2, vsync: this);
     fetchVendorInfo();
     initializeFeatures();
+    isFavorite = widget.vehicle.isFavorite;
   }
 
   // Method to initialize features
@@ -58,12 +61,44 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
   Future<void> fetchVendorInfo() async {
     try {
       CustomUser? vendorData =
-          await AuthService().getUserData(widget.vehicle.vendorId);
+      await AuthService().getUserData(widget.vehicle.vendorId);
       setState(() {
         vendor = vendorData;
       });
     } catch (e) {
       print('Error fetching vendor information: $e');
+    }
+  }
+
+  Future<void> toggleFavorite(String vehicleId) async {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        if (isFavorite) {
+          // Add vehicle to favorites
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('favorites')
+              .doc(vehicleId)
+              .set(widget.vehicle.toMap());
+        } else {
+          // Remove vehicle from favorites
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('favorites')
+              .doc(vehicleId)
+              .delete();
+        }
+      }
+    } catch (error) {
+      print('Error toggling favorite: $error');
+      // Handle error
     }
   }
 
@@ -92,18 +127,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                 backgroundColor: Colors.grey,
                 child: vendor?.imageURL != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(45),
-                        child: Image.network(
-                          vendor!.imageURL!,
-                          width: 90,
-                          height: 90,
-                          fit: BoxFit.cover,
-                        ),
-                      )
+                  borderRadius: BorderRadius.circular(45),
+                  child: Image.network(
+                    vendor!.imageURL!,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
+                )
                     : Text(
-                        vendor?.fullname?[0].toUpperCase() ?? "",
-                        style: const TextStyle(fontSize: 18),
-                      ),
+                  vendor?.fullname?[0].toUpperCase() ?? "",
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -161,7 +196,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                       spreadRadius: 1,
                       blurRadius: 5,
                       offset:
-                          Offset(0, 3), // changes the position of the shadow
+                      Offset(0, 3), // changes the position of the shadow
                     ),
                   ],
                 ),
@@ -194,19 +229,17 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                            Offset(0, 3), // changes the position of the shadow
+                        Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
+                    onPressed: () async {
+                      await toggleFavorite(widget.vehicle.id);
                     },
                     icon: isFavorite
                         ? Icon(Icons.favorite, color: Colors.red)
-                        : Icon(Icons.favorite_outline, color: Colors.white),
+                        : Icon(Icons.favorite_outline),
                   ),
                 ),
               ),
@@ -222,7 +255,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                            Offset(0, 3), // changes the position of the shadow
+                        Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
@@ -307,9 +340,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      CrossAxisAlignment.center,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           feature['icon'],

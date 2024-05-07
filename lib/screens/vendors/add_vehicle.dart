@@ -117,7 +117,8 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
             color: _colorController.text,
             overview: _overviewController.text,
             imageUrl: imageUrl,
-            available: true, // Assuming the new vehicle is available
+            available: true, 
+            isFavorite: false,// Assuming the new vehicle is available
             vendorId: currentUser
                 .userId!, // Set the current user's ID as the vendor ID
           );
