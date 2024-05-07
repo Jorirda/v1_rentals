@@ -117,6 +117,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
           overview: _overviewController.text,
           imageUrl: imageUrl,
           available: true,
+          isFavorite: false,
           vendorId: currentUser.userId ?? '',
         );
 

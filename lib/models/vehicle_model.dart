@@ -40,6 +40,7 @@ class Vehicle {
   String imageUrl;
   bool available;
   String vendorId; // Reference to the vendor's user ID
+  bool isFavorite;
 
   Vehicle({
     required this.id,
@@ -56,6 +57,7 @@ class Vehicle {
     required this.color,
     required this.vendorId,
     required this.modelYear,
+    required this.isFavorite,
   });
 
   // Convert DocumentSnapshot to Vehicle object
@@ -79,6 +81,7 @@ class Vehicle {
       imageUrl: data['imageUrl'] ?? '',
       available: data['available'] ?? false,
       vendorId: data['vendorId'] ?? '',
+      isFavorite: data['isFavorite'] ?? false,
     );
   }
 
@@ -97,6 +100,7 @@ class Vehicle {
       'overview': overview,
       'imageUrl': imageUrl,
       'available': available,
+      'isFavorite': isFavorite,
       'vendorId': vendorId,
     };
   }

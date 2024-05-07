@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
@@ -26,6 +28,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     tabController = TabController(length: 2, vsync: this);
     fetchVendorInfo();
     initializeFeatures();
+    isFavorite = widget.vehicle.isFavorite;
   }
 
   // Method to initialize features
@@ -66,6 +69,39 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
       print('Error fetching vendor information: $e');
     }
   }
+
+  Future<void> toggleFavorite(String vehicleId, Vehicle vehicle) async {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        if (isFavorite) {
+          // Add vehicle to favorites
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('favorites')
+              .doc(vehicleId)
+              .set(vehicle.toMap());
+        } else {
+          // Remove vehicle from favorites
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('favorites')
+              .doc(vehicleId)
+              .delete();
+        }
+      }
+    } catch (error) {
+      print('Error toggling favorite: $error');
+      // Handle error
+    }
+ }
+
 
   @override
   void dispose() {
@@ -199,14 +235,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                     ],
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
+                    onPressed: () async {
+                      await toggleFavorite(widget.vehicle.id);
                     },
                     icon: isFavorite
                         ? Icon(Icons.favorite, color: Colors.red)
-                        : Icon(Icons.favorite_outline, color: Colors.white),
+                        : Icon(Icons.favorite_outline),
                   ),
                 ),
               ),
