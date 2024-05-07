@@ -25,15 +25,24 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     if (currentUser == null) {
       throw Exception('User not logged in');
     }
+
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(currentUser.uid)
         .collection('favorites')
         .get();
-    return querySnapshot.docs
-        .map((doc) => Vehicle.fromMap(doc.data() as DocumentSnapshot<Object?>))
-        .toList();
+
+    List<Vehicle> vehicles = [];
+    for (var doc in querySnapshot.docs) {
+      // Assume Vehicle.fromMap is actually expecting a DocumentSnapshot
+      Vehicle vehicle = Vehicle.fromMap(doc);
+      vehicles.add(vehicle);
+    }
+    return vehicles;
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +69,36 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             itemCount: favoriteVehicles.length,
             itemBuilder: (context, index) {
               final vehicle = favoriteVehicles[index];
-              return ListTile(
-                title: Text(vehicle.brand),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CarDetailsScreen(vehicle),
-                    ),
-                  );
-                },
+              return Card(
+                margin: EdgeInsets.all(8),
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  leading: Image.network(
+                    vehicle.imageUrl ?? 'https://via.placeholder.com/150',
+                    width: 100,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                  ),
+                  title: Text(vehicle.brand),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(vehicle.modelYear),
+                      Text('\$${vehicle.pricePerDay}/Day')
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CarDetailsScreen(vehicle),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               );
             },
           );

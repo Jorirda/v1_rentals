@@ -61,7 +61,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
   Future<void> fetchVendorInfo() async {
     try {
       CustomUser? vendorData =
-          await AuthService().getUserData(widget.vehicle.vendorId);
+      await AuthService().getUserData(widget.vehicle.vendorId);
       setState(() {
         vendor = vendorData;
       });
@@ -70,7 +70,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     }
   }
 
-  Future<void> toggleFavorite(String vehicleId, Vehicle vehicle) async {
+  Future<void> toggleFavorite(String vehicleId) async {
     setState(() {
       isFavorite = !isFavorite;
     });
@@ -85,7 +85,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
               .doc(currentUser.uid)
               .collection('favorites')
               .doc(vehicleId)
-              .set(vehicle.toMap());
+              .set(widget.vehicle.toMap());
         } else {
           // Remove vehicle from favorites
           await FirebaseFirestore.instance
@@ -100,8 +100,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
       print('Error toggling favorite: $error');
       // Handle error
     }
- }
-
+  }
 
   @override
   void dispose() {
@@ -128,18 +127,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                 backgroundColor: Colors.grey,
                 child: vendor?.imageURL != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(45),
-                        child: Image.network(
-                          vendor!.imageURL!,
-                          width: 90,
-                          height: 90,
-                          fit: BoxFit.cover,
-                        ),
-                      )
+                  borderRadius: BorderRadius.circular(45),
+                  child: Image.network(
+                    vendor!.imageURL!,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
+                )
                     : Text(
-                        vendor?.fullname?[0].toUpperCase() ?? "",
-                        style: const TextStyle(fontSize: 18),
-                      ),
+                  vendor?.fullname?[0].toUpperCase() ?? "",
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -197,7 +196,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                       spreadRadius: 1,
                       blurRadius: 5,
                       offset:
-                          Offset(0, 3), // changes the position of the shadow
+                      Offset(0, 3), // changes the position of the shadow
                     ),
                   ],
                 ),
@@ -230,7 +229,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                            Offset(0, 3), // changes the position of the shadow
+                        Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
@@ -256,7 +255,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                            Offset(0, 3), // changes the position of the shadow
+                        Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
@@ -341,9 +340,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      CrossAxisAlignment.center,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           feature['icon'],
