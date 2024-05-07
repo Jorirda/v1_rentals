@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +112,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
             seats: int.parse(_seatsController.text),
             fuelType: FuelType.gasoline,
             transmission: TransmissionType.automatic,
-            pricePerDay: double.parse(_pricePerDayController.text),
+            pricePerDay: int.parse(_pricePerDayController.text),
             rating: 4.8,
             color: _colorController.text,
             overview: _overviewController.text,

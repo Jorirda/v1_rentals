@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
+import 'package:v1_rentals/screens/main/search_page.dart';
 
 class FilterPage extends StatefulWidget {
-  const FilterPage({super.key});
-
+  const FilterPage(
+    this.vehicles, {
+    super.key,
+  });
+  final List<Vehicle> vehicles;
   @override
   _FilterPageState createState() => _FilterPageState();
 }
 
 class _FilterPageState extends State<FilterPage> {
   CarType? _selectedCarType;
+
   FuelType? _selectedFuelType;
+  TransmissionType? _selectedTransmissionType;
   RangeValues _priceRange = const RangeValues(0, 1000);
 
   @override
@@ -25,6 +31,38 @@ class _FilterPageState extends State<FilterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                'Car Brand',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+              TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a brand';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Model Year',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+              TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a brand';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
               Text(
                 'Car Type',
                 style: TextStyle(
@@ -73,12 +111,36 @@ class _FilterPageState extends State<FilterPage> {
                 }).toList(),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
+                'Transmission Type',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+              DropdownButtonFormField<TransmissionType>(
+                value: _selectedTransmissionType,
+                onChanged: (TransmissionType? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _selectedTransmissionType = newValue;
+                    });
+                  }
+                },
+                items: TransmissionType.values.map((TransmissionType value) {
+                  return DropdownMenuItem<TransmissionType>(
+                    value: value,
+                    child: Text(value.toString().split('.').last),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              Text(
                 'Price per Day Range',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,12 +194,20 @@ class _FilterPageState extends State<FilterPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Apply button functionality
-                    Navigator.pop(context, {
-                      'carType': _selectedCarType,
-                      'fuelType': _selectedFuelType,
-                      'minPrice': _priceRange.start,
-                      'maxPrice': _priceRange.end,
-                    });
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchScreen(
+                          widget.vehicles.where((vehicle) {
+                            // Apply filtering logic here based on selected filters
+
+                            return vehicle.carType == _selectedCarType &&
+                                vehicle.pricePerDay >= _priceRange.start &&
+                                vehicle.pricePerDay <= _priceRange.end;
+                          }).toList(),
+                        ),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,

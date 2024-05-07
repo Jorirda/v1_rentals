@@ -51,7 +51,7 @@ class CustomUser {
       'address': address,
       'userType': userType == UserType.client ? 'client' : 'vendor',
       'createdAt': createdAt.toIso8601String(), // Convert to ISO 8601 format
-      'imageURL': imageURL, // Add imageURL
+      'imageURL': imageURL,
     };
 
     if (userType == UserType.client) {

@@ -111,7 +111,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
           seats: int.parse(_seatsController.text),
           fuelType: _selectedFuelType,
           transmission: _selectedTransmissionType,
-          pricePerDay: double.parse(_pricePerDayController.text),
+          pricePerDay: int.parse(_pricePerDayController.text),
           rating: 4.8,
           color: _colorController.text,
           overview: _overviewController.text,

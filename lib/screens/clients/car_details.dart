@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 
 class CarDetailsScreen extends StatefulWidget {
@@ -15,12 +18,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
   bool isFavorite = false;
   late TabController tabController;
   late List<Map<String, dynamic>> features;
-
+  CustomUser? vendor;
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 2, vsync: this);
-
+    fetchVendorInfo();
     features = [
       {
         'title': 'Car Type',
@@ -45,6 +48,84 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     ];
   }
 
+  // Method to fetch vendor information
+  Future<void> fetchVendorInfo() async {
+    try {
+      CustomUser? vendorData =
+          await AuthService().getUserData(widget.vehicle.vendorId);
+      setState(() {
+        vendor = vendorData;
+      });
+    } catch (e) {
+      print('Error fetching vendor information: $e');
+    }
+  }
+
+  // Widget to display vendor information
+  Widget buildVendorInfo() {
+    if (vendor != null) {
+      return Card(
+        color: Theme.of(context).colorScheme.primary,
+        margin: const EdgeInsets.all(16.0),
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: Colors.grey,
+                child: vendor?.imageURL != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(45),
+                        child: Image.network(
+                          vendor!.imageURL!,
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Text(
+                        vendor?.fullname?[0].toUpperCase() ?? "",
+                        style: const TextStyle(fontSize: 18),
+                      ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      vendor!.fullname,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      vendor!.businessName ?? 'No Business Name',
+                      style: TextStyle(
+                        color: Colors.grey[300],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      // Show loading indicator or placeholder while fetching vendor information
+      return CircularProgressIndicator();
+    }
+  }
+
   @override
   void dispose() {
     tabController.dispose();
@@ -61,6 +142,31 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
             expandedHeight: 350.0,
             pinned: true,
             stretch: true,
+            automaticallyImplyLeading: false,
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset:
+                          Offset(0, 3), // changes the position of the shadow
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                ),
+              ),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               background: ClipRRect(
                 child: Image.network(
@@ -70,21 +176,57 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
               ),
             ),
             actions: [
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    isFavorite = !isFavorite;
-                  });
-                },
-                icon: isFavorite
-                    ? Icon(Icons.favorite, color: Colors.red)
-                    : Icon(Icons.favorite_outline, color: Colors.white),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset:
+                            Offset(0, 3), // changes the position of the shadow
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isFavorite = !isFavorite;
+                      });
+                    },
+                    icon: isFavorite
+                        ? Icon(Icons.favorite, color: Colors.red)
+                        : Icon(Icons.favorite_outline, color: Colors.white),
+                  ),
+                ),
               ),
-              IconButton(
-                onPressed: () {
-                  // Add your action here
-                },
-                icon: Icon(Icons.share, color: Colors.white),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset:
+                            Offset(0, 3), // changes the position of the shadow
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      // Add your action here
+                    },
+                    icon: Icon(Icons.share, color: Colors.white),
+                  ),
+                ),
               ),
             ],
           ),
@@ -228,48 +370,49 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                   ),
                 ),
                 // Card with vendor information
-                Card(
-                  color: Colors.white,
-                  margin: const EdgeInsets.all(16.0),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 30,
-                          // backgroundImage: NetworkImage(
-                          //     widget.vehicle.vendorImageUrl ?? ''),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Vendor Name',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Vendor Business Name',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                // Card(
+                //   color: Colors.white,
+                //   margin: const EdgeInsets.all(16.0),
+                //   elevation: 3,
+                //   shape: RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.circular(10),
+                //   ),
+                //   child: const Padding(
+                //     padding: const EdgeInsets.all(16.0),
+                //     child: Row(
+                //       children: [
+                //         CircleAvatar(
+                //           radius: 30,
+                //           // backgroundImage: NetworkImage(
+                //           //     widget.vehicle.vendorImageUrl ?? ''),
+                //         ),
+                //         const SizedBox(width: 16),
+                //         Expanded(
+                //           child: Column(
+                //             crossAxisAlignment: CrossAxisAlignment.start,
+                //             children: [
+                //               Text(
+                //                 'Vendor Name',
+                //                 style: TextStyle(
+                //                   fontWeight: FontWeight.bold,
+                //                   fontSize: 16,
+                //                 ),
+                //               ),
+                //               const SizedBox(height: 8),
+                //               Text(
+                //                 'Vendor Business Name',
+                //                 style: TextStyle(
+                //                   color: Colors.grey,
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                buildVendorInfo(), // Display vendor information widget
               ],
             ),
           ),
@@ -299,11 +442,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.storefront),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   const Text(
                     'Store',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -313,30 +457,55 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                 children: [
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(Icons.chat_outlined),
+                    icon: Icon(
+                      Icons.phone,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const Text(
-                    'Chat',
+                    'Call',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () {
-                  // Add your booking logic here
-                },
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.chat_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  const Text(
+                    'Chat',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Add your booking logic here
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 32),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Book Now'),
                 ),
-                child: const Text('Book Now'),
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/clients/car_details.dart';
+import 'package:v1_rentals/screens/main/filter_page.dart';
 
 class SearchScreen extends StatefulWidget {
   final List<Vehicle> vehicles;
@@ -84,6 +85,27 @@ class _SearchScreenState extends State<SearchScreen> {
           },
         ),
         actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FilterPage(widget.vehicles),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.filter_list_sharp),
+                color: Colors.white,
+              ),
+            ),
+          ),
           TextButton(
               onPressed: () {
                 Navigator.pop(context);

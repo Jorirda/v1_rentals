@@ -6,7 +6,7 @@ import 'package:v1_rentals/screens/clients/bookings_page.dart';
 import 'package:v1_rentals/screens/clients/favorites_page.dart';
 import 'package:v1_rentals/screens/main/home_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
-import 'package:v1_rentals/screens/vendors/fleet_sreen.dart';
+import 'package:v1_rentals/screens/vendors/fleet_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {

@@ -210,27 +210,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FilterPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.filter_list_sharp),
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(right: 15),
+                  //   child: Container(
+                  //     decoration: BoxDecoration(
+                  //       color: Theme.of(context).colorScheme.primary,
+                  //       borderRadius: BorderRadius.circular(10),
+                  //     ),
+                  //     child: IconButton(
+                  //       onPressed: () {
+                  //         Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //             builder: (context) => FilterPage(vehicles),
+                  //           ),
+                  //         );
+                  //       },
+                  //       icon: const Icon(Icons.filter_list_sharp),
+                  //       color: Colors.white,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(
@@ -419,27 +419,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            const Icon(Icons.settings),
+                                            Icon(
+                                              Icons.settings,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
                                             const SizedBox(width: 4),
                                             Text(
                                               vehicles[index]
                                                   .getTransmissionTypeString(),
                                               style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary),
+                                                  fontWeight: FontWeight.w600),
                                             ),
                                           ],
                                         ),
                                         Row(
                                           children: [
-                                            const Icon(Icons.monetization_on),
+                                            Icon(
+                                              Icons.monetization_on,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
                                             const SizedBox(width: 4),
                                             Text(
                                               '${vehicles[index].pricePerDay}/Day',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 15),
+                                                  fontSize: 15,
+                                                  color: Colors.red),
                                             ),
                                           ],
                                         ),

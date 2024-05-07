@@ -33,7 +33,7 @@ class Vehicle {
   int seats;
   FuelType fuelType;
   TransmissionType transmission;
-  double pricePerDay;
+  int pricePerDay;
   double rating;
   String color;
   String overview;
@@ -73,7 +73,7 @@ class Vehicle {
       transmission: TransmissionType.values.firstWhere(
           (e) => e.toString() == 'TransmissionType.${data['transmission']}'),
       color: data['color'] ?? '',
-      pricePerDay: (data['pricePerDay'] ?? 0).toDouble(),
+      pricePerDay: data['pricePerDay'] ?? 0,
       rating: (data['rating'] ?? 0).toDouble(),
       overview: data['overview'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
