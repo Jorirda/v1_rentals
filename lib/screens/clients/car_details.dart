@@ -6,6 +6,7 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:v1_rentals/screens/main/vendor_store.dart';
 
 import '../main/home_page.dart';
 
@@ -34,7 +35,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     setupFavoriteListener();
   }
 
-
   void setupFavoriteListener() {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
@@ -52,6 +52,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
       });
     }
   }
+
   // Check if the vehicle is already favorited by the user
   void checkIfFavorite() async {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -72,6 +73,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
       print("Initial favorite state is: $isFavorite");
     });
   }
+
   // Method to initialize features
   void initializeFeatures() {
     features = [
@@ -102,7 +104,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
   Future<void> fetchVendorInfo() async {
     try {
       CustomUser? vendorData =
-      await AuthService().getUserData(widget.vehicle.vendorId);
+          await AuthService().getUserData(widget.vehicle.vendorId);
       setState(() {
         vendor = vendorData;
       });
@@ -119,8 +121,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     }
 
     setState(() {
-      widget.vehicle.isFavorite = !widget.vehicle.isFavorite; // Toggle the local state
-      isFavorite = widget.vehicle.isFavorite; // Update the local isFavorite for UI
+      widget.vehicle.isFavorite =
+          !widget.vehicle.isFavorite; // Toggle the local state
+      isFavorite =
+          widget.vehicle.isFavorite; // Update the local isFavorite for UI
     });
 
     print("Updating favorite status to: ${widget.vehicle.isFavorite}");
@@ -144,18 +148,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
       print("Firestore operation successful.");
     } catch (e) {
       print("Failed to update Firestore: $e");
-      setState(() {  // Revert if failed
+      setState(() {
+        // Revert if failed
         widget.vehicle.isFavorite = !widget.vehicle.isFavorite;
         isFavorite = widget.vehicle.isFavorite;
       });
     }
   }
-
-
-
-
-
-
 
   @override
   void dispose() {
@@ -182,21 +181,23 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                 backgroundColor: Colors.grey,
                 child: vendor?.imageURL != null
                     ? ClipRRect(
-                  borderRadius: BorderRadius.circular(45),
-                  child: CachedNetworkImage(
-                    imageUrl: vendor!.imageURL!,
-                    width: 90,
-                    height: 90,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    cacheManager: CustomCacheManager.instance,
-                  ),
-                )
+                        borderRadius: BorderRadius.circular(45),
+                        child: CachedNetworkImage(
+                          imageUrl: vendor!.imageURL!,
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                          cacheManager: CustomCacheManager.instance,
+                        ),
+                      )
                     : Text(
-                  vendor?.fullname?[0].toUpperCase() ?? "",
-                  style: const TextStyle(fontSize: 18),
-                ),
+                        vendor?.fullname?[0].toUpperCase() ?? "",
+                        style: const TextStyle(fontSize: 18),
+                      ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -204,7 +205,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      vendor!.fullname,
+                      vendor!.businessName ?? 'No Business Name',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -212,11 +213,39 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      vendor!.businessName ?? 'No Business Name',
-                      style: TextStyle(
-                        color: Colors.grey[300],
-                      ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                        ),
+                        Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                        ),
+                        Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                        ),
+                        Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                        ),
+                        Icon(
+                          Icons.star_outline,
+                          color: Colors.yellow,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          '4.0',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -251,7 +280,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                       color: Colors.black.withOpacity(0.5),
                       spreadRadius: 1,
                       blurRadius: 5,
-                      offset: Offset(0, 3), // changes the position of the shadow
+                      offset:
+                          Offset(0, 3), // changes the position of the shadow
                     ),
                   ],
                 ),
@@ -284,7 +314,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                        Offset(0, 3), // changes the position of the shadow
+                            Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
@@ -294,7 +324,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                     },
                     icon: isFavorite
                         ? Icon(Icons.favorite, color: Colors.red)
-                        : Icon(Icons.favorite_outline),
+                        : Icon(
+                            Icons.favorite_outline,
+                            color: Colors.white,
+                          ),
                   ),
                 ),
               ),
@@ -310,7 +343,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                        Offset(0, 3), // changes the position of the shadow
+                            Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
@@ -395,9 +428,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.center,
+                                          CrossAxisAlignment.center,
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           feature['icon'],
@@ -436,7 +469,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                     ],
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Text(
@@ -447,7 +479,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                     ),
                   ),
                 ),
-                buildVendorInfo(), // Display vendor information widget
+                buildVendorInfo(),
+                Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Text(
+                    'Reviews',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -475,7 +518,16 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VendorStorePage(
+                            vendorId: widget.vehicle.vendorId,
+                          ),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.storefront),
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -549,14 +601,16 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
     );
   }
 }
+
 class CustomCacheManager {
   static const key = 'customCacheKey';
 
   static final CacheManager instance = CacheManager(
     Config(
       key,
-      stalePeriod: const Duration(days: 15),  // Adjust the cache duration as needed
-      maxNrOfCacheObjects: 100,  // Adjust the max number of objects
+      stalePeriod:
+          const Duration(days: 15), // Adjust the cache duration as needed
+      maxNrOfCacheObjects: 100, // Adjust the max number of objects
       repo: JsonCacheInfoRepository(databaseName: key),
       fileService: HttpFileService(),
     ),

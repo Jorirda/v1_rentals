@@ -19,7 +19,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true; // Keep state alive across tab switches
 
@@ -36,11 +37,13 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     _getInitialInfo();
     _loadVehicles();
   }
+
   Future<void> _onRefresh() async {
     await _loadCurrentUser();
     _getInitialInfo();
     await _loadVehicles();
   }
+
   void _getInitialInfo() {
     recommendBrands = RecommendModel.getRecommendedBrands();
   }
@@ -76,404 +79,415 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   Widget build(BuildContext context) {
     super.build(context); // Needed for AutomaticKeepAliveClientMixin
     return Scaffold(
-        body: SafeArea(
+      body: SafeArea(
         child: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: SingleChildScrollView(
-        physics: AlwaysScrollableScrollPhysics(), // Ensure scrollability
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.grey,
-                      child: _currentUser?.imageURL != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(45),
-                              child: Image.network(
-                                _currentUser!.imageURL!,
-                                width: 90,
-                                height: 90,
-                                fit: BoxFit.cover,
+          onRefresh: _onRefresh,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(), // Ensure scrollability
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Colors.grey,
+                        child: _currentUser?.imageURL != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(45),
+                                child: Image.network(
+                                  _currentUser!.imageURL!,
+                                  width: 90,
+                                  height: 90,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Text(
+                                _currentUser?.fullname?[0].toUpperCase() ?? "",
+                                style: const TextStyle(fontSize: 18),
                               ),
-                            )
-                          : Text(
-                              _currentUser?.fullname?[0].toUpperCase() ?? "",
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10, left: 20),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LocationScreen(),
-                                ),
-                              );
-                            },
-                            icon: Icon(Icons.location_on_sharp),
-                            padding: EdgeInsets.zero,
-                            color: Colors.red,
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LocationScreen(),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Text(
-                                  'Bridgetown, Barbados',
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontWeight: FontWeight.bold,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10, left: 20),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const LocationScreen(),
                                   ),
+                                );
+                              },
+                              icon: Icon(Icons.location_on_sharp),
+                              padding: EdgeInsets.zero,
+                              color: Colors.red,
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LocationScreen(),
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Bridgetown, Barbados',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hello ${_currentUser?.fullname ?? ""}\u{1F44B}',
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const Text(
+                        'Search for your favorite vehicle',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SearchScreen(vehicles),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  child: Icon(Icons.search, color: Colors.red),
                                 ),
-                                Icon(
-                                  Icons.arrow_drop_down,
-                                ),
+                                Text('Search for vehicles',
+                                    style: TextStyle(color: Colors.grey)),
                               ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(right: 15),
+                    //   child: Container(
+                    //     decoration: BoxDecoration(
+                    //       color: Theme.of(context).colorScheme.primary,
+                    //       borderRadius: BorderRadius.circular(10),
+                    //     ),
+                    //     child: IconButton(
+                    //       onPressed: () {
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //             builder: (context) => FilterPage(),
+                    //           ),
+                    //         );
+                    //       },
+                    //       icon: const Icon(Icons.filter_list_sharp),
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Hello ${_currentUser?.fullname ?? ""}\u{1F44B}',
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    const Text(
-                      'Search for your favorite vehicle',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
+                const SizedBox(
+                  height: 15,
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: InkWell(
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Recommended Brands',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 100,
+                  child: ListView.separated(
+                    itemCount: recommendBrands.length,
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                    ),
+                    separatorBuilder: (context, index) => const SizedBox(
+                      width: 25,
+                    ),
+                    itemBuilder: (context, index) {
+                      return Container(
+                        width: 100,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              width: 150,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(20),
+                                border:
+                                    Border.all(color: Colors.black, width: 1),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(
+                                        3, 2), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Image.asset(
+                                    recommendBrands[index].iconPath),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'All Vehicles in Collection',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 240,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: vehicles.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SearchScreen(vehicles),
+                              builder: (context) =>
+                                  CarDetailsScreen(vehicles[index]),
                             ),
                           );
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                child: Icon(Icons.search, color: Colors.red),
-                              ),
-                              Text('Search for vehicles',
-                                  style: TextStyle(color: Colors.grey)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(right: 15),
-                  //   child: Container(
-                  //     decoration: BoxDecoration(
-                  //       color: Theme.of(context).colorScheme.primary,
-                  //       borderRadius: BorderRadius.circular(10),
-                  //     ),
-                  //     child: IconButton(
-                  //       onPressed: () {
-                  //         Navigator.push(
-                  //           context,
-                  //           MaterialPageRoute(
-                  //             builder: (context) => FilterPage(),
-                  //           ),
-                  //         );
-                  //       },
-                  //       icon: const Icon(Icons.filter_list_sharp),
-                  //       color: Colors.white,
-                  //     ),
-                  //   ),
-                  // ),
-                ],
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Recommended Brands',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        'View All',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 100,
-                child: ListView.separated(
-                  itemCount: recommendBrands.length,
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.only(
-                    left: 20,
-                    right: 20,
-                  ),
-                  separatorBuilder: (context, index) => const SizedBox(
-                    width: 25,
-                  ),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: 100,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            width: 150,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.black, width: 1),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(
-                                      3, 2), // changes position of shadow
+                          margin: const EdgeInsets.all(8),
+                          width: 280,
+                          child: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildVehicleImage(vehicles[
+                                    index]), // Use the method to build image
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            vehicles[index].brand,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                vehicles[index]
+                                                    .rating
+                                                    .toString(),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              const Icon(
+                                                Icons.star,
+                                                color: Colors.yellow,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      const Divider(),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.settings),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                vehicles[index]
+                                                    .getTransmissionTypeString(),
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.monetization_on,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${vehicles[index].pricePerDay}/Day',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                    color: Colors.red),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Image.asset(recommendBrands[index].iconPath),
-                            ),
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'All Vehicles in Collection',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
                         ),
-                      ),
-                      Text(
-                        'View All',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 240,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: vehicles.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                CarDetailsScreen(vehicles[index]),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        width: 280,
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildVehicleImage(vehicles[
-                                  index]), // Use the method to build image
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          vehicles[index].brand,
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              vehicles[index].rating.toString(),
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            const Icon(
-                                              Icons.star,
-                                              color: Colors.yellow,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    const Divider(),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.settings),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              vehicles[index]
-                                                  .getTransmissionTypeString(),
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.monetization_on),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '${vehicles[index].pricePerDay}/Day',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 
@@ -486,7 +500,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         ),
         child: CachedNetworkImage(
           imageUrl: vehicle.imageUrl!,
-          cacheManager: CustomCacheManager.instance,  // Use the custom cache manager
+          cacheManager:
+              CustomCacheManager.instance, // Use the custom cache manager
           width: 280,
           height: 120,
           fit: BoxFit.cover,
@@ -516,8 +531,8 @@ class CustomCacheManager {
   static final CacheManager instance = CacheManager(
     Config(
       key,
-      stalePeriod: const Duration(days: 30),  // Longer cache duration
-      maxNrOfCacheObjects: 100,               // Increase max number of cached objects
+      stalePeriod: const Duration(days: 30), // Longer cache duration
+      maxNrOfCacheObjects: 100, // Increase max number of cached objects
       repo: JsonCacheInfoRepository(databaseName: key),
       fileService: HttpFileService(),
     ),
