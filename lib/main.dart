@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth.dart';
 import 'package:v1_rentals/screens/account/account_page.dart';
-import 'package:v1_rentals/screens/clients/bookings_page.dart';
+import 'package:v1_rentals/screens/clients/my_bookings.dart';
 import 'package:v1_rentals/screens/clients/favorites_page.dart';
 import 'package:v1_rentals/screens/main/home_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
@@ -59,7 +59,7 @@ class _MainScreenState extends State<MainScreen> {
         children: const [
           HomeScreen(),
           FavoriteScreen(),
-          BookingScreen(),
+          MyBookings(),
           AccountScreen(),
         ],
         physics: NeverScrollableScrollPhysics(), // Prevent swiping to navigate
@@ -67,9 +67,12 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
-          BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Bookings'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), label: 'Favorites'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.library_books), label: 'Bookings'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle), label: 'Account'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).colorScheme.primary,
@@ -113,7 +116,8 @@ class _VendorMainScreenState extends State<VendorMainScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.car_rental), label: 'Fleet'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Account'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle), label: 'Account'),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).colorScheme.primary,

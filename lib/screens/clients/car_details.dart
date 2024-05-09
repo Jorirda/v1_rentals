@@ -6,30 +6,28 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:v1_rentals/screens/main/vendor_store.dart';
 
-import '../main/home_page.dart';
+import 'package:v1_rentals/screens/main/booking_page.dart';
+import 'package:v1_rentals/screens/main/vendor_store.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final Vehicle vehicle;
 
-  const CarDetailsScreen(this.vehicle, {Key? key}) : super(key: key);
+  const CarDetailsScreen(this.vehicle, {super.key});
 
   @override
   _CarDetailsScreenState createState() => _CarDetailsScreenState();
 }
 
-class _CarDetailsScreenState extends State<CarDetailsScreen>
-    with SingleTickerProviderStateMixin {
+class _CarDetailsScreenState extends State<CarDetailsScreen> {
   bool isFavorite = false;
-  late TabController tabController;
+
   CustomUser? vendor;
   late List<Map<String, dynamic>> features;
 
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 2, vsync: this);
     fetchVendorInfo();
     initializeFeatures();
     setupFavoriteListener();
@@ -154,12 +152,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
         isFavorite = widget.vehicle.isFavorite;
       });
     }
-  }
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
   }
 
   // Widget to display vendor information
@@ -581,7 +573,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen>
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Add your booking logic here
+                    // Navigate to the booking screen and pass the selected vehicle
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookingScreen(widget.vehicle),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(

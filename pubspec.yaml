@@ -48,6 +48,8 @@ dependencies:
   geolocator: ^11.0.0
   geocoding: ^3.0.0
   flutter_native_splash: ^2.4.0
+  flutter_credit_card: ^4.0.1
+
 
 flutter_native_splash:
   color: "#ffffff"
@@ -78,6 +80,11 @@ flutter:
   assets:
     - assets/images/v1-rentals-logo.png
     - assets/images/default_avatar.png
+    - assets/images/mastercard_icon.png
+    - assets/images/visa_icon.png
+    - assets/images/google_pay_icon.png
+    - assets/images/paypal_icon.png
+    - assets/images/apple_pay_icon.png
     - assets/rec-images/audi-logo.png
     - assets/rec-images/dodge-logo.png
     - assets/rec-images/ford-logo.png
