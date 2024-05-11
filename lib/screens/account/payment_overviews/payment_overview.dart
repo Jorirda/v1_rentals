@@ -165,7 +165,7 @@ class _PaymentOverviewScreenState extends State<PaymentOverviewScreen> {
             Container(
               width: 100,
               height: 100,
-              child: Image.asset('assets/images/credit-card.png'),
+              child: Image.asset('assets/images/visa_icon.png'),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -174,7 +174,7 @@ class _PaymentOverviewScreenState extends State<PaymentOverviewScreen> {
                 children: [
                   Text(
                     // Display card information here
-                    'XXXX XXXX ${card.lastFourDigits}',
+                    'XXXX XXXX XXXX ${card.lastFourDigits}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 
 class AuthService {
@@ -67,16 +68,56 @@ class AuthService {
         // Convert the vendor's document snapshot to a CustomUser object
         CustomUser vendor =
             CustomUser.fromMap(vendorSnapshot.data() as Map<String, dynamic>?);
-
-        // Now you have access to the vendor's information
-        print('Vendor Name: ${vendor.fullname}');
-        print('Vendor Email: ${vendor.email}');
-        // Display other vendor details as needed
       } else {
         print('Vendor not found!');
       }
     } catch (error) {
       print('Error fetching vendor information: $error');
+    }
+  }
+
+  // Method to get the vehicle document based on its ID
+  Future<DocumentSnapshot> getVehicleDocument(String vehicleId) async {
+    try {
+      return await _firestore.collection('vehicles').doc(vehicleId).get();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Stream<List<Booking>> getCurrentUserBookingsStream(BookingStatus status) {
+    try {
+      Query bookingsQuery = _firestore.collection('bookings');
+      // Filter by booking status
+      if (status != BookingStatus.all) {
+        bookingsQuery = bookingsQuery.where('status',
+            isEqualTo: status.toString().split('.').last);
+      }
+      return bookingsQuery
+          .where('userId', isEqualTo: _auth.currentUser!.uid)
+          .snapshots()
+          .map((snapshot) =>
+              snapshot.docs.map((doc) => Booking.fromSnapshot(doc)).toList());
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Stream<List<Booking>> getVendorBookingsStream(BookingStatus status) {
+    try {
+      Query bookingsQuery = _firestore.collection('bookings');
+      // Filter by booking status
+      if (status != BookingStatus.all) {
+        bookingsQuery = bookingsQuery.where('status',
+            isEqualTo: status.toString().split('.').last);
+      }
+      return bookingsQuery
+          .where('vendorId', isEqualTo: _auth.currentUser!.uid)
+          .snapshots()
+          .map((snapshot) =>
+              snapshot.docs.map((doc) => Booking.fromSnapshot(doc)).toList());
+    } catch (e) {
+      throw e;
     }
   }
 

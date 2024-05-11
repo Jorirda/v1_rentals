@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth.dart';
 import 'package:v1_rentals/screens/account/account_page.dart';
-import 'package:v1_rentals/screens/clients/my_bookings.dart';
+import 'package:v1_rentals/screens/clients/client_bookings.dart';
 import 'package:v1_rentals/screens/clients/favorites_page.dart';
 import 'package:v1_rentals/screens/main/home_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
 import 'package:v1_rentals/screens/vendors/fleet_screen.dart';
+import 'package:v1_rentals/screens/vendors/vendor_bookings.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -59,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
         children: const [
           HomeScreen(),
           FavoriteScreen(),
-          MyBookings(),
+          ClientBookings(),
           AccountScreen(),
         ],
         physics: NeverScrollableScrollPhysics(), // Prevent swiping to navigate
@@ -108,6 +109,7 @@ class _VendorMainScreenState extends State<VendorMainScreen> {
         children: const [
           HomeScreen(),
           FleetScreen(),
+          VendorBookings(),
           AccountScreen(),
         ],
         physics: NeverScrollableScrollPhysics(), // Prevent swiping to navigate
@@ -116,6 +118,8 @@ class _VendorMainScreenState extends State<VendorMainScreen> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.car_rental), label: 'Fleet'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.library_books), label: 'Bookings'),
           BottomNavigationBarItem(
               icon: Icon(Icons.account_circle), label: 'Account'),
         ],

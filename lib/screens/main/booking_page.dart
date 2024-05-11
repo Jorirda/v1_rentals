@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/payment_card_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
@@ -34,30 +35,38 @@ class _BookingScreenState extends State<BookingScreen> {
   PaymentCard? _selectedPaymentCard;
 
   String? vendorBusinessName;
+  String? userFullName;
+
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
     super.initState();
     // Initialize booking model with default values or empty
     booking = Booking(
-      userId: '', // Initialize with current user's ID if available
+      userId: FirebaseAuth.instance.currentUser?.uid ??
+          '', // Initialize with current user's ID if available
       vehicleId: widget.vehicle.id,
+      vendorId: widget.vehicle.vendorId,
       pickupDate: DateTime.now(), // Initialize with current date/time
       dropoffDate: DateTime.now().add(Duration(days: 1)),
-      id: '',
+      id: FirebaseFirestore.instance.collection('bookings').doc().id,
       createdAt: Timestamp.now(), // Initialize createdAt with current time
       pickupTime: TimeOfDay.now(), // Initialize with current time of day
       dropoffTime: TimeOfDay.now(), // Initialize with current time of day
-      pickupLocation: '',
-      dropoffLocation: '',
+      pickupLocation: 'GAIA',
+      dropoffLocation: 'GAIA',
       totalPrice: widget.vehicle.pricePerDay,
-      status: '',
+      imageUrl: widget.vehicle.imageUrl,
+      status: BookingStatus.pending,
       paymentStatus: false,
-      paymentMethod: '', // Example: Next day
+      paymentMethod: '',
     );
-    // Fetch user's payment cards when the screen initializes
-    fetchUserPaymentCards();
-    fetchVendorInformation(widget.vehicle.vendorId);
+
+    fetchUserPaymentCards(); // Fetch user's payment cards when the screen initializes
+    fetchUserData(); // Fetch user data including full name
+    fetchVendorInformation(widget.vehicle
+        .vendorId); // Fetch vendor information by passing vehicle vendorId
   }
 
   @override
@@ -66,6 +75,20 @@ class _BookingScreenState extends State<BookingScreen> {
     pickupLocationController.dispose();
     dropoffLocationController.dispose();
     super.dispose();
+  }
+
+  // Fetch user data including full name
+  void fetchUserData() async {
+    try {
+      CustomUser? user = await _authService.getCurrentUser();
+      if (user != null) {
+        setState(() {
+          userFullName = user.fullname;
+        });
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   Future<void> fetchVendorInformation(String? vendorId) async {
@@ -638,7 +661,13 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
             ),
             Text(
-              'Renter: $vendorBusinessName', // Assuming 'name' is the property for the car name
+              'Rental Supplier: $vendorBusinessName', // Assuming 'name' is the property for the car name
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Renter: $userFullName', // Assuming 'name' is the property for the car name
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -774,7 +803,7 @@ class _BookingScreenState extends State<BookingScreen> {
           if (isLastStep) {
             print('Completed');
             //send data to firebase
-            sendBookingDataToFirebase();
+            sendBookingDataToFirebase(booking);
           } else {
             setState(() {
               if (currentStep < getSteps().length - 1) {
@@ -833,40 +862,45 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  Future<void> sendBookingDataToFirebase() async {
+  Future<void> sendBookingDataToFirebase(Booking booking) async {
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Set the user ID for the booking
-        booking.userId = user.uid;
+      // Get a reference to the Firestore collection for bookings
+      CollectionReference bookingsCollection =
+          FirebaseFirestore.instance.collection('bookings');
 
-        // Set the pickup and drop-off dates and times
-        booking.pickupTime = booking.pickupTime;
-        booking.pickupDate = booking.pickupDate;
+      // Generate a new booking ID
+      String bookingId =
+          FirebaseFirestore.instance.collection('bookings').doc().id;
 
-        booking.dropoffTime = booking.dropoffTime;
-        booking.dropoffDate = booking.dropoffDate;
+      // Set the booking ID in the booking object
+      booking.id = bookingId;
 
-        // Set the pickup and drop-off locations
-        booking.pickupLocation = pickupLocationController.text;
-        booking.dropoffLocation = dropoffLocationController.text;
+      // Add the booking with the explicitly set ID to the "bookings" collection
+      await bookingsCollection.doc(bookingId).set(booking.toMap());
 
-        // Set the payment method
-        booking.paymentMethod =
-            _selectedPaymentMethod.toString().split('.').last;
+      // Add a reference to this booking in the client's "bookings" subcollection
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(booking.userId)
+          .collection('bookings')
+          .doc(bookingId)
+          .set({'bookingId': bookingId});
 
-        // Send booking data to Firestore
-        await FirebaseFirestore.instance
-            .collection('bookings')
-            .add(booking.toMap());
-        // Show success message or navigate to the next screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Booking successfully saved.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
+      // Add a reference to this booking for the vendor ID provided in the booking
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(booking.vendorId)
+          .collection('bookings')
+          .doc(bookingId)
+          .set({'bookingId': bookingId});
+
+      // Show success message or navigate to the next screen
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Booking successfully saved.'),
+          backgroundColor: Colors.green,
+        ),
+      );
     } catch (e) {
       print('Error sending booking data to Firebase: $e');
       // Show error message if booking data couldn't be saved
