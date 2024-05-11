@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/booking_model.dart';
+import 'package:v1_rentals/models/payment_card_model.dart';
+import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
-import 'package:v1_rentals/screens/main/add_payment_card.dart';
+import 'package:v1_rentals/screens/account/payment_overviews/add_payment_card.dart';
 
 enum PaymentMethod {
+  Card,
   PayPal,
   ApplePay,
   GooglePay,
@@ -21,10 +25,16 @@ class BookingScreen extends StatefulWidget {
 
 class _BookingScreenState extends State<BookingScreen> {
   late Booking booking; // Declare booking model variable
+  TextEditingController pickupLocationController = TextEditingController();
+  TextEditingController dropoffLocationController = TextEditingController();
   int currentStep = 0;
   bool setSameLocation = false;
-
+  List<PaymentCard> userCards = []; // List to hold user's payment cards
   PaymentMethod? _selectedPaymentMethod;
+  PaymentCard? _selectedPaymentCard;
+
+  String? vendorBusinessName;
+
   @override
   void initState() {
     super.initState();
@@ -38,11 +48,45 @@ class _BookingScreenState extends State<BookingScreen> {
       createdAt: Timestamp.now(), // Initialize createdAt with current time
       pickupTime: TimeOfDay.now(), // Initialize with current time of day
       dropoffTime: TimeOfDay.now(), // Initialize with current time of day
-      totalPrice: 0,
+      pickupLocation: '',
+      dropoffLocation: '',
+      totalPrice: widget.vehicle.pricePerDay,
       status: '',
-      paymentStatus: false, // Example: Next day
-      // Initialize other fields with default values or empty
+      paymentStatus: false,
+      paymentMethod: '', // Example: Next day
     );
+    // Fetch user's payment cards when the screen initializes
+    fetchUserPaymentCards();
+    fetchVendorInformation(widget.vehicle.vendorId);
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers
+    pickupLocationController.dispose();
+    dropoffLocationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchVendorInformation(String? vendorId) async {
+    try {
+      if (vendorId != null) {
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(vendorId)
+            .get();
+
+        if (userSnapshot.exists) {
+          CustomUser vendor =
+              CustomUser.fromMap(userSnapshot.data() as Map<String, dynamic>?);
+          setState(() {
+            vendorBusinessName = vendor.businessName;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching vendor information: $e');
+    }
   }
 
   List<Step> getSteps() {
@@ -226,6 +270,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       }
                       return null;
                     },
+                    controller: pickupLocationController,
                   ),
                 ),
                 const SizedBox(
@@ -272,6 +317,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    controller: dropoffLocationController,
                     keyboardType: TextInputType
                         .text, // Change keyboard type to text for location entry
                     validator: (value) {
@@ -361,11 +407,23 @@ class _BookingScreenState extends State<BookingScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Your credit and debit cards', // Example payment method
+                          'Your credit and debit cards',
                           style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const Divider(),
+                        if (userCards.isNotEmpty) ...[
+                          // Display radio tiles for user's payment cards
+                          ...userCards
+                              .map((card) => buildPaymentCardRadioTile(card)),
+                        ] else ...[
+                          Center(
+                            child: Text('No cards found'),
+                          ),
+                        ],
+                        // Display default option for adding a new card if no cards are available
                         TextButton(
                           onPressed: () {
                             Navigator.push(
@@ -402,18 +460,20 @@ class _BookingScreenState extends State<BookingScreen> {
                                 Icons.navigate_next,
                               ),
                               Container(
-                                  width: 32,
-                                  height: 32,
-                                  child: Image.asset(
-                                      'assets/images/visa_icon.png')),
+                                width: 32,
+                                height: 32,
+                                child:
+                                    Image.asset('assets/images/visa_icon.png'),
+                              ),
                               SizedBox(
                                 width: 5,
                               ),
                               Container(
-                                  width: 32,
-                                  height: 32,
-                                  child: Image.asset(
-                                      'assets/images/mastercard_icon.png'))
+                                width: 32,
+                                height: 32,
+                                child: Image.asset(
+                                    'assets/images/mastercard_icon.png'),
+                              )
                             ],
                           ),
                         ),
@@ -421,18 +481,18 @@ class _BookingScreenState extends State<BookingScreen> {
                           height: 20,
                         ),
                         const Text(
-                          'Other payment methods', // Example payment method
+                          'Other payment methods',
                           style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const Divider(),
                         // ListView for other payment methods
-                        ListView(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                        Column(
                           children: [
                             // PayPal payment option
-                            RadioListTile(
+                            RadioListTile<PaymentMethod>(
                               title: Text(
                                 'PayPal',
                                 style: TextStyle(fontWeight: FontWeight.w500),
@@ -441,15 +501,15 @@ class _BookingScreenState extends State<BookingScreen> {
                               groupValue: _selectedPaymentMethod,
                               onChanged: (value) {
                                 setState(() {
-                                  _selectedPaymentMethod =
-                                      value as PaymentMethod;
+                                  _selectedPaymentMethod = value;
+                                  _selectedPaymentCard = null;
                                 });
                               },
                               secondary:
                                   Image.asset('assets/images/paypal_icon.png'),
                             ),
                             // Apple Pay payment option
-                            RadioListTile(
+                            RadioListTile<PaymentMethod>(
                               title: Text(
                                 'Apple Pay',
                                 style: TextStyle(fontWeight: FontWeight.w500),
@@ -458,15 +518,15 @@ class _BookingScreenState extends State<BookingScreen> {
                               groupValue: _selectedPaymentMethod,
                               onChanged: (value) {
                                 setState(() {
-                                  _selectedPaymentMethod =
-                                      value as PaymentMethod;
+                                  _selectedPaymentMethod = value;
+                                  _selectedPaymentCard = null;
                                 });
                               },
                               secondary: Image.asset(
                                   'assets/images/apple_pay_icon.png'),
                             ),
                             // Google Pay payment option
-                            RadioListTile(
+                            RadioListTile<PaymentMethod>(
                               title: Text(
                                 'Google Pay',
                                 style: TextStyle(fontWeight: FontWeight.w500),
@@ -475,13 +535,13 @@ class _BookingScreenState extends State<BookingScreen> {
                               groupValue: _selectedPaymentMethod,
                               onChanged: (value) {
                                 setState(() {
-                                  _selectedPaymentMethod =
-                                      value as PaymentMethod;
+                                  _selectedPaymentMethod = value;
+                                  _selectedPaymentCard = null;
                                 });
                               },
                               secondary: Image.asset(
                                   'assets/images/google_pay_icon.png'),
-                            )
+                            ),
                           ],
                         ),
                       ],
@@ -494,13 +554,157 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
       ),
       Step(
-          state: currentStep > 2 ? StepState.complete : StepState.indexed,
-          isActive: currentStep >= 2,
-          title: const Text('Summary'),
-          content: Text(
-              'Step 3') // Your widget for Step 3, such as a form for entering payment details,
-          ),
+        state: currentStep > 2 ? StepState.complete : StepState.indexed,
+        isActive: currentStep >= 2,
+        title: const Text('Summary'),
+        content: _buildSummaryWidget(),
+      ),
     ];
+  }
+
+  Future<void> fetchUserPaymentCards() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Fetch user's cards from Firestore
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('cards')
+            .get();
+
+        // Convert QuerySnapshot to List of PaymentCard objects
+        List<PaymentCard> cards = querySnapshot.docs
+            .map((doc) =>
+                PaymentCard.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
+
+        setState(() {
+          userCards = cards;
+        });
+      }
+    } catch (e) {
+      print('Error fetching user payment cards: $e');
+    }
+  }
+
+  // Method to generate the summary widget
+  Widget _buildSummaryWidget() {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Summary',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Icon(Icons.notes),
+              ],
+            ),
+            SizedBox(height: 10),
+            Divider(),
+            // Display vehicle image
+            Container(
+              height: 200, // Adjust the height as needed
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: NetworkImage(widget.vehicle.imageUrl),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            // Display car name
+            Text(
+              'Rental Vehicle: ${widget.vehicle.brand}', // Assuming 'name' is the property for the car name
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              'Renter: $vendorBusinessName', // Assuming 'name' is the property for the car name
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10),
+            Divider(),
+            // Display pick-up date and time
+            Text(
+              'Pick-up: ${booking.pickupDate.day}/${booking.pickupDate.month}/${booking.pickupDate.year} at ${booking.pickupTime.hour}:${booking.pickupTime.minute}',
+            ),
+            SizedBox(height: 5),
+            // Display drop-off date and time
+            Text(
+              'Drop-off: ${booking.dropoffDate.day}/${booking.dropoffDate.month}/${booking.dropoffDate.year} at ${booking.dropoffTime.hour}:${booking.dropoffTime.minute}',
+            ),
+            SizedBox(height: 5),
+            // Display pick-up location
+            Text(
+              'Pick-up Location: ${pickupLocationController.text}',
+            ),
+            SizedBox(height: 5),
+            // Display drop-off location
+            Text(
+              'Drop-off Location: ${dropoffLocationController.text}',
+            ),
+            SizedBox(height: 10),
+            Divider(),
+            // Display selected payment method and card information
+            Text(
+              'Payment Method: ${_selectedPaymentMethod?.toString().split('.').last ?? 'N/A'}',
+            ),
+            if (_selectedPaymentCard != null) ...[
+              Text(
+                'Bank Card: - Visa ending in ${_selectedPaymentCard?.lastFourDigits}',
+              ),
+            ],
+            Divider(),
+            SizedBox(height: 10),
+            // Display total price
+            Text(
+              'Total Price: USD\$${booking.totalPrice.toStringAsFixed(2)}',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildPaymentCardRadioTile(PaymentCard card) {
+    return RadioListTile<PaymentCard>(
+      title: Text(
+        'Visa ending in ${card.lastFourDigits}',
+        style: TextStyle(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text('Card Holder: ${card.cardHolderName}'),
+      value: card,
+      groupValue: _selectedPaymentCard,
+      secondary: Image.asset('assets/images/credit-card.png'),
+      onChanged: (value) {
+        setState(() {
+          _selectedPaymentMethod = PaymentMethod.Card;
+          _selectedPaymentCard = value;
+        });
+      },
+    );
   }
 
   Future<void> _selectPickupDate(BuildContext context) async {
@@ -570,6 +774,7 @@ class _BookingScreenState extends State<BookingScreen> {
           if (isLastStep) {
             print('Completed');
             //send data to firebase
+            sendBookingDataToFirebase();
           } else {
             setState(() {
               if (currentStep < getSteps().length - 1) {
@@ -626,5 +831,51 @@ class _BookingScreenState extends State<BookingScreen> {
         },
       ),
     );
+  }
+
+  Future<void> sendBookingDataToFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Set the user ID for the booking
+        booking.userId = user.uid;
+
+        // Set the pickup and drop-off dates and times
+        booking.pickupTime = booking.pickupTime;
+        booking.pickupDate = booking.pickupDate;
+
+        booking.dropoffTime = booking.dropoffTime;
+        booking.dropoffDate = booking.dropoffDate;
+
+        // Set the pickup and drop-off locations
+        booking.pickupLocation = pickupLocationController.text;
+        booking.dropoffLocation = dropoffLocationController.text;
+
+        // Set the payment method
+        booking.paymentMethod =
+            _selectedPaymentMethod.toString().split('.').last;
+
+        // Send booking data to Firestore
+        await FirebaseFirestore.instance
+            .collection('bookings')
+            .add(booking.toMap());
+        // Show success message or navigate to the next screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Booking successfully saved.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error sending booking data to Firebase: $e');
+      // Show error message if booking data couldn't be saved
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to save booking. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1_rentals/screens/account/edit_account.dart';
+import 'package:v1_rentals/screens/account/payment_overviews/payment_overview.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -102,9 +103,16 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
 
               AccountMenuWidget(
-                title: 'Payment Details',
+                title: 'Payment Options',
                 icon: Icons.wallet,
-                onPress: () {},
+                onPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentOverviewScreen(),
+                    ),
+                  );
+                },
                 textColor: null,
               ),
               AccountMenuWidget(

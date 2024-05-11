@@ -82,6 +82,7 @@ flutter:
     - assets/images/default_avatar.png
     - assets/images/mastercard_icon.png
     - assets/images/visa_icon.png
+    - assets/images/credit-card.png
     - assets/images/google_pay_icon.png
     - assets/images/paypal_icon.png
     - assets/images/apple_pay_icon.png

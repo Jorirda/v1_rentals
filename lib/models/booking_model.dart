@@ -9,9 +9,12 @@ class Booking {
   TimeOfDay pickupTime; // Pickup time
   DateTime dropoffDate; // Drop-off date
   TimeOfDay dropoffTime; // Drop-off time
+  String pickupLocation; // Pickup location
+  String dropoffLocation; // Drop-off location
   int totalPrice; // Total price of the booking
   String status; // Booking status (e.g., confirmed, canceled)
   bool paymentStatus; // Payment status (true if paid, false if pending)
+  String paymentMethod;
   Timestamp createdAt; // Timestamp of when the booking was created
 
   Booking({
@@ -22,9 +25,12 @@ class Booking {
     required this.pickupTime,
     required this.dropoffDate,
     required this.dropoffTime,
+    required this.pickupLocation,
+    required this.dropoffLocation,
     required this.totalPrice,
     required this.status,
     required this.paymentStatus,
+    required this.paymentMethod,
     required this.createdAt,
   });
 
@@ -41,9 +47,12 @@ class Booking {
       dropoffDate: (data['dropoffDate'] as Timestamp).toDate(),
       dropoffTime:
           TimeOfDay.fromDateTime((data['dropoffTime'] as Timestamp).toDate()),
+      pickupLocation: data['pickupLocation'] ?? '',
+      dropoffLocation: data['dropoffLocation'] ?? '',
       totalPrice: data['totalPrice'] ?? 0,
       status: data['status'] ?? '',
       paymentStatus: data['paymentStatus'] ?? false,
+      paymentMethod: data['paymentMethod'] ?? '',
       createdAt: data['createdAt'] ?? Timestamp.now(),
     );
   }
@@ -53,24 +62,26 @@ class Booking {
     return {
       'userId': userId,
       'vehicleId': vehicleId,
-      'pickupDate': pickupDate,
-      'pickupTime': Timestamp.fromDate(DateTime(
-          pickupDate.year,
-          pickupDate.month,
-          pickupDate.day,
-          pickupTime.hour,
-          pickupTime.minute)),
-      'dropoffDate': dropoffDate,
-      'dropoffTime': Timestamp.fromDate(DateTime(
-          dropoffDate.year,
-          dropoffDate.month,
-          dropoffDate.day,
-          dropoffTime.hour,
-          dropoffTime.minute)),
+      'pickupDate': pickupDate.toIso8601String().substring(0, 10),
+      'pickupTime': getFormattedTime(pickupTime),
+      'dropoffDate': dropoffDate.toIso8601String().substring(0, 10),
+      'dropoffTime': getFormattedTime(dropoffTime),
+      'pickupLocation': pickupLocation,
+      'dropoffLocation': dropoffLocation,
       'totalPrice': totalPrice,
       'status': status,
       'paymentStatus': paymentStatus,
+      'paymentMethod': paymentMethod,
       'createdAt': createdAt,
     };
+  }
+
+  // Method to format time
+  String getFormattedTime(TimeOfDay time) {
+    final int hour = time.hourOfPeriod;
+    final String amPm = time.period == DayPeriod.am ? 'AM' : 'PM';
+    final String hourString = hour == 0 ? '12' : hour.toString();
+    final String minuteString = time.minute.toString().padLeft(2, '0');
+    return '$hourString:$minuteString $amPm';
   }
 }
