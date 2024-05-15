@@ -96,7 +96,7 @@ class _EditPaymentCardScreenState extends State<EditPaymentCardScreen> {
               expiryDate: expiryDateController.text,
               cardHolderName: cardHolderNameController.text,
               cvvCode: cvvCodeController.text,
-              showBackView: isCvvFocused,
+              showBackView: false,
               onCreditCardWidgetChange: (p0) {},
               bankName: 'Scotiabank',
               cardType: CardType.visa,

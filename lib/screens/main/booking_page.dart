@@ -7,6 +7,7 @@ import 'package:v1_rentals/models/payment_card_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/add_payment_card.dart';
+import 'package:intl/intl.dart';
 
 enum PaymentMethod {
   Card,
@@ -51,16 +52,18 @@ class _BookingScreenState extends State<BookingScreen> {
       pickupDate: DateTime.now(), // Initialize with current date/time
       dropoffDate: DateTime.now().add(Duration(days: 1)),
       id: FirebaseFirestore.instance.collection('bookings').doc().id,
-      createdAt: Timestamp.now(), // Initialize createdAt with current time
-      pickupTime: TimeOfDay.now(), // Initialize with current time of day
-      dropoffTime: TimeOfDay.now(), // Initialize with current time of day
+      createdAt: DateTime.now(), // Initialize createdAt with current time
+      pickupTime: TimeOfDay.fromDateTime(
+          DateTime.now()), // Initialize with current time of day
+      dropoffTime: TimeOfDay.fromDateTime(
+          DateTime.now()), // Initialize with current time of day
       pickupLocation: 'GAIA',
       dropoffLocation: 'GAIA',
       totalPrice: widget.vehicle.pricePerDay,
       imageUrl: widget.vehicle.imageUrl,
       status: BookingStatus.pending,
       paymentStatus: false,
-      paymentMethod: '',
+      paymentMethod: PaymentMethod.Card.toString(),
     );
 
     fetchUserPaymentCards(); // Fetch user's payment cards when the screen initializes
@@ -676,12 +679,12 @@ class _BookingScreenState extends State<BookingScreen> {
             Divider(),
             // Display pick-up date and time
             Text(
-              'Pick-up: ${booking.pickupDate.day}/${booking.pickupDate.month}/${booking.pickupDate.year} at ${booking.pickupTime.hour}:${booking.pickupTime.minute}',
+              'Pick-up: ${DateFormat('yyyy-MM-dd').format(booking.pickupDate)} at ${booking.pickupTime.format(context)}',
             ),
             SizedBox(height: 5),
             // Display drop-off date and time
             Text(
-              'Drop-off: ${booking.dropoffDate.day}/${booking.dropoffDate.month}/${booking.dropoffDate.year} at ${booking.dropoffTime.hour}:${booking.dropoffTime.minute}',
+              'Drop-off: ${DateFormat('yyyy-MM-dd').format(booking.dropoffDate)} at ${booking.dropoffTime.format(context)}',
             ),
             SizedBox(height: 5),
             // Display pick-up location
@@ -874,6 +877,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
       // Set the booking ID in the booking object
       booking.id = bookingId;
+      booking.paymentMethod = _selectedPaymentMethod.toString().split('.').last;
 
       // Add the booking with the explicitly set ID to the "bookings" collection
       await bookingsCollection.doc(bookingId).set(booking.toMap());
@@ -895,6 +899,93 @@ class _BookingScreenState extends State<BookingScreen> {
           .set({'bookingId': bookingId});
 
       // Show success message or navigate to the next screen
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            insetPadding: EdgeInsets.all(16),
+            iconPadding: EdgeInsets.zero,
+            titlePadding: EdgeInsets.only(top: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            title: Text(
+              'Success',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            icon: Container(
+              height: 150,
+              width: double.infinity,
+              margin: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
+                color: Color.fromARGB(255, 70, 209, 75),
+              ),
+              child: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color.fromARGB(255, 185, 255, 187)
+                        .withOpacity(0.3),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 75,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 16),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 8),
+                      Text(
+                        'Booking request successfully saved.',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    'Okay',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                SizedBox(height: 16),
+              ],
+            ),
+          );
+        },
+      );
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Booking successfully saved.'),

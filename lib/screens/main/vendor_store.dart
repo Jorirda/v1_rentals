@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
-import 'package:v1_rentals/screens/clients/car_details.dart';
+import 'package:v1_rentals/screens/main/car_details.dart';
 
 class VendorStorePage extends StatefulWidget {
   final String vendorId;

@@ -26,10 +26,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'V1 Rentals',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 0, 157, 255)),
+        // cardTheme: const CardTheme(color: Colors.white),
         useMaterial3: true,
       ),
       home: const AuthenticationWrapper(),

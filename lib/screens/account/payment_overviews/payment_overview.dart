@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:v1_rentals/models/payment_card_model.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/add_payment_card.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/edit_payment_card.dart';
@@ -100,8 +101,9 @@ class _PaymentOverviewScreenState extends State<PaymentOverviewScreen> {
                       return Center(child: Text('No cards found'));
                     } else {
                       return Column(
-                        children:
-                            cards.map((card) => buildCardItem(card)).toList(),
+                        children: cards
+                            .map((card) => buildCardItem(context, card))
+                            .toList(),
                       );
                     }
                   }
@@ -149,105 +151,112 @@ class _PaymentOverviewScreenState extends State<PaymentOverviewScreen> {
     );
   }
 
-  Widget buildCardItem(PaymentCard card) {
-    // Implement how each card item should be displayed
-    return Card(
-      color: Theme.of(context).colorScheme.primary,
-      margin: const EdgeInsets.all(16.0),
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              child: Image.asset('assets/images/visa_icon.png'),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    // Display card information here
-                    'XXXX XXXX XXXX ${card.lastFourDigits}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EditPaymentCardScreen(
-                                cardId: card.cardId,
-                                cardNumber: card.cardNumber,
-                                expiryDate: card.expiryDate,
-                                cardHolderName: card.cardHolderName,
-                                cvvCode: card.cvvCode,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          'Edit',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                      ),
-                      Text(' | '),
-                      TextButton(
-                        onPressed: () {
-                          // Show confirmation dialog before deleting the card
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text("Confirm"),
-                                content: Text(
-                                    "Are you sure you want to remove this card?"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text("Cancel"),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      removeCard(card.cardId);
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text("Remove"),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: Text(
-                          'Remove',
-                          style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+  Widget buildCardItem(BuildContext context, PaymentCard card) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditPaymentCardScreen(
+                  cardId: card.cardId,
+                  cardNumber: card.cardNumber,
+                  expiryDate: card.expiryDate,
+                  cardHolderName: card.cardHolderName,
+                  cvvCode: card.cvvCode,
+                ),
               ),
-            ),
-          ],
+            );
+          },
+          child: Column(
+            children: [
+              CreditCardWidget(
+                cardNumber: card.cardNumber,
+                expiryDate: card.expiryDate,
+                cardHolderName: card.cardHolderName,
+                cvvCode: card.cvvCode,
+                showBackView: false,
+                onCreditCardWidgetChange: (p0) {},
+                bankName: 'Scotiabank',
+                cardType: CardType.visa,
+                isHolderNameVisible: true,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditPaymentCardScreen(
+                              cardId: card.cardId,
+                              cardNumber: card.cardNumber,
+                              expiryDate: card.expiryDate,
+                              cardHolderName: card.cardHolderName,
+                              cvvCode: card.cvvCode,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Edit',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Show confirmation dialog before deleting the card
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Confirm"),
+                              content: Text(
+                                  "Are you sure you want to remove this card?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Cancel"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    removeCard(card.cardId);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Remove"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Text(
+                        'Delete',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

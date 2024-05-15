@@ -121,6 +121,17 @@ class AuthService {
     }
   }
 
+  Future<void> updateBookingStatus(
+      String bookingId, BookingStatus status) async {
+    try {
+      await _firestore.collection('bookings').doc(bookingId).update({
+        'status': status.toString().split('.').last,
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);

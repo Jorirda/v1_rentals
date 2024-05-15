@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 enum BookingStatus {
   all,
@@ -25,13 +26,17 @@ class Booking {
   String imageUrl;
   bool paymentStatus; // Payment status (true if paid, false if pending)
   String paymentMethod;
-  Timestamp createdAt; // Timestamp of when the booking was created
+  DateTime createdAt; // Timestamp of when the booking was created
+
+  // Date and time format
+  static final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+  static final DateFormat timeFormat = DateFormat('HH:mm:ss');
 
   Booking({
     required this.id,
     required this.userId,
     required this.vehicleId,
-    required this.vendorId, // Add vendorId
+    required this.vendorId,
     required this.pickupDate,
     required this.pickupTime,
     required this.dropoffDate,
@@ -52,7 +57,7 @@ class Booking {
       id: doc.id,
       userId: data['userId'] ?? '',
       vehicleId: data['vehicleId'] ?? '',
-      vendorId: data['vendorId'] ?? '', // Extract vendorId
+      vendorId: data['vendorId'] ?? '',
       pickupDate: DateTime.parse(data['pickupDate'] ?? ''),
       pickupTime: _parseTimeOfDay(data['pickupTime'] ?? ''),
       dropoffDate: DateTime.parse(data['dropoffDate'] ?? ''),
@@ -62,41 +67,32 @@ class Booking {
       totalPrice: data['totalPrice'] ?? 0,
       status: BookingStatus.values.firstWhere(
         (e) => e.toString() == 'BookingStatus.${data['status']}',
-        orElse: () =>
-            BookingStatus.pending, // Provide a default status if not found
+        orElse: () => BookingStatus.pending,
       ),
       imageUrl: data['imageUrl'] ?? '',
       paymentStatus: data['paymentStatus'] ?? false,
       paymentMethod: data['paymentMethod'] ?? '',
-      createdAt: (data['createdAt'] as Timestamp?) ?? Timestamp.now(),
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
   }
 
-  // Helper method to parse string to TimeOfDay
   static TimeOfDay _parseTimeOfDay(String timeString) {
-    final List<String> parts = timeString.split(' ');
-    final List<String> timeParts = parts[0].split(':');
-    final int hour = int.parse(timeParts[0]);
-    final int minute = int.parse(timeParts[1]);
-    final String period = parts[1];
-
-    return TimeOfDay(
-      hour: period == 'AM' ? hour : hour + 12,
-      minute: minute,
-    );
+    final DateTime parsedTime = timeFormat.parse(timeString);
+    return TimeOfDay(hour: parsedTime.hour, minute: parsedTime.minute);
   }
 
-  // Convert Booking object to Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'userId': userId,
       'vehicleId': vehicleId,
-      'vendorId': vendorId, // Include vendorId
-      'pickupDate': pickupDate.toIso8601String().substring(0, 10),
-      'pickupTime': getFormattedTime(pickupTime),
-      'dropoffDate': dropoffDate.toIso8601String().substring(0, 10),
-      'dropoffTime': getFormattedTime(dropoffTime),
+      'vendorId': vendorId,
+      'pickupDate': dateFormat.format(pickupDate),
+      'pickupTime': timeFormat
+          .format(DateTime(1, 1, 1, pickupTime.hour, pickupTime.minute)),
+      'dropoffDate': dateFormat.format(dropoffDate),
+      'dropoffTime': timeFormat
+          .format(DateTime(1, 1, 1, dropoffTime.hour, dropoffTime.minute)),
       'pickupLocation': pickupLocation,
       'dropoffLocation': dropoffLocation,
       'totalPrice': totalPrice,
@@ -106,14 +102,5 @@ class Booking {
       'paymentMethod': paymentMethod,
       'createdAt': createdAt,
     };
-  }
-
-  // Method to format time
-  String getFormattedTime(TimeOfDay time) {
-    final int hour = time.hourOfPeriod;
-    final String amPm = time.period == DayPeriod.am ? 'AM' : 'PM';
-    final String hourString = hour == 0 ? '12' : hour.toString();
-    final String minuteString = time.minute.toString().padLeft(2, '0');
-    return '$hourString:$minuteString $amPm';
   }
 }

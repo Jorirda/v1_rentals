@@ -7,7 +7,7 @@ import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
-import 'package:v1_rentals/screens/clients/car_details.dart';
+import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/screens/main/filter_page.dart';
 import 'package:v1_rentals/screens/main/location_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
@@ -382,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen>
                           margin: const EdgeInsets.all(8),
                           width: 280,
                           child: Card(
-                            elevation: 4,
+                            elevation: 2,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
-import 'package:v1_rentals/screens/clients/car_details.dart';
+import 'package:v1_rentals/screens/main/car_details.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({Key? key}) : super(key: key);
@@ -41,9 +41,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return vehicles;
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,12 +69,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               return Card(
                 margin: EdgeInsets.all(8),
                 child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   leading: Image.network(
                     vehicle.imageUrl ?? 'https://via.placeholder.com/150',
                     width: 100,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(Icons.error),
                   ),
                   title: Text(vehicle.brand),
                   subtitle: Column(

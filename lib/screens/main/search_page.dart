@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
-import 'package:v1_rentals/screens/clients/car_details.dart';
+import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/screens/main/filter_page.dart';
 
 class SearchScreen extends StatefulWidget {
