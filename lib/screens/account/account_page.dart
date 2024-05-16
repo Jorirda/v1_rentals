@@ -103,6 +103,13 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
 
               AccountMenuWidget(
+                title: 'Address Book',
+                icon: Icons.book_rounded,
+                onPress: () {},
+                textColor: null,
+              ),
+
+              AccountMenuWidget(
                 title: 'Payment Options',
                 icon: Icons.wallet,
                 onPress: () {

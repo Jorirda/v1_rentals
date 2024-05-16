@@ -9,8 +9,9 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/screens/main/filter_page.dart';
-import 'package:v1_rentals/screens/main/location_page.dart';
+import 'package:v1_rentals/widgets/location_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
+import 'package:marquee/marquee.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen>
   List<RecommendModel> recommendBrands = [];
   List<Vehicle> vehicles = [];
   bool isDarkMode = false;
-
+  CustomUser? user;
   @override
   void initState() {
     super.initState();
@@ -52,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen>
     try {
       User? firebaseUser = FirebaseAuth.instance.currentUser;
       if (firebaseUser != null) {
-        CustomUser? user = await _authService.getUserData(firebaseUser.uid);
+        user = await _authService.getUserData(firebaseUser.uid);
         setState(() {
           _currentUser = user;
         });
@@ -75,6 +76,14 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  String? _truncateAddress(String? address) {
+    const int maxLength = 25; // Maximum length of truncated address
+    if (address == null) return null;
+    return address.length <= maxLength
+        ? address
+        : '${address.substring(0, maxLength)}...';
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context); // Needed for AutomaticKeepAliveClientMixin
@@ -87,71 +96,81 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                Container(
+                  color: Theme.of(context).colorScheme.primary,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey,
-                        child: _currentUser?.imageURL != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(45),
-                                child: Image.network(
-                                  _currentUser!.imageURL!,
-                                  width: 90,
-                                  height: 90,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : Text(
-                                _currentUser?.fullname?[0].toUpperCase() ?? "",
-                                style: const TextStyle(fontSize: 18),
-                              ),
+                      SizedBox(
+                        height: 20,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(right: 10, left: 20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const LocationScreen(),
-                                  ),
-                                );
-                              },
-                              icon: Icon(Icons.location_on_sharp),
-                              padding: EdgeInsets.zero,
-                              color: Colors.red,
+                            CircleAvatar(
+                              radius: 35,
+                              backgroundColor: Colors.grey,
+                              child: _currentUser?.imageURL != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(45),
+                                      child: Image.network(
+                                        _currentUser!.imageURL!,
+                                        width: 70,
+                                        height: 70,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : Text(
+                                      _currentUser?.fullname?[0]
+                                              .toUpperCase() ??
+                                          "",
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LocationScreen(),
-                                  ),
-                                );
-                              },
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 10, left: 20),
                               child: Row(
                                 children: [
-                                  Text(
-                                    'Bridgetown, Barbados',
-                                    style: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.bold,
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              LocationScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on,
+                                          color: Colors.red,
+                                        ),
+                                        Tooltip(
+                                          message: _currentUser?.address ??
+                                              'Your location',
+                                          child: Text(
+                                            _truncateAddress(
+                                                    _currentUser?.address) ??
+                                                'Your location',
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_drop_down,
+                                    style: TextButton.styleFrom(
+                                        foregroundColor: Colors.white),
                                   ),
                                 ],
                               ),
@@ -159,96 +178,104 @@ class _HomeScreenState extends State<HomeScreen>
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hello ${_currentUser?.fullname ?? ""}\u{1F44B}',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                      const SizedBox(
+                        height: 20,
                       ),
-                      const Text(
-                        'Search for your favorite vehicle',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SearchScreen(vehicles),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hello, ${_currentUser?.fullname ?? ""}\u{1F44B}',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 15),
-                                  child: Icon(Icons.search, color: Colors.red),
+                            const Text(
+                              'Search for your favorite vehicle',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          SearchScreen(vehicles),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.white),
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white),
+                                  child: const Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15),
+                                        child: Icon(Icons.search,
+                                            color: Colors.red),
+                                      ),
+                                      Text('Search for vehicles',
+                                          style: TextStyle(color: Colors.grey)),
+                                    ],
+                                  ),
                                 ),
-                                Text('Search for vehicles',
-                                    style: TextStyle(color: Colors.grey)),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                          // Padding(
+                          //   padding: const EdgeInsets.only(right: 15),
+                          //   child: Container(
+                          //     decoration: BoxDecoration(
+                          //       color: Theme.of(context).colorScheme.primary,
+                          //       borderRadius: BorderRadius.circular(10),
+                          //     ),
+                          //     child: IconButton(
+                          //       onPressed: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) => FilterPage(),
+                          //           ),
+                          //         );
+                          //       },
+                          //       icon: const Icon(Icons.filter_list_sharp),
+                          //       color: Colors.white,
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
                       ),
-                    ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(right: 15),
-                    //   child: Container(
-                    //     decoration: BoxDecoration(
-                    //       color: Theme.of(context).colorScheme.primary,
-                    //       borderRadius: BorderRadius.circular(10),
-                    //     ),
-                    //     child: IconButton(
-                    //       onPressed: () {
-                    //         Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(
-                    //             builder: (context) => FilterPage(),
-                    //           ),
-                    //         );
-                    //       },
-                    //       icon: const Icon(Icons.filter_list_sharp),
-                    //       color: Colors.white,
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
+                      SizedBox(
+                        height: 20,
+                      )
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 15,

@@ -132,6 +132,16 @@ class AuthService {
     }
   }
 
+  Future<void> updateUserAddress(String userId, String address) async {
+    try {
+      await _firestore.collection('users').doc(userId).update({
+        'address': address,
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
