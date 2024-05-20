@@ -197,12 +197,16 @@ class _VendorStorePageState extends State<VendorStorePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: 5),
-                            Text(
-                              vehicle.brand,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  vehicle.brand,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ],
                             ),
                             const Divider(),
                             Row(
@@ -212,6 +216,17 @@ class _VendorStorePageState extends State<VendorStorePage> {
                                     Icon(Icons.settings),
                                     SizedBox(width: 4),
                                     Text(vehicle.getTransmissionTypeString()),
+                                  ],
+                                ),
+                                VerticalDivider(),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.star,
+                                      color: Colors.yellow,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Text(vehicle.rating.toString()),
                                   ],
                                 ),
                               ],

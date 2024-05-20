@@ -119,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //Image Container
+                // Image Container
                 Container(
                   margin: const EdgeInsets.only(
                     top: 30,
@@ -136,11 +136,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Text(
                   'Create Account',
                   style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary),
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
-
                 // Welcome Text
                 const Text(
                   ' Select a type and register below with your details.',
@@ -148,11 +148,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     fontSize: 15,
                   ),
                 ),
-
                 const SizedBox(
                   height: 25,
                 ),
-
                 ToggleButtons(
                   isSelected: UserType.values.map((UserType userType) {
                     return userType == _selectedUserType;
@@ -172,7 +170,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     return Text(userType.toString().split('.').last);
                   }).toList(),
                 ),
-
                 const SizedBox(
                   height: 20,
                 ),
@@ -180,53 +177,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 _selectedUserType == UserType.client
                     ? _buildClientForm()
                     : _buildVendorForm(),
-
                 const SizedBox(
                   height: 20,
                 ),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    child: const Text('Sign Up'),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'I am already a member!',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-
-                    //Switch to Login page
-                    GestureDetector(
-                      onTap: widget.showLogin,
-                      child: Text(
-                        'Log in now',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _submitForm,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                child: const Text('Sign Up'),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'I am already a member!',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                // Switch to Login page
+                GestureDetector(
+                  onTap: widget.showLogin,
+                  child: Text(
+                    'Log in now',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -238,18 +239,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            //Full Name Text Field
+            // Full Name Text Field
             FormTextField(
               hintText: 'Full Name',
               keyboardType: TextInputType.text,
               iconValue: Icons.person,
               controller: _fullnameController,
             ),
-
             const SizedBox(
               height: 10,
             ),
-
             // Email Textfield
             FormTextField(
               hintText: 'Email',
@@ -257,11 +256,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               iconValue: Icons.email,
               controller: _emailController,
             ),
-
             const SizedBox(
               height: 10,
             ),
-
             // Password Textfield
             FormTextField(
               hintText: 'Password',
@@ -270,9 +267,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               obscureText: true,
               controller: _passwordController,
             ),
-
             const SizedBox(height: 10),
-
             // Expiry Date Textfield
             buildDatePickerField(
               hintText: 'Date of Birth',
@@ -284,9 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 });
               },
             ),
-
             const SizedBox(height: 10),
-
             // Phone No. Textfield
             FormTextField(
               hintText: 'Phone #',
@@ -294,9 +287,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.number,
               controller: _phoneNumController,
             ),
-
             const SizedBox(height: 10),
-
             // Address Textfield
             FormTextField(
               hintText: 'Address',
@@ -304,9 +295,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.text,
               controller: _addressController,
             ),
-
             const SizedBox(height: 10),
-
             // Driver License Textfield
             FormTextField(
               hintText: "Driver's License #",
@@ -314,9 +303,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.text,
               controller: _driverLicenseNumberController,
             ),
-
             const SizedBox(height: 10),
-
             // Issuing Country State Textfield
             FormTextField(
               hintText: 'Issuing Country',
@@ -324,9 +311,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.text,
               controller: _issuingCountryController,
             ),
-
             const SizedBox(height: 10),
-
             // Expiry Date Textfield
             buildDatePickerField(
               hintText: 'Expiry Date',
@@ -338,7 +323,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 });
               },
             ),
-
             const SizedBox(height: 10),
           ],
         ),
@@ -352,14 +336,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            //Full Name Text Field
+            // Full Name Text Field
             FormTextField(
               hintText: 'Full Name',
               keyboardType: TextInputType.text,
               iconValue: Icons.person,
               controller: _fullnameController,
             ),
-
             const SizedBox(height: 10),
             // Email Textfield
             FormTextField(
@@ -368,11 +351,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               iconValue: Icons.email,
               controller: _emailController,
             ),
-
             const SizedBox(
               height: 10,
             ),
-
             // Password Textfield
             FormTextField(
               hintText: 'Password',
@@ -382,7 +363,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: _passwordController,
             ),
             const SizedBox(height: 10),
-
             // Phone # Textfield
             FormTextField(
               hintText: 'Phone #',
@@ -390,9 +370,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.number,
               controller: _phoneNumController,
             ),
-
             const SizedBox(height: 10),
-
             // Business Name Textfield
             FormTextField(
               hintText: 'Business Name',
@@ -400,9 +378,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.text,
               controller: _businessNameController,
             ),
-
             const SizedBox(height: 10),
-
             // Address Textfield
             FormTextField(
               hintText: 'Address',
@@ -410,9 +386,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               keyboardType: TextInputType.text,
               controller: _addressController,
             ),
-
             const SizedBox(height: 10),
-
             // Business Registration Number Textfield
             FormTextField(
               hintText: 'Business Registration # (if applicable)',
@@ -421,7 +395,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               controller: _businessRegNumController,
             ),
             const SizedBox(height: 10),
-
             // Tax Identification Number Textfield
             FormTextField(
               hintText: 'TIN # (if applicable)',

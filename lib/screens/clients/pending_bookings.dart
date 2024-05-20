@@ -105,16 +105,52 @@ class PendingBookingsScreen extends StatelessWidget {
                                     ],
                                   ),
                                   SizedBox(height: 10),
-                                  Container(
-                                    height: 200,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      image: DecorationImage(
-                                        image: NetworkImage(booking.imageUrl),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                                  Text(
+                                    '${booking.createdAt}',
+                                    style: TextStyle(color: Colors.grey),
                                   ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.arrow_circle_up_sharp,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text('${booking.pickupLocation}')
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.arrow_circle_down_sharp,
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text('${booking.dropoffLocation}')
+                                    ],
+                                  )
+                                  // Container(
+                                  //   height: 200,
+                                  //   decoration: BoxDecoration(
+                                  //     borderRadius: BorderRadius.circular(8),
+                                  //     image: DecorationImage(
+                                  //       image: NetworkImage(booking.imageUrl),
+                                  //       fit: BoxFit.cover,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               );
                             }

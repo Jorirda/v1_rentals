@@ -96,13 +96,6 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
 
               AccountMenuWidget(
-                title: 'Rent History',
-                icon: Icons.car_rental_rounded,
-                onPress: () {},
-                textColor: null,
-              ),
-
-              AccountMenuWidget(
                 title: 'Address Book',
                 icon: Icons.book_rounded,
                 onPress: () {},

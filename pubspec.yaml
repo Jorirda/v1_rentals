@@ -54,6 +54,7 @@ dependencies:
   flutter_polyline_points: ^2.0.0
   geodesy: ^0.10.2
   marquee: ^2.2.3
+  fluttertoast: ^8.2.5
 
 
 flutter_native_splash:
@@ -85,6 +86,8 @@ flutter:
   assets:
     - assets/images/v1-rentals-logo.png
     - assets/images/default_avatar.png
+    - assets/images/car-rental-bg.png
+    - assets/images/car-rental-bg2.jpg
     - assets/images/mastercard_icon.png
     - assets/images/visa_icon.png
     - assets/images/credit-card.png

@@ -1,14 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/models/location/search_history_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
-import 'package:v1_rentals/widgets/add_dropoff_location.dart';
-import 'package:v1_rentals/widgets/add_pickup_location.dart';
-import 'package:v1_rentals/widgets/location_map.dart';
-import 'dart:async';
+import 'package:v1_rentals/widgets/dropoff_location.dart';
+import 'package:v1_rentals/widgets/pickup_location.dart';
 import 'package:v1_rentals/widgets/location_service.dart';
+
+import 'dart:async';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -18,51 +17,25 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  late GoogleMapController _mapController;
   LatLng _currentPosition =
       const LatLng(13.081781693391143, -59.48398883384077);
-  String _currentAddress = '';
-  final TextEditingController _searchController = TextEditingController();
-  List<String> _suggestions = [];
-  List<LatLng> _suggestionPositions = [];
-  List<double> _suggestionDistances = [];
-  final List<String> _searchHistory = [];
+  String _currentLocation = '';
+
+  final List<SearchHistory> _searchHistory =
+      []; // Update to store SearchHistory objects
   final List<String> _popularLocations = ['Popular 1', 'Popular 2'];
-  bool _isLoading = false;
-  bool _showSearchHistory = true;
-  Timer? _debounce;
-  AuthService authService = AuthService();
+  final AuthService _authService = AuthService();
+  final LocationService _locationService =
+      LocationService(); // Ensure you have an instance of LocationService
+
+  String _pickupLocation = 'Set Address';
+  String _dropoffLocation = 'Set Address';
 
   @override
   void initState() {
     super.initState();
     _initializeLocation();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  @override
-  void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    _debounce?.cancel();
-    super.dispose();
-  }
-
-  void _onSearchChanged() {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
-      if (_searchController.text.isEmpty) {
-        setState(() {
-          _suggestions.clear();
-          _showSearchHistory = true;
-        });
-      } else {
-        await _getSuggestions(_searchController.text);
-        setState(() {
-          _showSearchHistory = false;
-        });
-      }
-    });
+    _fetchSearchHistory(); // Fetch search history when initializing
   }
 
   Future<void> _initializeLocation() async {
@@ -71,189 +44,174 @@ class _LocationScreenState extends State<LocationScreen> {
       String address = await LocationService.updatePosition(position);
       setState(() {
         _currentPosition = position;
-        _currentAddress = address;
+        _currentLocation = address;
       });
     } catch (e) {
-      print('Error initializing location: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error initializing location: $e')),
-      );
+      _showError('Error initializing location: $e');
     }
   }
 
-  Future<void> _getSuggestions(String query) async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _fetchSearchHistory() async {
     try {
-      List<Map<String, dynamic>> results =
-          await LocationService.getSuggestions(query);
-      List<String> descriptions = [];
-      List<String> placeIds = [];
-
-      for (var result in results) {
-        descriptions.add(result['description']);
-        placeIds.add(result['place_id']);
+      CustomUser? currentUser = await _authService.getCurrentUser();
+      if (currentUser != null && currentUser.userId != null) {
+        List<SearchHistory> searchHistory =
+            await _locationService.getSearchHistory(currentUser.userId!);
+        setState(() {
+          _searchHistory
+            ..clear()
+            ..addAll(
+                searchHistory.reversed); // Reverse the list and add all items
+        });
       }
-
-      setState(() {
-        _suggestions = descriptions;
-      });
-
-      List<LatLng> positions =
-          await LocationService.getSuggestionDetails(placeIds);
-      setState(() {
-        _suggestionPositions = positions;
-      });
-
-      List<double> distances = await LocationService.calculateDistances(
-          _currentPosition, _suggestionPositions);
-      setState(() {
-        _suggestionDistances = distances;
-        _isLoading = false;
-      });
     } catch (e) {
-      print('Error fetching suggestions: $e');
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching suggestions: $e')),
-      );
+      _showError('Error fetching search history: $e');
     }
   }
 
-  void _showMapSection() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MapScreen(initialPosition: _currentPosition),
+  Future<void> _clearSearchHistory() async {
+    try {
+      CustomUser? currentUser = await _authService.getCurrentUser();
+      if (currentUser != null && currentUser.userId != null) {
+        await _locationService.clearSearchHistory(currentUser.userId!);
+        setState(() {
+          _searchHistory.clear();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Search history cleared successfully')),
+        );
+      }
+    } catch (e) {
+      _showError('Error clearing search history: $e');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Widget _buildLocationOption(
+      IconData icon, String title, String subtitle, VoidCallback onTap) {
+    const int maxSubtitleLength = 20;
+    String truncatedSubtitle = subtitle.length > maxSubtitleLength
+        ? '${subtitle.substring(0, maxSubtitleLength)}...'
+        : subtitle;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(icon, color: Colors.red, size: 40),
+          Text(title,
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+          Tooltip(
+            message: subtitle,
+            child: Text(
+              truncatedSubtitle,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey[400]),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  void _saveSearchHistory(String search) {
-    setState(() {
-      _searchHistory.remove(search);
-      _searchHistory.insert(0, search);
-    });
-  }
-
-  Widget _buildHistoryAndPopularLocations() {
-    return ListView(
-      children: [
-        _buildSearchHistory(),
-        _buildPopularLocations(),
-      ],
-    );
-  }
-
-  Widget _buildSearchHistory() {
+  Widget _buildCurrentLocation() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SetPickupLocationScreen()),
-                    );
-                  },
-                  child: Column(
-                    children: [
-                      const Icon(Icons.arrow_circle_up, color: Colors.red),
-                      Text('Pick-up',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary)),
-                      Text('Set Address'),
-                    ],
-                  ),
+          padding: const EdgeInsets.only(left: 8, top: 20),
+          child: Row(
+            children: [
+              const Icon(Icons.location_on, color: Colors.red),
+              SizedBox(width: 5),
+              Text(
+                'Current Location Address',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
-                GestureDetector(
-                  onTap: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SetDropoffLocationScreen()),
-                    )
-                  },
-                  child: Column(
-                    children: [
-                      const Icon(Icons.arrow_circle_down, color: Colors.red),
-                      Text('Drop-off',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary)),
-                      Text('Set Address'),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: _showMapSection,
-                  child: Column(
-                    children: [
-                      Icon(Icons.map_sharp, color: Colors.red),
-                      Text('Use Map',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary)),
-                      Text('Drag Map'),
-                    ],
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        Card(
+          margin: const EdgeInsets.all(12.0),
+          child: ListTile(
+            leading: const Icon(Icons.location_on_outlined, color: Colors.red),
+            title: Text(_currentLocation),
+            trailing: IconButton(
+              onPressed: _initializeLocation,
+              icon: const Icon(Icons.my_location),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.only(left: 8),
-          child: Row(
-            children: [
-              Icon(Icons.access_time),
-              SizedBox(width: 5),
-              Text(
-                'History',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
-              ),
-            ],
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(IconData icon, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.red),
+          const SizedBox(width: 5),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-        ),
+          Spacer(),
+          if (title == 'History')
+            TextButton(
+              onPressed: _clearSearchHistory,
+              child: Text(
+                'clear',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListSection(List<SearchHistory> items, String headerTitle,
+      IconData headerIcon, ValueChanged<int> onTap) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        _buildSectionHeader(headerIcon, headerTitle),
         const SizedBox(height: 8),
         Card(
-          margin: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(12.0),
           child: ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _searchHistory.length,
+            itemCount: items.length,
             itemBuilder: (context, index) {
               return ListTile(
-                leading: const Icon(Icons.location_on),
-                title: Text(_searchHistory[index]),
-                onTap: () {
-                  _searchController.text = _searchHistory[index];
-                  _saveSearchHistory(_searchHistory[index]);
-                  _getSuggestions(_searchHistory[index]);
-                  setState(() {
-                    _showSearchHistory = false;
-                  });
-                },
-                subtitle: _suggestionDistances.length > index
-                    ? Text(
-                        '${_suggestionDistances[index].toStringAsFixed(1)} km')
-                    : null,
+                leading:
+                    const Icon(Icons.location_on_outlined, color: Colors.red),
+                title: Text(
+                  items[index].locationName,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                subtitle: Text(items[index].address),
               );
             },
             separatorBuilder: (context, index) => const Divider(),
@@ -263,49 +221,92 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 
-  Widget _buildPopularLocations() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
+  void _showBottomSheet(BuildContext context, String? selectedLocation) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.star),
-              SizedBox(width: 5),
-              Text(
-                'Popular Locations',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary),
+              ElevatedButton(
+                onPressed: () async {
+                  if (selectedLocation != null) {
+                    CustomUser? currentUser =
+                        await _authService.getCurrentUser();
+                    if (currentUser != null && currentUser.userId != null) {
+                      await _authService.updateUserAddress(
+                          currentUser.userId!, selectedLocation);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Address updated successfully')),
+                      );
+                    } else {
+                      _showError('No user signed in or userId is null');
+                    }
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Set Current User Address'),
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 8),
+        );
+      },
+    );
+  }
+
+  Widget _buildLocationOptions() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Card(
-          margin: const EdgeInsets.all(8.0),
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _popularLocations.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: const Icon(Icons.location_on),
-                title: Text(_popularLocations[index]),
-                onTap: () {
-                  _searchController.text = _popularLocations[index];
-                  _saveSearchHistory(_popularLocations[index]);
-                  _getSuggestions(_popularLocations[index]);
-                  setState(() {
-                    _showSearchHistory = false;
-                  });
-                },
-              );
-            },
-            separatorBuilder: (context, index) => const Divider(),
+          color: Theme.of(context).colorScheme.primary,
+          margin: const EdgeInsets.all(12),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildLocationOption(
+                  Icons.arrow_circle_up_sharp,
+                  'Pick-up',
+                  _pickupLocation,
+                  () async {
+                    final selectedLocation = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SetPickupLocationScreen(
+                              historyLocations: _searchHistory)),
+                    );
+                    if (selectedLocation != null) {
+                      setState(() {
+                        _pickupLocation = selectedLocation;
+                      });
+                    }
+                  },
+                ),
+                _buildLocationOption(
+                  Icons.arrow_circle_down,
+                  'Drop-off',
+                  _dropoffLocation,
+                  () async {
+                    final selectedLocation = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SetDropoffLocationScreen(
+                              historyLocations: _searchHistory)),
+                    );
+                    if (selectedLocation != null) {
+                      setState(() {
+                        _dropoffLocation = selectedLocation;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -316,114 +317,38 @@ class _LocationScreenState extends State<LocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: 'Search for a location',
-            contentPadding:
-                EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
-                    icon: Icon(Icons.clear),
-                    onPressed: () {
-                      _searchController.clear();
-                    },
-                  )
-                : null,
+        title: const Text('Locations'),
+      ),
+      body: ListView(
+        children: [
+          _buildLocationOptions(),
+          _buildCurrentLocation(),
+          _buildListSection(
+            _searchHistory,
+            'History',
+            Icons.access_time_filled_sharp,
+            (index) {
+              // Implement the onTap functionality if needed
+            },
           ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              _getSuggestions(_searchController.text);
+          _buildListSection(
+            _popularLocations
+                .map((location) => SearchHistory(
+                      locationName: location,
+                      address: '',
+                      latitude: 0.0,
+                      longitude: 0.0,
+                    ))
+                .toList(),
+            'Popular Locations',
+            Icons.star,
+            (index) {
+              // Implement the onTap functionality if needed
             },
           ),
         ],
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : _showSearchHistory
-              ? _buildHistoryAndPopularLocations()
-              : _buildSuggestionsList(),
-      backgroundColor: Colors.grey[200],
-    );
-  }
-
-  Widget _buildSuggestionsList() {
-    return ListView.builder(
-      itemCount: _suggestions.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: const Icon(Icons.location_on),
-          title: Text(_suggestions[index]),
-          onTap: () async {
-            String selectedLocation = _suggestions[index];
-            // _searchController.text = selectedLocation;
-            _saveSearchHistory(selectedLocation);
-            // await _getSuggestions(selectedLocation);
-            setState(() {
-              _showSearchHistory = false;
-            });
-            // Show bottom sheet
-            _showBottomSheet(context, selectedLocation);
-          },
-          subtitle: _suggestionDistances.length > index
-              ? Text('${_suggestionDistances[index].toStringAsFixed(1)} km')
-              : null,
-        );
-      },
-    );
-  }
-
-  void _showBottomSheet(BuildContext context, String? selectedLocation) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext bc) {
-        return Container(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    // Ensure selectedLocation and userId are not null
-                    if (selectedLocation != null) {
-                      CustomUser? currentUser =
-                          await authService.getCurrentUser();
-                      if (currentUser != null && currentUser.userId != null) {
-                        // Update user's address
-                        await authService.updateUserAddress(
-                            currentUser.userId!, selectedLocation);
-                        // Inform user
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Address updated successfully')),
-                        );
-                      } else {
-                        // Handle scenario where no user is signed in or userId is null
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content:
-                                  Text('No user signed in or userId is null')),
-                        );
-                      }
-                    }
-                    // Close the bottom sheet
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Set Current User Address'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      backgroundColor: Colors.grey[100],
     );
   }
 }

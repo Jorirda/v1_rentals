@@ -8,13 +8,12 @@ import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
-import 'package:v1_rentals/screens/main/filter_page.dart';
+
 import 'package:v1_rentals/widgets/location_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
-import 'package:marquee/marquee.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -126,8 +125,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       ),
                                     )
                                   : Text(
-                                      _currentUser?.fullname?[0]
-                                              .toUpperCase() ??
+                                      _currentUser?.fullname[0].toUpperCase() ??
                                           "",
                                       style: const TextStyle(fontSize: 18),
                                     ),
@@ -296,12 +294,15 @@ class _HomeScreenState extends State<HomeScreen>
                             color: Colors.black,
                           ),
                         ),
-                        Text(
-                          'View All',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.primary,
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'View All',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
                         ),
                       ],
@@ -377,12 +378,15 @@ class _HomeScreenState extends State<HomeScreen>
                             color: Colors.black,
                           ),
                         ),
-                        Text(
-                          'View All',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.primary,
+                        TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            'View All',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
                         ),
                       ],
@@ -519,14 +523,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildVehicleImage(Vehicle vehicle) {
-    if (vehicle.imageUrl != null && vehicle.imageUrl.isNotEmpty) {
+    if (vehicle.imageUrl.isNotEmpty) {
       return ClipRRect(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
         ),
         child: CachedNetworkImage(
-          imageUrl: vehicle.imageUrl!,
+          imageUrl: vehicle.imageUrl,
           cacheManager:
               CustomCacheManager.instance, // Use the custom cache manager
           width: 280,

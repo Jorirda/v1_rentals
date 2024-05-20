@@ -76,75 +76,77 @@ class _PaymentOverviewScreenState extends State<PaymentOverviewScreen> {
         title: const Text('Payment Overview'),
       ),
       body: SafeArea(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(
-                  'Bank Card',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        child: SingleChildScrollView(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    'Bank Card',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              StreamBuilder<List<PaymentCard>>(
-                stream: _userCardsStream,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final cards = snapshot.data ?? [];
-                    if (cards.isEmpty) {
-                      return Center(child: Text('No cards found'));
+                StreamBuilder<List<PaymentCard>>(
+                  stream: _userCardsStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
                     } else {
-                      return Column(
-                        children: cards
-                            .map((card) => buildCardItem(context, card))
-                            .toList(),
-                      );
+                      final cards = snapshot.data ?? [];
+                      if (cards.isEmpty) {
+                        return Center(child: Text('No cards found'));
+                      } else {
+                        return Column(
+                          children: cards
+                              .map((card) => buildCardItem(context, card))
+                              .toList(),
+                        );
+                      }
                     }
-                  }
-                },
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddPaymentCardScreen(),
-                    ),
-                  );
-                },
-                child: Card(
-                  margin: EdgeInsets.all(20),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          title: Text(
-                            '+ Add Credit/Debit Card',
-                            textAlign: TextAlign.center,
-                          ),
-                          subtitle: Text(
-                            'Add your bank account',
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  },
                 ),
-              )
-            ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddPaymentCardScreen(),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    margin: EdgeInsets.all(20),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            title: Text(
+                              '+ Add Credit/Debit Card',
+                              textAlign: TextAlign.center,
+                            ),
+                            subtitle: Text(
+                              'Add your bank account',
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

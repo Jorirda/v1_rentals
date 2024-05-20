@@ -3,11 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
+import 'package:v1_rentals/models/location/search_history_model.dart';
 import 'package:v1_rentals/models/payment_card_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/add_payment_card.dart';
 import 'package:intl/intl.dart';
+import 'package:v1_rentals/widgets/dropoff_location.dart';
+import 'package:v1_rentals/widgets/location_page.dart';
+import 'package:v1_rentals/widgets/location_service.dart';
+import 'package:v1_rentals/widgets/pickup_location.dart';
 
 enum PaymentMethod {
   Card,
@@ -40,6 +45,11 @@ class _BookingScreenState extends State<BookingScreen> {
 
   final AuthService _authService = AuthService();
 
+  final List<SearchHistory> _searchHistory =
+      []; // Update to store SearchHistory objects
+
+  final LocationService _locationService = LocationService();
+
   @override
   void initState() {
     super.initState();
@@ -57,8 +67,8 @@ class _BookingScreenState extends State<BookingScreen> {
           DateTime.now()), // Initialize with current time of day
       dropoffTime: TimeOfDay.fromDateTime(
           DateTime.now()), // Initialize with current time of day
-      pickupLocation: 'GAIA',
-      dropoffLocation: 'GAIA',
+      pickupLocation: '',
+      dropoffLocation: '',
       totalPrice: widget.vehicle.pricePerDay,
       imageUrl: widget.vehicle.imageUrl,
       status: BookingStatus.pending,
@@ -70,6 +80,7 @@ class _BookingScreenState extends State<BookingScreen> {
     fetchUserData(); // Fetch user data including full name
     fetchVendorInformation(widget.vehicle
         .vendorId); // Fetch vendor information by passing vehicle vendorId
+    _fetchSearchHistory();
   }
 
   @override
@@ -78,6 +89,66 @@ class _BookingScreenState extends State<BookingScreen> {
     pickupLocationController.dispose();
     dropoffLocationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchSearchHistory() async {
+    try {
+      CustomUser? currentUser = await _authService.getCurrentUser();
+      if (currentUser != null && currentUser.userId != null) {
+        List<SearchHistory> searchHistory =
+            await _locationService.getSearchHistory(currentUser.userId!);
+        setState(() {
+          _searchHistory
+            ..clear()
+            ..addAll(
+                searchHistory.reversed); // Reverse the list and add all items
+        });
+      }
+    } catch (e) {
+      _showError('Error fetching search history: $e');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _selectPickupLocation(BuildContext context) async {
+    // Navigate to SetPickupLocationScreen
+    final selectedLocation = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SetPickupLocationScreen(
+          historyLocations: _searchHistory,
+        ),
+      ),
+    );
+
+    if (selectedLocation != null) {
+      setState(() {
+        pickupLocationController.text = selectedLocation;
+      });
+    }
+  }
+
+  Future<void> _selectDropoffLocation(BuildContext context) async {
+    // Navigate to SetDropoffLocationScreen
+    final selectedLocation = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SetDropoffLocationScreen(
+          historyLocations: _searchHistory,
+        ),
+      ),
+    );
+
+    if (selectedLocation != null) {
+      setState(() {
+        dropoffLocationController.text = selectedLocation;
+      });
+    }
   }
 
   // Fetch user data including full name
@@ -282,35 +353,22 @@ class _BookingScreenState extends State<BookingScreen> {
                 Expanded(
                   child: TextFormField(
                     decoration: InputDecoration(
-                      hintText:
-                          'Enter pick-up location', // Provide a hint text for better UX
+                      hintText: 'Enter pick-up location',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    keyboardType: TextInputType
-                        .text, // Change keyboard type to text for location entry
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a pick-up location';
-                      }
-                      return null;
-                    },
                     controller: pickupLocationController,
                   ),
                 ),
-                const SizedBox(
-                    width:
-                        10), // Add spacing between text field and icon button
+                const SizedBox(width: 10),
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      // Add functionality to get user's current location
-                    },
+                    onPressed: () => _selectPickupLocation(context),
                     icon: const Icon(
                       Icons.my_location,
                       color: Colors.white,
@@ -337,35 +395,22 @@ class _BookingScreenState extends State<BookingScreen> {
                 Expanded(
                   child: TextFormField(
                     decoration: InputDecoration(
-                      hintText:
-                          'Enter drop-off location', // Provide a hint text for better UX
+                      hintText: 'Enter drop-off location',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     controller: dropoffLocationController,
-                    keyboardType: TextInputType
-                        .text, // Change keyboard type to text for location entry
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a drop-off location';
-                      }
-                      return null;
-                    },
                   ),
                 ),
-                const SizedBox(
-                    width:
-                        10), // Add spacing between text field and icon button
+                const SizedBox(width: 10),
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: IconButton(
-                    onPressed: () {
-                      // Add functionality to get user's current location
-                    },
+                    onPressed: () => _selectDropoffLocation(context),
                     icon: const Icon(
                       Icons.my_location,
                       color: Colors.white,

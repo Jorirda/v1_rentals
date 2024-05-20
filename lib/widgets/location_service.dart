@@ -1,13 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:v1_rentals/auth/auth_service.dart';
+
+import 'package:v1_rentals/models/location/locations_model.dart';
+import 'package:v1_rentals/models/location/search_history_model.dart';
+import 'package:v1_rentals/models/user_model.dart';
 
 class LocationService {
   static const String apiKey =
       'AIzaSyBtA-wz9_JZno0YdDdV-kmaQh2guHxGrKE'; // Google API Key
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final AuthService _authService;
+
+  LocationService() {
+    _authService = AuthService();
+  }
+
+  Future<String> getCurrentUserId() async {
+    final CustomUser? currentUser = await _authService.getCurrentUser();
+    if (currentUser != null) {
+      return currentUser.userId!;
+    } else {
+      throw Exception('Current user not found');
+    }
+  }
 
   static Future<LatLng> getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -58,6 +80,9 @@ class LocationService {
         results.add({
           'description': prediction['description'],
           'place_id': prediction['place_id'],
+          'main_text': prediction['structured_formatting']['main_text'],
+          'secondary_text': prediction['structured_formatting']
+              ['secondary_text'],
         });
       }
       return results;
@@ -83,29 +108,105 @@ class LocationService {
     return positions;
   }
 
+  Future<void> savePickupLocation(Locations location) async {
+    try {
+      final String userId = await getCurrentUserId();
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('pickupLocations')
+          .add(location.toMap());
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> saveDropoffLocation(Locations location) async {
+    try {
+      final String userId = await getCurrentUserId();
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('dropoffLocations')
+          .add(location.toMap());
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> saveSearchHistory(SearchHistory history) async {
+    try {
+      final String userId = await getCurrentUserId();
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('searchHistory')
+          .add(history.toMap());
+    } catch (e) {
+      throw e;
+    }
+  }
+
   static Future<List<double>> calculateDistances(
       LatLng currentPosition, List<LatLng> suggestionPositions) async {
-    List<double> distances = [];
-    for (var position in suggestionPositions) {
-      double distance = await Geolocator.distanceBetween(
+    return await Future.wait(suggestionPositions.map((position) async {
+      double distance = Geolocator.distanceBetween(
         currentPosition.latitude,
         currentPosition.longitude,
         position.latitude,
         position.longitude,
       );
-      distance /= 1000; // Convert meters to kilometers
-      distances.add(distance);
+      return distance / 1000; // Convert meters to kilometers
+    }).toList());
+  }
+
+  Future<List<SearchHistory>> getSearchHistory(String userId) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('searchHistory')
+          .get();
+
+      return snapshot.docs
+          .map((doc) =>
+              SearchHistory.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw Exception('Error fetching search history: $e');
     }
-    return distances;
   }
 
-  static Future<List<String>> getSearchHistory() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList('searchHistory') ?? [];
+  Future<void> clearSearchHistory(String userId) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('searchHistory')
+          .get();
+      for (DocumentSnapshot document in snapshot.docs) {
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('searchHistory')
+            .doc(document.id)
+            .delete();
+      }
+      print('Search history cleared successfully');
+    } catch (e) {
+      print('Error clearing search history: $e');
+    }
   }
 
-  static Future<void> saveSearchHistory(List<String> searchHistory) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('searchHistory', searchHistory);
-  }
+  //   Future<void> clearSearchHistory(String userId) async {
+  //   try {
+  //     QuerySnapshot snapshot = await _firestore.collection('users').doc(userId).collection('searchHistory').get();
+  //     for (DocumentSnapshot document in snapshot.docs) {
+  //       await _firestore.collection('users').doc(userId).collection('searchHistory').doc(document.id).delete();
+  //     }
+  //     print('Search history cleared successfully');
+  //   } catch (e) {
+  //     print('Error clearing search history: $e');
+  //   }
+  // }
 }
