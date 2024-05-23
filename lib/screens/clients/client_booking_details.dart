@@ -7,12 +7,12 @@ import 'package:intl/intl.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/clients/edit_bookings.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
+import 'package:v1_rentals/auth/push_notifications.dart';
 
 class ClientBookingDetailsScreen extends StatefulWidget {
   final Booking booking;
 
-  const ClientBookingDetailsScreen({Key? key, required this.booking})
-      : super(key: key);
+  const ClientBookingDetailsScreen({super.key, required this.booking});
 
   @override
   _ClientBookingDetailsScreenState createState() =>
@@ -33,11 +33,45 @@ class _ClientBookingDetailsScreenState
     _clientFuture = AuthService().getUserData(widget.booking.userId);
   }
 
-  // Method to update booking status
+// Method to update booking status
   Future<void> updateBookingStatus(
       String bookingId, BookingStatus status) async {
     try {
       await AuthService().updateBookingStatus(bookingId, status);
+
+      // Send notifications to user and vendor upon confirming cancel or completing edit
+      if (status == BookingStatus.cancelled ||
+          status == BookingStatus.pending) {
+        String userTitle = '';
+        String userBody = '';
+        String vendorTitle = '';
+        String vendorBody = '';
+
+        if (status == BookingStatus.cancelled) {
+          userTitle = 'Booking Cancelled';
+          userBody = 'Your booking has been cancelled.';
+          vendorTitle = 'Booking Cancelled';
+          vendorBody = 'A booking has been cancelled by the user.';
+        } else if (status == BookingStatus.pending) {
+          userTitle = 'Booking Updated';
+          userBody = 'Your booking details have been updated.';
+          vendorTitle = 'Booking Updated';
+          vendorBody = 'A booking has been updated by the user.';
+        }
+
+        await pushNotificationService.sendNotification(
+            userTitle,
+            userBody,
+            (await AuthService().getUserData(widget.booking.userId))
+                    ?.fcmToken ??
+                '');
+        await pushNotificationService.sendNotification(
+            vendorTitle,
+            vendorBody,
+            (await AuthService().getUserData(widget.booking.vendorId))
+                    ?.fcmToken ??
+                '');
+      }
     } catch (e) {
       throw e;
     }

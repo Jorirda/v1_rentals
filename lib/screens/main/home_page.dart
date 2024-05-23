@@ -173,6 +173,18 @@ class _HomeScreenState extends State<HomeScreen>
                                 ],
                               ),
                             ),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  color: Colors.white),
+                              child: IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.notifications,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -246,27 +258,6 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                           ),
-                          // Padding(
-                          //   padding: const EdgeInsets.only(right: 15),
-                          //   child: Container(
-                          //     decoration: BoxDecoration(
-                          //       color: Theme.of(context).colorScheme.primary,
-                          //       borderRadius: BorderRadius.circular(10),
-                          //     ),
-                          //     child: IconButton(
-                          //       onPressed: () {
-                          //         Navigator.push(
-                          //           context,
-                          //           MaterialPageRoute(
-                          //             builder: (context) => FilterPage(),
-                          //           ),
-                          //         );
-                          //       },
-                          //       icon: const Icon(Icons.filter_list_sharp),
-                          //       color: Colors.white,
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                       SizedBox(

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/auth/push_notifications.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/location/search_history_model.dart';
 import 'package:v1_rentals/models/payment_card_model.dart';
@@ -10,7 +11,7 @@ import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/add_payment_card.dart';
 import 'package:intl/intl.dart';
 import 'package:v1_rentals/widgets/dropoff_location.dart';
-import 'package:v1_rentals/widgets/location_page.dart';
+
 import 'package:v1_rentals/widgets/location_service.dart';
 import 'package:v1_rentals/widgets/pickup_location.dart';
 
@@ -917,25 +918,24 @@ class _BookingScreenState extends State<BookingScreen> {
           FirebaseFirestore.instance.collection('bookings');
 
       // Generate a new booking ID
-      String bookingId =
-          FirebaseFirestore.instance.collection('bookings').doc().id;
+      String bookingId = bookingsCollection.doc().id;
 
-      // Set the booking ID in the booking object
+      // Set the booking ID and other details in the booking object
       booking.id = bookingId;
       booking.paymentMethod = _selectedPaymentMethod.toString().split('.').last;
+      booking.pickupLocation = pickupLocationController.text;
+      booking.dropoffLocation = dropoffLocationController.text;
 
       // Add the booking with the explicitly set ID to the "bookings" collection
       await bookingsCollection.doc(bookingId).set(booking.toMap());
 
-      // Add a reference to this booking in the client's "bookings" subcollection
+      // Add references to this booking in the client's and vendor's "bookings" subcollections
       await FirebaseFirestore.instance
           .collection('users')
           .doc(booking.userId)
           .collection('bookings')
           .doc(bookingId)
           .set({'bookingId': bookingId});
-
-      // Add a reference to this booking for the vendor ID provided in the booking
       await FirebaseFirestore.instance
           .collection('users')
           .doc(booking.vendorId)
@@ -943,100 +943,20 @@ class _BookingScreenState extends State<BookingScreen> {
           .doc(bookingId)
           .set({'bookingId': bookingId});
 
-      // Show success message or navigate to the next screen
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.zero,
-            insetPadding: EdgeInsets.all(16),
-            iconPadding: EdgeInsets.zero,
-            titlePadding: EdgeInsets.only(top: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            title: Text(
-              'Success',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            icon: Container(
-              height: 150,
-              width: double.infinity,
-              margin: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                ),
-                color: Color.fromARGB(255, 70, 209, 75),
-              ),
-              child: Center(
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color.fromARGB(255, 185, 255, 187)
-                        .withOpacity(0.3),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 75,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 16),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8),
-                      Text(
-                        'Booking request successfully saved.',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Text(
-                    'Okay',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                SizedBox(height: 16),
-              ],
-            ),
-          );
-        },
-      );
-
+      // Show success SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Booking successfully saved.'),
           backgroundColor: Colors.green,
         ),
       );
+
+      // Send notifications to user and vendor using PushNotificationService
+      await pushNotificationService.sendUserNotification(booking.userId);
+      await pushNotificationService.sendVendorNotification(booking.vendorId);
+
+      // Close the page
+      Navigator.of(context).pop();
     } catch (e) {
       print('Error sending booking data to Firebase: $e');
       // Show error message if booking data couldn't be saved

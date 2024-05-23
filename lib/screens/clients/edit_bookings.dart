@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:v1_rentals/auth/push_notifications.dart';
 import 'package:v1_rentals/models/booking_model.dart';
+import 'package:v1_rentals/auth/auth_service.dart';
 
 class EditBookingScreen extends StatefulWidget {
   final Booking booking;
@@ -213,7 +215,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
     );
   }
 
-// Method to update the booking in Firestore
+  // Method to update the booking in Firestore
   void _updateBooking() async {
     // Update the booking object with the modified details
     Booking updatedBooking = Booking(
@@ -243,6 +245,25 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
           .collection('bookings')
           .doc(widget.booking.id)
           .update(updatedBooking.toMap()); // Update the booking data
+
+      // Send notifications
+      String userTitle = 'Booking Updated';
+      String userBody = 'Your booking details have been updated.';
+      String vendorTitle = 'Booking Updated';
+      String vendorBody = 'A booking has been updated by the user.';
+
+      await pushNotificationService.sendNotification(
+          userTitle,
+          userBody,
+          (await AuthService().getUserData(widget.booking.userId))?.fcmToken ??
+              '');
+      await pushNotificationService.sendNotification(
+          vendorTitle,
+          vendorBody,
+          (await AuthService().getUserData(widget.booking.vendorId))
+                  ?.fcmToken ??
+              '');
+
       // Show a success message, navigate back, or perform any other action
       print('Booking updated successfully!');
     } catch (e) {

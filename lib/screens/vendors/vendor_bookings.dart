@@ -185,16 +185,6 @@ class _VendorBookingsState extends State<VendorBookings>
                                     Text('${booking.dropoffLocation}')
                                   ],
                                 )
-                                // Container(
-                                //   height: 200,
-                                //   decoration: BoxDecoration(
-                                //     borderRadius: BorderRadius.circular(8),
-                                //     image: DecorationImage(
-                                //       image: NetworkImage(booking.imageUrl),
-                                //       fit: BoxFit.cover,
-                                //     ),
-                                //   ),
-                                // ),
                               ],
                             );
                           }

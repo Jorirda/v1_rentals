@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen(this.showSignUp, {super.key});
@@ -13,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -31,14 +34,25 @@ class _LoginScreenState extends State<LoginScreen> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        // Navigate to the home screen or any other screen after successful login
+
+        String userId = userCredential.user!.uid;
+
+        // Retrieve FCM token and update it in Firestore
+        String? token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          await _authService.updateFcmToken(userId, token);
+        }
+
+        // Navigate to the appropriate screen after successful login
+        // You can navigate to the main screen or any other screen here
       } catch (e) {
         // Handle login errors
         print("Error logging in: $e");
+      } finally {
+        setState(() {
+          _isAuthenticating = false;
+        });
       }
-      setState(() {
-        _isAuthenticating = false;
-      });
     }
   }
 
@@ -58,7 +72,6 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Colors.white,
             image: DecorationImage(
               image: AssetImage('assets/images/car-rental-bg2.jpg'),
-              // fit: BoxFit.cover, // Removed the fit property
             ),
           ),
         ),
@@ -67,15 +80,9 @@ class _LoginScreenState extends State<LoginScreen> {
           body: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              // crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Image at the Top
                 Container(
-                  margin: const EdgeInsets.only(
-                    top: 50,
-                    bottom: 20,
-                  ),
-                  // width: 100,
+                  margin: const EdgeInsets.only(top: 50, bottom: 20),
                   height: 120,
                   child: Image.asset('assets/images/v1-rentals-logo.png'),
                 ),
@@ -99,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            // Email Textfield
+                            // Email TextField
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Container(
@@ -141,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
-                            // Password Textfield
+                            // Password TextField
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Container(

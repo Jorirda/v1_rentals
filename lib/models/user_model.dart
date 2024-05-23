@@ -10,6 +10,7 @@ class CustomUser {
   UserType userType;
   DateTime createdAt;
   String? imageURL; // Add imageURL
+  String? fcmToken; // Add fcmToken
 
   // Client fields
   String? dateOfBirth;
@@ -39,6 +40,7 @@ class CustomUser {
     this.regNum,
     this.tinNum,
     this.imageURL,
+    this.fcmToken, // Initialize fcmToken
   });
 
   Map<String, dynamic> toMap() {
@@ -52,6 +54,7 @@ class CustomUser {
       'userType': userType == UserType.client ? 'client' : 'vendor',
       'createdAt': createdAt.toIso8601String(), // Convert to ISO 8601 format
       'imageURL': imageURL,
+      'fcmToken': fcmToken, // Add fcmToken to map
     };
 
     if (userType == UserType.client) {
@@ -102,8 +105,8 @@ class CustomUser {
       businessName: map['businessName'] as String?,
       regNum: map['regNum'] as String?,
       tinNum: map['tinNum'] as String?,
-      imageURL: map['imageURL']
-          as String?, // Initialize imageURL with null if not present
+      imageURL: map['imageURL'] as String?,
+      fcmToken: map['fcmToken'] as String?, // Initialize fcmToken
     );
   }
 }

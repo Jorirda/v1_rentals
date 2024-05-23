@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/auth/push_notifications.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:intl/intl.dart';
@@ -32,11 +33,45 @@ class _VendorBookingDetailsScreenState
     _clientFuture = AuthService().getUserData(widget.booking.userId);
   }
 
-  // Method to update booking status
-  Future<void> updateBookingStatus(
+  // Method to update booking status and send notifications
+  Future<void> updateBookingStatusAndNotify(
       String bookingId, BookingStatus status) async {
     try {
       await AuthService().updateBookingStatus(bookingId, status);
+
+      // Send notifications to user and vendor upon confirming cancel or accepting booking
+      if (status == BookingStatus.cancelled ||
+          status == BookingStatus.inProgress) {
+        String userTitle = '';
+        String userBody = '';
+        String vendorTitle = '';
+        String vendorBody = '';
+
+        if (status == BookingStatus.cancelled) {
+          userTitle = 'Booking Declined';
+          userBody = 'Your booking has been declined by the vendor.';
+          vendorTitle = 'Booking Declined';
+          vendorBody = 'You have declined the booking.';
+        } else if (status == BookingStatus.inProgress) {
+          userTitle = 'Booking Accepted';
+          userBody = 'Your booking has been accepted by the vendor.';
+          vendorTitle = 'Booking Accepted';
+          vendorBody = 'You have accepted the booking.';
+        }
+
+        await pushNotificationService.sendNotification(
+            userTitle,
+            userBody,
+            (await AuthService().getUserData(widget.booking.userId))
+                    ?.fcmToken ??
+                '');
+        await pushNotificationService.sendNotification(
+            vendorTitle,
+            vendorBody,
+            (await AuthService().getUserData(widget.booking.vendorId))
+                    ?.fcmToken ??
+                '');
+      }
     } catch (e) {
       throw e;
     }
@@ -228,6 +263,7 @@ class _VendorBookingDetailsScreenState
                             ],
                           ),
                           SizedBox(height: 15),
+
                           // Display drop-off date and time
                           Row(
                             children: [
@@ -240,7 +276,6 @@ class _VendorBookingDetailsScreenState
                           ),
                           SizedBox(height: 15),
                           // Display pick-up location
-
                           Row(
                             children: [
                               Text('Pick-up Location'),
@@ -266,7 +301,6 @@ class _VendorBookingDetailsScreenState
                     ),
                   ),
                   // Display pick-up date and time
-
                   SizedBox(height: 10),
                   Card(
                     elevation: 2,
@@ -280,12 +314,11 @@ class _VendorBookingDetailsScreenState
                             'Transaction Details',
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
-
                           SizedBox(height: 15),
                           // Display payment method
                           Row(
                             children: [
-                              Text('Payment method'),
+                              Text('Paymentmethod'),
                               Spacer(),
                               Text(
                                 '${widget.booking.paymentMethod}',
@@ -310,11 +343,7 @@ class _VendorBookingDetailsScreenState
                               ),
                             ],
                           ),
-
-                          SizedBox(
-                            height: 30,
-                          ),
-
+                          SizedBox(height: 30),
                           Text(
                             'Amount Information',
                             style: TextStyle(fontWeight: FontWeight.w600),
@@ -322,36 +351,24 @@ class _VendorBookingDetailsScreenState
                           SizedBox(
                             height: 10,
                           ),
-
                           Row(
                             children: [
-                              Text(
-                                'Total Rental Price',
-                              ),
+                              Text('Total Rental Price'),
                               Spacer(),
                               Text(
                                 '\$ ${widget.booking.totalPrice.toStringAsFixed(2)}',
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: 15,
-                          ),
-
+                          SizedBox(height: 15),
                           Row(
                             children: [
-                              Text(
-                                'Other Services',
-                              ),
+                              Text('Other Services'),
                               Spacer(),
-                              Text(
-                                '\$ 0.00',
-                              ),
+                              Text('\$ 0.00'),
                             ],
                           ),
-
                           Divider(),
-
                           Row(
                             children: [
                               Spacer(),
@@ -391,17 +408,22 @@ class _VendorBookingDetailsScreenState
                               'Are you sure you want to decline this booking?'),
                           actions: [
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.of(context).pop();
                               },
                               child: Text('Cancel'),
                             ),
                             TextButton(
                               onPressed: () async {
-                                // Update booking status to "cancelled"
-                                await updateBookingStatus(
-                                    widget.booking.id, BookingStatus.cancelled);
-                                Navigator.of(context).pop();
+                                try {
+                                  // Update booking status to "cancelled" and send notifications
+                                  await updateBookingStatusAndNotify(
+                                      widget.booking.id,
+                                      BookingStatus.cancelled);
+                                } catch (e) {
+                                  // Handle error, e.g., show a snackbar or dialog
+                                  print('Error declining booking: $e');
+                                }
                               },
                               child: Text('Confirm'),
                             ),
@@ -432,17 +454,22 @@ class _VendorBookingDetailsScreenState
                               'Are you sure you want to accept this booking?'),
                           actions: [
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.of(context).pop();
                               },
                               child: Text('Cancel'),
                             ),
                             TextButton(
                               onPressed: () async {
-                                // Update booking status to "inProgress"
-                                await updateBookingStatus(widget.booking.id,
-                                    BookingStatus.inProgress);
-                                Navigator.of(context).pop();
+                                try {
+                                  // Update booking status to "inProgress" and send notifications
+                                  await updateBookingStatusAndNotify(
+                                      widget.booking.id,
+                                      BookingStatus.inProgress);
+                                } catch (e) {
+                                  // Handle error, e.g., show a snackbar or dialog
+                                  print('Error accepting booking: $e');
+                                }
                               },
                               child: Text('Confirm'),
                             ),

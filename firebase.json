@@ -1,1 +1,30 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"v1-rentals-test","appId":"1:334896733266:android:37e882c7d0d7ffc3e7538b","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"v1-rentals-test","configurations":{"android":"1:334896733266:android:37e882c7d0d7ffc3e7538b","ios":"1:334896733266:ios:728fcd09c4000300e7538b"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "v1-rentals-test",
+                    "appId": "1:334896733266:android:37e882c7d0d7ffc3e7538b",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "v1-rentals-test",
+                    "configurations": {
+                        "android": "1:334896733266:android:37e882c7d0d7ffc3e7538b",
+                        "ios": "1:334896733266:ios:728fcd09c4000300e7538b"
+                    }
+                }
+            },
+            "hosting": {
+                "public": "public",
+                "ignore": [
+                    "firebase.json",
+                    "**/.*",
+                    "**/node_modules/**"
+                ]
+            }
+        }
+    }
+}
