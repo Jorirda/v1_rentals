@@ -1,3 +1,5 @@
+import 'package:v1_rentals/models/enum_extensions.dart';
+
 enum UserType { client, vendor }
 
 class CustomUser {
@@ -108,5 +110,9 @@ class CustomUser {
       imageURL: map['imageURL'] as String?,
       fcmToken: map['fcmToken'] as String?, // Initialize fcmToken
     );
+  }
+
+  String getUserTypeString() {
+    return userType.getTranslation();
   }
 }

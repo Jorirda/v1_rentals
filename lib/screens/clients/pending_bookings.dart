@@ -3,6 +3,7 @@ import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/screens/clients/client_booking_details.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class PendingBookingsScreen extends StatelessWidget {
   const PendingBookingsScreen({super.key});
@@ -18,7 +19,7 @@ class PendingBookingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pending Requests'),
+        title: Text(S.of(context).pending_request),
       ),
       body: StreamBuilder<List<Booking>>(
         stream:
@@ -31,7 +32,7 @@ class PendingBookingsScreen extends StatelessWidget {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No pending bookings found.'));
+            return Center(child: Text(S.of(context).no_bookings_found));
           }
           return ListView.builder(
             itemCount: snapshot.data!.length,
@@ -92,10 +93,7 @@ class PendingBookingsScreen extends StatelessWidget {
                                       ),
                                       const Spacer(),
                                       Text(
-                                        '${booking.status}'
-                                            .toString()
-                                            .split('.')
-                                            .last,
+                                        booking.getBookingStatusString(),
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Theme.of(context)
@@ -162,7 +160,7 @@ class PendingBookingsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              'Total Price: ',
+                              '${S.of(context).total_rental_price} :',
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w600),
                             ),

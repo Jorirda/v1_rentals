@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/l10n/locale_provider.dart';
 import 'package:v1_rentals/models/user_model.dart';
+import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen(this.showLogin, {super.key});
@@ -111,7 +115,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          S.of(context).sign_up,
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontSize: 30,
+              fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        actions: [
+          PopupMenuButton<Locale>(
+            icon: Icon(
+              Icons.language,
+              color: Colors.blue,
+            ),
+            onSelected: (Locale locale) {
+              localeProvider.setLocale(locale);
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  value: const Locale('en'),
+                  child: Text(S.of(context).english),
+                ),
+                PopupMenuItem(
+                  value: const Locale('zh'),
+                  child: Text(S.of(context).chinese),
+                ),
+              ];
+            },
+          ),
+        ],
+      ),
       backgroundColor: Colors.grey[100],
       body: SafeArea(
         child: SingleChildScrollView(
@@ -134,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 10,
                 ),
                 Text(
-                  'Create Account',
+                  S.of(context).create_account,
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -142,8 +180,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 // Welcome Text
-                const Text(
-                  ' Select a type and register below with your details.',
+                Text(
+                  S.of(context).select_user_type,
                   style: TextStyle(
                     fontSize: 15,
                   ),
@@ -151,6 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 25,
                 ),
+
                 ToggleButtons(
                   isSelected: UserType.values.map((UserType userType) {
                     return userType == _selectedUserType;
@@ -167,7 +206,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fillColor: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(15),
                   children: UserType.values.map((UserType userType) {
-                    return Text(userType.toString().split('.').last);
+                    // Use the getTranslation method for localization
+                    return Text(userType.getTranslation());
                   }).toList(),
                 ),
                 const SizedBox(
@@ -175,8 +215,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 // Render different forms based on user type
                 _selectedUserType == UserType.client
-                    ? _buildClientForm()
-                    : _buildVendorForm(),
+                    ? _buildClientForm(context)
+                    : _buildVendorForm(context),
                 const SizedBox(
                   height: 20,
                 ),
@@ -199,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   foregroundColor: Colors.white,
                   textStyle: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                child: const Text('Sign Up'),
+                child: Text(S.of(context).login),
               ),
             ),
             const SizedBox(height: 10),
@@ -207,8 +247,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'I am already a member!',
+                Text(
+                  S.of(context).already_member,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
@@ -218,7 +258,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 GestureDetector(
                   onTap: widget.showLogin,
                   child: Text(
-                    'Log in now',
+                    S.of(context).login,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -233,7 +273,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildClientForm() {
+  Widget _buildClientForm(BuildContext context) {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -241,7 +281,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: [
             // Full Name Text Field
             FormTextField(
-              hintText: 'Full Name',
+              hintText: S.of(context).full_name,
               keyboardType: TextInputType.text,
               iconValue: Icons.person,
               controller: _fullnameController,
@@ -251,7 +291,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             // Email Textfield
             FormTextField(
-              hintText: 'Email',
+              hintText: S.of(context).email,
               keyboardType: TextInputType.emailAddress,
               iconValue: Icons.email,
               controller: _emailController,
@@ -261,7 +301,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             // Password Textfield
             FormTextField(
-              hintText: 'Password',
+              hintText: S.of(context).password,
               iconValue: Icons.password,
               keyboardType: TextInputType.text,
               obscureText: true,
@@ -270,7 +310,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Expiry Date Textfield
             buildDatePickerField(
-              hintText: 'Date of Birth',
+              hintText: S.of(context).date_of_birth,
               value: _dateOfBirthController.text,
               icon: Icons.calendar_today,
               onChanged: (value) {
@@ -282,7 +322,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Phone No. Textfield
             FormTextField(
-              hintText: 'Phone #',
+              hintText: S.of(context).phone_number,
               iconValue: Icons.phone,
               keyboardType: TextInputType.number,
               controller: _phoneNumController,
@@ -290,7 +330,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Address Textfield
             FormTextField(
-              hintText: 'Address',
+              hintText: S.of(context).address,
               iconValue: Icons.add_location_alt_rounded,
               keyboardType: TextInputType.text,
               controller: _addressController,
@@ -298,7 +338,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Driver License Textfield
             FormTextField(
-              hintText: "Driver's License #",
+              hintText: S.of(context).driver_license_number,
               iconValue: Icons.car_rental,
               keyboardType: TextInputType.text,
               controller: _driverLicenseNumberController,
@@ -306,7 +346,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Issuing Country State Textfield
             FormTextField(
-              hintText: 'Issuing Country',
+              hintText: S.of(context).issuing_country,
               iconValue: Icons.language,
               keyboardType: TextInputType.text,
               controller: _issuingCountryController,
@@ -314,7 +354,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Expiry Date Textfield
             buildDatePickerField(
-              hintText: 'Expiry Date',
+              hintText: S.of(context).expiry_date,
               value: _expiryDateController.text,
               icon: Icons.calendar_today,
               onChanged: (value) {
@@ -330,7 +370,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildVendorForm() {
+  Widget _buildVendorForm(BuildContext context) {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -338,7 +378,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: [
             // Full Name Text Field
             FormTextField(
-              hintText: 'Full Name',
+              hintText: S.of(context).full_name,
               keyboardType: TextInputType.text,
               iconValue: Icons.person,
               controller: _fullnameController,
@@ -346,7 +386,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Email Textfield
             FormTextField(
-              hintText: 'Email',
+              hintText: S.of(context).email,
               keyboardType: TextInputType.emailAddress,
               iconValue: Icons.email,
               controller: _emailController,
@@ -356,7 +396,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             // Password Textfield
             FormTextField(
-              hintText: 'Password',
+              hintText: S.of(context).password,
               iconValue: Icons.password,
               keyboardType: TextInputType.text,
               obscureText: true,
@@ -365,7 +405,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Phone # Textfield
             FormTextField(
-              hintText: 'Phone #',
+              hintText: S.of(context).phone_number,
               iconValue: Icons.phone,
               keyboardType: TextInputType.number,
               controller: _phoneNumController,
@@ -373,7 +413,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Business Name Textfield
             FormTextField(
-              hintText: 'Business Name',
+              hintText: S.of(context).business_name,
               iconValue: Icons.business_center,
               keyboardType: TextInputType.text,
               controller: _businessNameController,
@@ -381,7 +421,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Address Textfield
             FormTextField(
-              hintText: 'Address',
+              hintText: S.of(context).address,
               iconValue: Icons.add_location_alt_rounded,
               keyboardType: TextInputType.text,
               controller: _addressController,
@@ -389,7 +429,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Business Registration Number Textfield
             FormTextField(
-              hintText: 'Business Registration # (if applicable)',
+              hintText: S.of(context).business_registration_number,
               iconValue: Icons.numbers,
               keyboardType: TextInputType.text,
               controller: _businessRegNumController,
@@ -397,7 +437,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 10),
             // Tax Identification Number Textfield
             FormTextField(
-              hintText: 'TIN # (if applicable)',
+              hintText: S.of(context).tax_identification_number,
               iconValue: Icons.numbers,
               keyboardType: TextInputType.text,
               controller: _taxIdentificationNumController,

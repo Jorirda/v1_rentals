@@ -4,11 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
 import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
-
 import 'package:v1_rentals/widgets/location_page.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
 
@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen>
   List<Vehicle> vehicles = [];
   bool isDarkMode = false;
   CustomUser? user;
+
   @override
   void initState() {
     super.initState();
@@ -145,30 +146,30 @@ class _HomeScreenState extends State<HomeScreen>
                                         ),
                                       );
                                     },
+                                    style: TextButton.styleFrom(
+                                        foregroundColor: Colors.white),
                                     child: Row(
                                       children: [
-                                        Icon(
+                                        const Icon(
                                           Icons.location_on,
                                           color: Colors.red,
                                         ),
                                         Tooltip(
                                           message: _currentUser?.address ??
-                                              'Your location',
+                                              S.of(context).your_location,
                                           child: Text(
                                             _truncateAddress(
                                                     _currentUser?.address) ??
-                                                'Your location',
+                                                S.of(context).your_location,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                           ),
                                         ),
-                                        Icon(
+                                        const Icon(
                                           Icons.arrow_drop_down,
                                         ),
                                       ],
                                     ),
-                                    style: TextButton.styleFrom(
-                                        foregroundColor: Colors.white),
                                   ),
                                 ],
                               ),
@@ -197,15 +198,15 @@ class _HomeScreenState extends State<HomeScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Hello, ${_currentUser?.fullname ?? ""}\u{1F44B}',
+                              '${S.of(context).hello},${_currentUser?.fullname ?? ""} \u{1F44B}',
                               style: TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
-                            const Text(
-                              'Search for your favorite vehicle',
+                            Text(
+                              S.of(context).search_for_favorite_vehicle,
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -242,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       border: Border.all(color: Colors.white),
                                       borderRadius: BorderRadius.circular(10),
                                       color: Colors.white),
-                                  child: const Row(
+                                  child: Row(
                                     children: [
                                       Padding(
                                         padding: EdgeInsets.symmetric(
@@ -250,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         child: Icon(Icons.search,
                                             color: Colors.red),
                                       ),
-                                      Text('Search for vehicles',
+                                      Text(S.of(context).search_for_vehicles,
                                           style: TextStyle(color: Colors.grey)),
                                     ],
                                   ),
@@ -277,8 +278,8 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Recommended Brands',
+                        Text(
+                          S.of(context).recommended_brands,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -288,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen>
                         TextButton(
                           onPressed: () {},
                           child: Text(
-                            'View All',
+                            S.of(context).view_all,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -361,8 +362,8 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'All Vehicles in Collection',
+                        Text(
+                          S.of(context).all_vehicles_in_collection,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -372,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen>
                         TextButton(
                           onPressed: () {},
                           child: Text(
-                            'View All',
+                            S.of(context).view_all,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,

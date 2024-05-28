@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/auth/push_notifications.dart';
 import 'package:v1_rentals/models/booking_model.dart';
@@ -8,6 +7,7 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class VendorBookingDetailsScreen extends StatefulWidget {
   final Booking booking;
@@ -81,7 +81,7 @@ class _VendorBookingDetailsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking Details'),
+        title: Text(S.of(context).my_bookings),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -105,10 +105,7 @@ class _VendorBookingDetailsScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Status: ${widget.booking.status}'
-                        .toString()
-                        .split('.')
-                        .last,
+                    widget.booking.getBookingStatusString(),
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -141,7 +138,7 @@ class _VendorBookingDetailsScreenState
                                 width: 10,
                               ),
                               Text(
-                                vendor?.businessName ?? 'Unknown Business Name',
+                                'vendor?.businessName ?? ${S.of(context).no_business_name}',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),
@@ -150,12 +147,13 @@ class _VendorBookingDetailsScreenState
                           SizedBox(
                             height: 10,
                           ),
-                          Text('Booking ID: ${widget.booking.id}'),
+                          Text(
+                              '${S.of(context).booking_id} : ${widget.booking.id}'),
                           SizedBox(
                             height: 20,
                           ),
                           Text(
-                            'Rental Vehicle: ${vehicleSnapshot['brand']}', // Example field from vehicle document
+                            '${S.of(context).rental_vehicle} : ${vehicleSnapshot['brand']}', // Example field from vehicle document
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
@@ -211,7 +209,7 @@ class _VendorBookingDetailsScreenState
                             children: [
                               // Display renter
                               Text(
-                                'Renter: ${client?.fullname}',
+                                '${S.of(context).renter} : ${client?.fullname}',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
@@ -246,7 +244,7 @@ class _VendorBookingDetailsScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Rental Details',
+                            S.of(context).rental_details,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
 
@@ -255,7 +253,7 @@ class _VendorBookingDetailsScreenState
                           ),
                           Row(
                             children: [
-                              Text('Pick-up'),
+                              Text(S.of(context).booking_time),
                               Spacer(),
                               Text(
                                 '${DateFormat('yyyy-MM-dd').format(widget.booking.pickupDate)} at ${widget.booking.pickupTime.format(context)}',
@@ -267,7 +265,7 @@ class _VendorBookingDetailsScreenState
                           // Display drop-off date and time
                           Row(
                             children: [
-                              Text('Drop-off'),
+                              Text(S.of(context).drop_off),
                               Spacer(),
                               Text(
                                 ' ${DateFormat('yyyy-MM-dd').format(widget.booking.dropoffDate)} at ${widget.booking.dropoffTime.format(context)}',
@@ -278,7 +276,7 @@ class _VendorBookingDetailsScreenState
                           // Display pick-up location
                           Row(
                             children: [
-                              Text('Pick-up Location'),
+                              Text(S.of(context).pick_up_location),
                               Spacer(),
                               Text(
                                 ' ${widget.booking.pickupLocation}',
@@ -289,7 +287,7 @@ class _VendorBookingDetailsScreenState
                           // Display drop-off location
                           Row(
                             children: [
-                              Text('Drop-off Location'),
+                              Text(S.of(context).drop_off_location),
                               Spacer(),
                               Text(
                                 '${widget.booking.dropoffLocation}',
@@ -311,14 +309,14 @@ class _VendorBookingDetailsScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Transaction Details',
+                            S.of(context).transaction_details,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           SizedBox(height: 15),
                           // Display payment method
                           Row(
                             children: [
-                              Text('Paymentmethod'),
+                              Text(S.of(context).payment_method),
                               Spacer(),
                               Text(
                                 '${widget.booking.paymentMethod}',
@@ -336,7 +334,7 @@ class _VendorBookingDetailsScreenState
                           ),
                           Row(
                             children: [
-                              Text('Booking Time'),
+                              Text(S.of(context).booking_time),
                               Spacer(),
                               Text(
                                 '${DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.booking.createdAt)}', // Specify the desired time format
@@ -345,7 +343,7 @@ class _VendorBookingDetailsScreenState
                           ),
                           SizedBox(height: 30),
                           Text(
-                            'Amount Information',
+                            S.of(context).amount_information,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           SizedBox(
@@ -353,7 +351,7 @@ class _VendorBookingDetailsScreenState
                           ),
                           Row(
                             children: [
-                              Text('Total Rental Price'),
+                              Text(S.of(context).total_price),
                               Spacer(),
                               Text(
                                 '\$ ${widget.booking.totalPrice.toStringAsFixed(2)}',
@@ -363,7 +361,7 @@ class _VendorBookingDetailsScreenState
                           SizedBox(height: 15),
                           Row(
                             children: [
-                              Text('Other Services'),
+                              Text(S.of(context).other_services),
                               Spacer(),
                               Text('\$ 0.00'),
                             ],
@@ -373,7 +371,7 @@ class _VendorBookingDetailsScreenState
                             children: [
                               Spacer(),
                               Text(
-                                'Total Price: \$${widget.booking.totalPrice.toStringAsFixed(2)}',
+                                '${S.of(context).total_rental_price} : \$${widget.booking.totalPrice.toStringAsFixed(2)}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.red),

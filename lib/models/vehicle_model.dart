@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 
 enum CarType {
   all,
@@ -107,14 +108,14 @@ class Vehicle {
   }
 
   String getCarTypeString() {
-    return carType.toString().split('.').last;
+    return carType.getTranslation();
   }
 
   String getFuelTypeString() {
-    return fuelType.toString().split('.').last;
+    return fuelType.getTranslation();
   }
 
   String getTransmissionTypeString() {
-    return transmission.toString().split('.').last;
+    return transmission.getTranslation();
   }
 }

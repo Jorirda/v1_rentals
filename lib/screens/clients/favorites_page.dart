@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 
+import 'package:v1_rentals/generated/l10n.dart';
+
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({Key? key}) : super(key: key);
 
@@ -45,7 +47,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorites'),
+        title: Text(S.of(context).favorites),
         centerTitle: true,
       ),
       body: FutureBuilder<List<Vehicle>>(

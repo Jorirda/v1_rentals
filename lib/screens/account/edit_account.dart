@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
 
 class EditAccountScreen extends StatefulWidget {
   const EditAccountScreen(this.onImagePicked, {super.key});
@@ -120,7 +120,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Account'),
+        title: Text(S.of(context).edit_account),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -146,7 +146,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: const Padding(
-                          padding: const EdgeInsets.all(4),
+                          padding: EdgeInsets.all(4),
                           child: Icon(
                             Icons.edit,
                             color: Colors.white,
@@ -162,7 +162,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               GestureDetector(
                 onTap: _getImageFromGallery,
                 child: Text(
-                  'Add or edit photo or avatar',
+                  S.of(context).add_or_edit_photo,
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
@@ -179,11 +179,14 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               const SizedBox(
                 height: 20,
               ),
-              _buildTextField('Full Name', _fullNameController, Icons.person),
-              _buildTextField('Email', _emailController, Icons.email),
-              _buildTextField('Phone #', _phoneNumberController, Icons.phone),
               _buildTextField(
-                  'Address', _addressController, Icons.location_city),
+                  S.of(context).full_name, _fullNameController, Icons.person),
+              _buildTextField(
+                  S.of(context).email, _emailController, Icons.email),
+              _buildTextField(S.of(context).phone_number,
+                  _phoneNumberController, Icons.phone),
+              _buildTextField(S.of(context).address, _addressController,
+                  Icons.location_city),
               const SizedBox(
                 height: 20,
               ),
@@ -196,7 +199,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     foregroundColor: Colors.white,
                     textStyle: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  child: const Text('Save Changes'),
+                  child: Text(S.of(context).save_changes),
                 ),
               ),
             ],
@@ -232,7 +235,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your $hintText';
+                return S.of(context).please_enter_your(hintText);
               }
               return null;
             },

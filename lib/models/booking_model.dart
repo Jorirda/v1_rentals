@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 
 enum BookingStatus {
   all,
@@ -102,5 +103,9 @@ class Booking {
       'paymentMethod': paymentMethod,
       'createdAt': createdAt,
     };
+  }
+
+  String getBookingStatusString() {
+    return status.getTranslation();
   }
 }

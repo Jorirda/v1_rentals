@@ -5,15 +5,15 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/screens/clients/client_booking_details.dart';
 import 'package:v1_rentals/screens/clients/pending_bookings.dart';
 
+import 'package:v1_rentals/generated/l10n.dart';
+
 class ClientBookings extends StatelessWidget {
-  const ClientBookings({
-    super.key,
-  });
+  const ClientBookings({Key? key});
 
   Future<Map<String, dynamic>> getVendorInfo(String vendorId) async {
     CustomUser? userData = await AuthService().getUserData(vendorId);
-    String businessName = userData?.businessName ?? 'Unknown Business';
-    String? imageUrl = userData?.imageURL;
+    String businessName = userData.businessName ?? 'Unknown Business';
+    String? imageUrl = userData.imageURL;
     return {'businessName': businessName, 'imageUrl': imageUrl};
   }
 
@@ -23,32 +23,43 @@ class ClientBookings extends StatelessWidget {
       length: 4, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
-          title: Text('My Bookings'),
+          title: Text(S.of(context).my_bookings), // Translate title
           actions: [
             TextButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PendingBookingsScreen()));
-                },
-                child: Text('Manage Pending Requests'))
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PendingBookingsScreen(),
+                  ),
+                );
+              },
+              child: Text(S
+                  .of(context)
+                  .manage_pending_requests), // Translate button text
+            )
           ],
           bottom: TabBar(
             tabs: [
-              Tab(text: 'All'),
-              Tab(text: 'Ongoing'),
-              Tab(text: 'Completed'),
-              Tab(text: 'Cancelled'),
+              Tab(text: S.of(context).all), // Translate tab texts
+              Tab(text: S.of(context).ongoing),
+              Tab(text: S.of(context).completed),
+              Tab(text: S.of(context).cancelled),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            buildBookingList(BookingStatus.all),
-            buildBookingList(BookingStatus.inProgress),
-            buildBookingList(BookingStatus.completed),
-            buildBookingList(BookingStatus.cancelled),
+            buildBookingList(BookingStatus.all), // Pass locale provider
+            buildBookingList(
+              BookingStatus.inProgress,
+            ),
+            buildBookingList(
+              BookingStatus.completed,
+            ),
+            buildBookingList(
+              BookingStatus.cancelled,
+            ),
           ],
         ),
       ),
@@ -66,7 +77,10 @@ class ClientBookings extends StatelessWidget {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No bookings found.'));
+          return Center(
+              child: Text(S
+                  .of(context)
+                  .no_bookings_found)); // Translate no bookings found message
         }
         return ListView.builder(
           itemCount: snapshot.data!.length,
@@ -115,21 +129,18 @@ class ClientBookings extends StatelessWidget {
                                           ? NetworkImage(imageUrl)
                                           : null,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      '$businessName',
-                                      style: TextStyle(
+                                      businessName,
+                                      style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w600),
                                     ),
                                     const Spacer(),
                                     Text(
-                                      '${booking.status}'
-                                          .toString()
-                                          .split('.')
-                                          .last,
+                                      booking.getBookingStatusString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Theme.of(context)
@@ -138,12 +149,12 @@ class ClientBookings extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 Text(
                                   '${booking.createdAt}',
                                   style: TextStyle(color: Colors.grey),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Row(
@@ -153,55 +164,46 @@ class ClientBookings extends StatelessWidget {
                                       color:
                                           Theme.of(context).colorScheme.primary,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
-                                    Text('${booking.pickupLocation}')
+                                    Text(booking.pickupLocation)
                                   ],
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.arrow_circle_down_sharp,
                                       color: Colors.red,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
-                                    Text('${booking.dropoffLocation}')
+                                    Text(booking.dropoffLocation)
                                   ],
                                 )
-                                // Container(
-                                //   height: 200,
-                                //   decoration: BoxDecoration(
-                                //     borderRadius: BorderRadius.circular(8),
-                                //     image: DecorationImage(
-                                //       image: NetworkImage(booking.imageUrl),
-                                //       fit: BoxFit.cover,
-                                //     ),
-                                //   ),
-                                // ),
                               ],
                             );
                           }
                         },
                       ),
-                      SizedBox(height: 10),
-                      Divider(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      const Divider(),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Text(
-                            'Total Price: ',
-                            style: TextStyle(
+                            "${S.of(context).total_price} : ", // Translate total price label
+                            style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),
                           Text(
                             '\$${booking.totalPrice.toStringAsFixed(2)}',
-                            style: TextStyle(color: Colors.red, fontSize: 20),
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 20),
                           ),
                         ],
                       ),

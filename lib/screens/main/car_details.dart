@@ -6,9 +6,10 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-
 import 'package:v1_rentals/screens/main/booking_page.dart';
 import 'package:v1_rentals/screens/main/vendor_store.dart';
+
+import 'package:v1_rentals/generated/l10n.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final Vehicle vehicle;
@@ -29,8 +30,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   void initState() {
     super.initState();
     fetchVendorInfo();
-    initializeFeatures();
     setupFavoriteListener();
+
+    // Delay the initialization of features until after the first frame is drawn
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initializeFeatures();
+    });
   }
 
   void setupFavoriteListener() {
@@ -74,28 +79,30 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
 
   // Method to initialize features
   void initializeFeatures() {
-    features = [
-      {
-        'title': 'Type',
-        'icon': Icons.directions_car,
-        'subtitle': widget.vehicle.getCarTypeString(),
-      },
-      {
-        'title': 'Seats',
-        'icon': Icons.event_seat,
-        'subtitle': '${widget.vehicle.seats} seats',
-      },
-      {
-        'title': 'Fuel ',
-        'icon': Icons.local_gas_station,
-        'subtitle': widget.vehicle.getFuelTypeString(),
-      },
-      {
-        'title': 'Transmission ',
-        'icon': Icons.settings,
-        'subtitle': widget.vehicle.getTransmissionTypeString(),
-      },
-    ];
+    setState(() {
+      features = [
+        {
+          'title': S.of(context).type,
+          'icon': Icons.directions_car,
+          'subtitle': widget.vehicle.getCarTypeString(),
+        },
+        {
+          'title': S.of(context).seats,
+          'icon': Icons.event_seat,
+          'subtitle': '${widget.vehicle.seats} ${S.of(context).seats}',
+        },
+        {
+          'title': S.of(context).fuel,
+          'icon': Icons.local_gas_station,
+          'subtitle': widget.vehicle.getFuelTypeString(),
+        },
+        {
+          'title': S.of(context).transmission,
+          'icon': Icons.settings,
+          'subtitle': widget.vehicle.getTransmissionTypeString(),
+        },
+      ];
+    });
   }
 
   // Method to fetch vendor information
@@ -197,7 +204,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      vendor!.businessName ?? 'No Business Name',
+                      vendor!.businessName ?? S.of(context).no_business_name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -251,6 +258,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -464,7 +472,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Text(
-                    'Vendor',
+                    S.of(context).vendor,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -476,7 +484,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Text(
-                    'Reviews',
+                    S.of(context).reviews,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -523,8 +531,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     icon: const Icon(Icons.storefront),
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  const Text(
-                    'Store',
+                  Text(
+                    S.of(context).store,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
@@ -541,8 +549,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  const Text(
-                    'Call',
+                  Text(
+                    S.of(context).call,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
@@ -559,8 +567,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                  const Text(
-                    'Chat',
+                  Text(
+                    S.of(context).chat,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
@@ -589,7 +597,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                   ),
-                  child: const Text('Book Now'),
+                  child: Text(S.of(context).book_now),
                 ),
               ),
             ],

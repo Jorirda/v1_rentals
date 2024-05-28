@@ -4,6 +4,7 @@ import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/screens/vendors/requests_booking.dart';
 import 'package:v1_rentals/screens/vendors/vendor_booking_details.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class VendorBookings extends StatefulWidget {
   const VendorBookings({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _VendorBookingsState extends State<VendorBookings>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Bookings'),
+        title: Text(S.of(context).my_bookings),
         actions: [
           TextButton(
               onPressed: () {
@@ -42,15 +43,15 @@ class _VendorBookingsState extends State<VendorBookings>
                     MaterialPageRoute(
                         builder: (context) => RequestedBookingsScreen()));
               },
-              child: Text('Manage Requests'))
+              child: Text(S.of(context).manage_requests))
         ],
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: 'All'),
-            Tab(text: 'Ongoing'),
-            Tab(text: 'Completed'),
-            Tab(text: 'Cancelled'),
+            Tab(text: S.of(context).all),
+            Tab(text: S.of(context).ongoing),
+            Tab(text: S.of(context).completed),
+            Tab(text: S.of(context).cancelled),
           ],
         ),
       ),
@@ -77,7 +78,7 @@ class _VendorBookingsState extends State<VendorBookings>
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No bookings found.'));
+          return Center(child: Text(S.of(context).no_bookings_found));
         }
         return ListView.builder(
           itemCount: snapshot.data!.length,
@@ -196,7 +197,7 @@ class _VendorBookingsState extends State<VendorBookings>
                       Row(
                         children: [
                           Text(
-                            'Total Price: ',
+                            S.of(context).total_price + ": ",
                             style: TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),

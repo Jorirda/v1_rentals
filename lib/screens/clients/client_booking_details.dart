@@ -1,18 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
+
 import 'package:v1_rentals/models/booking_model.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/clients/edit_bookings.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/auth/push_notifications.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class ClientBookingDetailsScreen extends StatefulWidget {
   final Booking booking;
 
-  const ClientBookingDetailsScreen({super.key, required this.booking});
+  const ClientBookingDetailsScreen({Key? key, required this.booking});
 
   @override
   _ClientBookingDetailsScreenState createState() =>
@@ -33,7 +36,7 @@ class _ClientBookingDetailsScreenState
     _clientFuture = AuthService().getUserData(widget.booking.userId);
   }
 
-// Method to update booking status
+  // Method to update booking status
   Future<void> updateBookingStatus(
       String bookingId, BookingStatus status) async {
     try {
@@ -62,14 +65,13 @@ class _ClientBookingDetailsScreenState
         await pushNotificationService.sendNotification(
             userTitle,
             userBody,
-            (await AuthService().getUserData(widget.booking.userId))
-                    ?.fcmToken ??
+            (await AuthService().getUserData(widget.booking.userId)).fcmToken ??
                 '');
         await pushNotificationService.sendNotification(
             vendorTitle,
             vendorBody,
             (await AuthService().getUserData(widget.booking.vendorId))
-                    ?.fcmToken ??
+                    .fcmToken ??
                 '');
       }
     } catch (e) {
@@ -79,9 +81,10 @@ class _ClientBookingDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    // final LocaleProvider localeProvider = LocaleProvider.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking Details'),
+        title: Text(S.of(context).booking_details),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -105,10 +108,7 @@ class _ClientBookingDetailsScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Status: ${widget.booking.status}'
-                        .toString()
-                        .split('.')
-                        .last,
+                    widget.booking.getBookingStatusString(),
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
@@ -141,7 +141,7 @@ class _ClientBookingDetailsScreenState
                                 width: 10,
                               ),
                               Text(
-                                vendor?.businessName ?? 'Unknown Business Name',
+                                vendor?.businessName ?? "",
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),
@@ -150,12 +150,13 @@ class _ClientBookingDetailsScreenState
                           SizedBox(
                             height: 10,
                           ),
-                          Text('Booking ID: ${widget.booking.id}'),
+                          Text(
+                              '${S.of(context).booking_id}: ${widget.booking.id}'),
                           SizedBox(
                             height: 20,
                           ),
                           Text(
-                            'Rental Vehicle: ${vehicleSnapshot['brand']}', // Example field from vehicle document
+                            '${S.of(context).rental_vehicle}: ${vehicleSnapshot['brand']}', // Example field from vehicle document
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
@@ -211,20 +212,20 @@ class _ClientBookingDetailsScreenState
                             children: [
                               // Display renter
                               Text(
-                                'Renter: ${client?.fullname}',
+                                '${S.of(context).renter}: ${client?.fullname}',
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
                               Spacer(),
                               Text(
-                                client?.phoneNum ?? 'Client Phone #',
+                                client?.phoneNum ?? "",
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
                           Text(
-                            client?.address ?? 'Client Address',
+                            client?.address ?? "",
                             style: TextStyle(color: Colors.grey),
                           ),
                           SizedBox(
@@ -246,16 +247,15 @@ class _ClientBookingDetailsScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Rental Details',
+                            S.of(context).rental_details,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
-
                           SizedBox(
                             height: 15,
                           ),
                           Row(
                             children: [
-                              Text('Pick-up'),
+                              Text(S.of(context).pick_up),
                               Spacer(),
                               Text(
                                 '${DateFormat('yyyy-MM-dd').format(widget.booking.pickupDate)} at ${widget.booking.pickupTime.format(context)}',
@@ -266,7 +266,7 @@ class _ClientBookingDetailsScreenState
                           // Display drop-off date and time
                           Row(
                             children: [
-                              Text('Drop-off'),
+                              Text(S.of(context).drop_off),
                               Spacer(),
                               Text(
                                 ' ${DateFormat('yyyy-MM-dd').format(widget.booking.dropoffDate)} at ${widget.booking.dropoffTime.format(context)}',
@@ -275,10 +275,9 @@ class _ClientBookingDetailsScreenState
                           ),
                           SizedBox(height: 15),
                           // Display pick-up location
-
                           Row(
                             children: [
-                              Text('Pick-up Location'),
+                              Text(S.of(context).pick_up_location),
                               Spacer(),
                               Text(
                                 ' ${widget.booking.pickupLocation}',
@@ -289,7 +288,7 @@ class _ClientBookingDetailsScreenState
                           // Display drop-off location
                           Row(
                             children: [
-                              Text('Drop-off Location'),
+                              Text(S.of(context).drop_off_location),
                               Spacer(),
                               Text(
                                 '${widget.booking.dropoffLocation}',
@@ -312,15 +311,14 @@ class _ClientBookingDetailsScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Transaction Details',
+                            S.of(context).transaction_details,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
-
                           SizedBox(height: 15),
                           // Display payment method
                           Row(
                             children: [
-                              Text('Payment method'),
+                              Text(S.of(context).payment_method),
                               Spacer(),
                               Text(
                                 '${widget.booking.paymentMethod}',
@@ -330,38 +328,35 @@ class _ClientBookingDetailsScreenState
                           // Display payment card information if available
                           if (widget.booking.paymentStatus) ...[
                             Text(
-                              'Bank Card: - Visa ending in ${widget.booking.paymentMethod}', // Example field from booking model
+                              'Bank Card : Visa ending in ${widget.booking.paymentMethod}', // Example field from booking model
                             ),
                           ],
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                           Row(
                             children: [
-                              Text('Booking Time'),
+                              Text(S.of(context).booking_time),
                               Spacer(),
                               Text(
                                 '${DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.booking.createdAt)}', // Specify the desired time format
                               ),
                             ],
                           ),
-
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
-
                           Text(
-                            'Amount Information',
+                            S.of(context).amount_information,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
-
                           Row(
                             children: [
                               Text(
-                                'Total Rental Price',
+                                S.of(context).total_rental_price,
                               ),
                               Spacer(),
                               Text(
@@ -372,11 +367,10 @@ class _ClientBookingDetailsScreenState
                           SizedBox(
                             height: 15,
                           ),
-
                           Row(
                             children: [
                               Text(
-                                'Other Services',
+                                S.of(context).other_services,
                               ),
                               Spacer(),
                               Text(
@@ -384,14 +378,12 @@ class _ClientBookingDetailsScreenState
                               ),
                             ],
                           ),
-
                           Divider(),
-
                           Row(
                             children: [
                               Spacer(),
                               Text(
-                                'Total Price: \$${widget.booking.totalPrice.toStringAsFixed(2)}',
+                                '${S.of(context).total_rental_price}: \$${widget.booking.totalPrice.toStringAsFixed(2)}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.red),
@@ -421,15 +413,14 @@ class _ClientBookingDetailsScreenState
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Cancel'),
-                          content: Text(
-                              'Are you sure you want to cancel this booking?'),
+                          title: Text(S.of(context).cancel),
+                          content: Text(S.of(context).confirm),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Cancel'),
+                              child: Text(S.of(context).cancel),
                             ),
                             TextButton(
                               onPressed: () async {
@@ -438,14 +429,14 @@ class _ClientBookingDetailsScreenState
                                     widget.booking.id, BookingStatus.cancelled);
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Confirm'),
+                              child: Text(S.of(context).confirm),
                             ),
                           ],
                         );
                       },
                     );
                   },
-                  child: Text('Cancel'),
+                  child: Text(S.of(context).cancel),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
@@ -463,7 +454,7 @@ class _ClientBookingDetailsScreenState
                       ),
                     );
                   },
-                  child: Text('Edit'),
+                  child: Text(S.of(context).edit),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,

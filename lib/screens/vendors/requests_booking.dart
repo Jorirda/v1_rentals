@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
-import 'package:v1_rentals/screens/clients/client_booking_details.dart';
 import 'package:v1_rentals/screens/vendors/vendor_booking_details.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class RequestedBookingsScreen extends StatelessWidget {
   const RequestedBookingsScreen({super.key});
 
   Future<Map<String, dynamic>> getVendorInfo(String vendorId) async {
     CustomUser? userData = await AuthService().getUserData(vendorId);
-    String businessName = userData?.businessName ?? 'Unknown Business';
-    String? imageUrl = userData?.imageURL;
+    String businessName = userData.businessName ?? 'Unknown Business';
+    String? imageUrl = userData.imageURL;
     return {'businessName': businessName, 'imageUrl': imageUrl};
   }
 
@@ -19,7 +19,7 @@ class RequestedBookingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Manage Requests'),
+        title: Text(S.of(context).manage_requests),
       ),
       body: StreamBuilder<List<Booking>>(
         stream: AuthService().getVendorBookingsStream(BookingStatus.pending),
@@ -31,7 +31,7 @@ class RequestedBookingsScreen extends StatelessWidget {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No pending bookings found.'));
+            return Center(child: Text(S.of(context).no_bookings_found));
           }
           return ListView.builder(
             itemCount: snapshot.data!.length,
@@ -92,10 +92,7 @@ class RequestedBookingsScreen extends StatelessWidget {
                                       ),
                                       const Spacer(),
                                       Text(
-                                        '${booking.status}'
-                                            .toString()
-                                            .split('.')
-                                            .last,
+                                        booking.getBookingStatusString(),
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             color: Theme.of(context)
@@ -162,7 +159,7 @@ class RequestedBookingsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              'Total Price: ',
+                              '${S.of(context).total_price}: ',
                               style: TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w600),
                             ),

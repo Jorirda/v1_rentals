@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:provider/provider.dart';
+import 'package:v1_rentals/l10n/locale_provider.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen(this.showSignUp, {super.key});
@@ -65,43 +68,70 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
+
     return Stack(
       children: [
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
             image: DecorationImage(
-              image: AssetImage('assets/images/car-rental-bg2.jpg'),
+              image: AssetImage('assets/images/car-rental-bg3.jpg'),
+              fit: BoxFit.contain,
             ),
           ),
         ),
         Scaffold(
+          appBar: AppBar(
+            title: Text(
+              S.of(context).login,
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+            actions: [
+              PopupMenuButton<Locale>(
+                icon: const Icon(
+                  Icons.language,
+                  color: Colors.blue,
+                ),
+                onSelected: (Locale locale) {
+                  localeProvider.setLocale(locale);
+                },
+                itemBuilder: (BuildContext context) {
+                  return [
+                    PopupMenuItem(
+                      value: const Locale('en'),
+                      child: Text(S.of(context).english),
+                    ),
+                    PopupMenuItem(
+                      value: const Locale('zh'),
+                      child: Text(S.of(context).chinese),
+                    ),
+                  ];
+                },
+              ),
+            ],
+          ),
           backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 50, bottom: 20),
-                  height: 120,
+                SizedBox(
+                  height: 150,
                   child: Image.asset('assets/images/v1-rentals-logo.png'),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                SizedBox(
+                  height: 200,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 25.0, vertical: 140),
+                      horizontal: 25.0, vertical: 20),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 25),
                       Form(
                         key: _formKey,
                         child: Column(
@@ -111,15 +141,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(color: Colors.white),
+                                  color: Colors.white.withOpacity(0.9),
+                                  border: Border.all(
+                                      color: Colors.black.withOpacity(1)),
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.5),
+                                      color: Colors.black.withOpacity(0.3),
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 3),
+                                      offset: const Offset(0, 3),
                                     ),
                                   ],
                                 ),
@@ -129,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     controller: _emailController,
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
-                                      hintText: 'Email',
+                                      hintText: S.of(context).email,
                                       border: InputBorder.none,
                                       icon: Icon(
                                         Icons.email,
@@ -140,7 +171,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter your email';
+                                        return S
+                                            .of(context)
+                                            .please_enter_your_email;
                                       }
                                       return null;
                                     },
@@ -150,18 +183,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             // Password TextField
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              padding: const EdgeInsets.symmetric(vertical: 10),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(color: Colors.white),
+                                  color: Colors.white.withOpacity(0.9),
+                                  border: Border.all(
+                                      color: Colors.black.withOpacity(1)),
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.5),
+                                      color: Colors.black.withOpacity(0.3),
                                       spreadRadius: 2,
                                       blurRadius: 5,
-                                      offset: Offset(0, 3),
+                                      offset: const Offset(0, 5),
                                     ),
                                   ],
                                 ),
@@ -174,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         controller: _passwordController,
                                         obscureText: _obscureText,
                                         decoration: InputDecoration(
-                                          hintText: 'Password',
+                                          hintText: S.of(context).password,
                                           border: InputBorder.none,
                                           icon: Icon(
                                             Icons.password_rounded,
@@ -185,7 +219,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return 'Please enter your password';
+                                            return S
+                                                .of(context)
+                                                .please_enter_your_password;
                                           }
                                           return null;
                                         },
@@ -207,59 +243,61 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 80),
-                            if (_isAuthenticating) CircularProgressIndicator(),
-                            if (!_isAuthenticating)
-                              // Login Button
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: _login,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Theme.of(context).colorScheme.primary,
-                                      foregroundColor: Colors.white,
-                                      textStyle: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    child: const Text('Login'),
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Not a member?',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(width: 4),
-                                // Switch to Sign Up page
-                                GestureDetector(
-                                  onTap: widget.showSignUp,
-                                  child: Text(
-                                    'Register now',
-                                    style: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            const SizedBox(height: 30),
+                            if (_isAuthenticating)
+                              const CircularProgressIndicator(),
                           ],
                         ),
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
+          bottomNavigationBar: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    child: Text(S.of(context).login),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      S.of(context).not_a_member,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    // Switch to Sign Up page
+                    GestureDetector(
+                      onTap: widget.showSignUp,
+                      child: Text(
+                        S.of(context).register_now,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

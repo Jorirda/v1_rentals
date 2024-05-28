@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
 import 'package:v1_rentals/screens/account/edit_account.dart';
+import 'package:v1_rentals/screens/account/languages.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/payment_overview.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -12,7 +14,7 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  late User? _user;
+  User? _user;
   String? _imageURL;
 
   @override
@@ -22,37 +24,37 @@ class _AccountScreenState extends State<AccountScreen> {
     if (_user != null) {
       FirebaseFirestore.instance
           .collection('users')
-          .where(FieldPath.documentId, isEqualTo: _user!.uid)
+          .doc(_user!.uid)
           .get()
-          .then((QuerySnapshot querySnapshot) {
-        if (querySnapshot.size > 0) {
+          .then((DocumentSnapshot documentSnapshot) {
+        if (documentSnapshot.exists) {
           setState(() {
-            var data = querySnapshot.docs.first.data() as Map<String, dynamic>;
+            var data = documentSnapshot.data() as Map<String, dynamic>;
             _imageURL = data['imageURL'];
           });
         }
+      }).catchError((error) {
+        print("Failed to fetch user data: $error");
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Account'),
+        title: Text(localization.account),
       ),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              const SizedBox(
-                height: 10,
-              ),
-              _buildUserData(_user, _imageURL),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 10),
+              _buildUserData(_user, _imageURL, localization),
+              const SizedBox(height: 20),
               SizedBox(
                 width: 200,
                 child: ElevatedButton(
@@ -75,35 +77,31 @@ class _AccountScreenState extends State<AccountScreen> {
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     shape: const StadiumBorder(),
                   ),
-                  child: const Text('Edit Account'),
+                  child: Text(localization.edit_account),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               const Divider(),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
 
               // MENU
 
               AccountMenuWidget(
-                title: 'Settings',
+                title: localization.settings,
                 icon: Icons.settings,
                 onPress: () {},
                 textColor: null,
               ),
 
               AccountMenuWidget(
-                title: 'Address Book',
+                title: localization.address_book,
                 icon: Icons.book_rounded,
                 onPress: () {},
                 textColor: null,
               ),
 
               AccountMenuWidget(
-                title: 'Payment Options',
+                title: localization.payment_options,
                 icon: Icons.wallet,
                 onPress: () {
                   Navigator.push(
@@ -116,26 +114,29 @@ class _AccountScreenState extends State<AccountScreen> {
                 textColor: null,
               ),
               AccountMenuWidget(
-                title: 'Language',
+                title: localization.language,
                 icon: Icons.language,
-                onPress: () {},
+                onPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LanguageScreen(),
+                    ),
+                  );
+                },
                 textColor: null,
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               const Divider(),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               AccountMenuWidget(
-                title: 'Help',
+                title: localization.help,
                 icon: Icons.help,
                 onPress: () {},
                 textColor: null,
               ),
               AccountMenuWidget(
-                title: 'Logout',
+                title: localization.logout,
                 icon: Icons.logout,
                 onPress: () {
                   FirebaseAuth.instance.signOut();
@@ -149,7 +150,11 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildUserData(User? user, String? imageURL) {
+  Widget _buildUserData(User? user, String? imageURL, S localization) {
+    if (user == null) {
+      return Text(localization.no_user_logged_in);
+    }
+
     return Column(
       children: [
         CircleAvatar(
@@ -157,23 +162,21 @@ class _AccountScreenState extends State<AccountScreen> {
           backgroundColor: Colors.grey,
           backgroundImage: imageURL != null ? NetworkImage(imageURL) : null,
         ),
-        const SizedBox(
-          height: 20,
-        ),
+        const SizedBox(height: 20),
         StreamBuilder<DocumentSnapshot>(
           stream: _getUserDataStream(user),
           builder:
               (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
             if (snapshot.hasError) {
-              return const Text('Something went wrong');
+              return Text(localization.something_went_wrong);
             }
 
-            // if (snapshot.connectionState == ConnectionState.waiting) {
-            //   return const CircularProgressIndicator();
-            // }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
 
             if (snapshot.data == null || snapshot.data!.data() == null) {
-              return const Text('No Data Found');
+              return Text(localization.no_data_found);
             }
 
             var data = snapshot.data!.data() as Map<String, dynamic>;
@@ -188,17 +191,15 @@ class _AccountScreenState extends State<AccountScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Text(
-                  ' ${data['email']}',
+                  '${data['email']}',
                   style: const TextStyle(
                     color: Colors.grey,
                   ),
                 ),
                 Text(
-                  ' ${data['userType']}',
+                  '${data['userType']}',
                   style: const TextStyle(
                     color: Colors.grey,
                   ),
@@ -211,15 +212,11 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Stream<DocumentSnapshot> _getUserDataStream(User? user) {
-    if (user != null) {
-      return FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .snapshots();
-    } else {
-      throw ArgumentError('User cannot be null');
-    }
+  Stream<DocumentSnapshot> _getUserDataStream(User user) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .snapshots();
   }
 }
 
