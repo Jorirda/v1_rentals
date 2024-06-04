@@ -239,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   foregroundColor: Colors.white,
                   textStyle: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                child: Text(S.of(context).login),
+                child: Text(S.of(context).sign_up),
               ),
             ),
             const SizedBox(height: 10),

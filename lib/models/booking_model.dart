@@ -12,22 +12,30 @@ enum BookingStatus {
 }
 
 class Booking {
-  String id; // Unique booking ID
-  String userId; // ID of the user who made the booking
-  String vehicleId; // ID of the booked vehicle
-  String vendorId; // ID of the vendor providing the vehicle
-  DateTime pickupDate; // Pickup date
-  TimeOfDay pickupTime; // Pickup time
-  DateTime dropoffDate; // Drop-off date
-  TimeOfDay dropoffTime; // Drop-off time
-  String pickupLocation; // Pickup location
-  String dropoffLocation; // Drop-off location
-  int totalPrice; // Total price of the booking
-  BookingStatus status; // Booking status (e.g., confirmed, canceled)
+  String id;
+  String userId;
+  String? userEmail;
+  String userFullName;
+  String vehicleId;
+  String vehicleDescription;
+  String vendorId;
+  String? vendorEmail;
+  String vendorBusinessName;
+  String? vendorContactInformation;
+  DateTime pickupDate;
+  TimeOfDay pickupTime;
+  DateTime dropoffDate;
+  TimeOfDay dropoffTime;
+  String pickupLocation;
+  String dropoffLocation;
+  int totalPrice;
+  BookingStatus status;
   String imageUrl;
-  bool paymentStatus; // Payment status (true if paid, false if pending)
+  bool paymentStatus;
   String paymentMethod;
-  DateTime createdAt; // Timestamp of when the booking was created
+  DateTime createdAt;
+  String clientImageURL; // Add this field
+  String vendorImageURL; // Add this field
 
   // Date and time format
   static final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
@@ -36,8 +44,14 @@ class Booking {
   Booking({
     required this.id,
     required this.userId,
+    this.userEmail,
+    required this.userFullName,
     required this.vehicleId,
+    required this.vehicleDescription,
     required this.vendorId,
+    this.vendorEmail,
+    required this.vendorBusinessName,
+    this.vendorContactInformation,
     required this.pickupDate,
     required this.pickupTime,
     required this.dropoffDate,
@@ -50,6 +64,8 @@ class Booking {
     required this.paymentStatus,
     required this.paymentMethod,
     required this.createdAt,
+    required this.clientImageURL, // Initialize this field
+    required this.vendorImageURL, // Initialize this field
   });
 
   factory Booking.fromSnapshot(DocumentSnapshot doc) {
@@ -57,8 +73,14 @@ class Booking {
     return Booking(
       id: doc.id,
       userId: data['userId'] ?? '',
+      userEmail: data['userEmail'] ?? '',
+      userFullName: data['userFullName'] ?? '',
       vehicleId: data['vehicleId'] ?? '',
+      vehicleDescription: data['vehicleDescription'] ?? '',
       vendorId: data['vendorId'] ?? '',
+      vendorEmail: data['vendorEmail'] ?? '',
+      vendorBusinessName: data['vendorBusinessName'] ?? '',
+      vendorContactInformation: data['vendorContactInformation'] ?? '',
       pickupDate: DateTime.parse(data['pickupDate'] ?? ''),
       pickupTime: _parseTimeOfDay(data['pickupTime'] ?? ''),
       dropoffDate: DateTime.parse(data['dropoffDate'] ?? ''),
@@ -74,6 +96,8 @@ class Booking {
       paymentStatus: data['paymentStatus'] ?? false,
       paymentMethod: data['paymentMethod'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
+      clientImageURL: data['clientImageURL'] ?? '', // Retrieve this field
+      vendorImageURL: data['vendorImageURL'] ?? '', // Retrieve this field
     );
   }
 
@@ -86,8 +110,14 @@ class Booking {
     return {
       'id': id,
       'userId': userId,
+      'userEmail': userEmail,
+      'userFullName': userFullName,
       'vehicleId': vehicleId,
+      'vehicleDescription': vehicleDescription,
       'vendorId': vendorId,
+      'vendorEmail': vendorEmail,
+      'vendorBusinessName': vendorBusinessName,
+      'vendorContactInformation': vendorContactInformation,
       'pickupDate': dateFormat.format(pickupDate),
       'pickupTime': timeFormat
           .format(DateTime(1, 1, 1, pickupTime.hour, pickupTime.minute)),
@@ -102,6 +132,8 @@ class Booking {
       'paymentStatus': paymentStatus,
       'paymentMethod': paymentMethod,
       'createdAt': createdAt,
+      'clientImageURL': clientImageURL, // Add this field
+      'vendorImageURL': vendorImageURL, // Add this field
     };
   }
 

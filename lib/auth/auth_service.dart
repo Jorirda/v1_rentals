@@ -69,6 +69,14 @@ class AuthService {
     }
   }
 
+  Future<void> updateUserData(String userId, Map<String, dynamic> data) async {
+    try {
+      await _firestore.collection('users').doc(userId).update(data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> getVendorInfo(String vendorId) async {
     try {
       DocumentSnapshot vendorSnapshot =
@@ -174,6 +182,10 @@ class AuthService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Stream<User?> authStateChanges() {
+    return _auth.authStateChanges();
   }
 
   Future<void> signOut() async {

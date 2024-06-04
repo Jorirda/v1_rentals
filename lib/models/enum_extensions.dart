@@ -95,3 +95,34 @@ extension BookingStatusExtension on BookingStatus {
     }
   }
 }
+
+extension BrandExtension on Brand {
+  String getTranslation() {
+    switch (this) {
+      case Brand.suzuki:
+        return S.current.brandSuzuki;
+      case Brand.ford:
+        return S.current.brandFord;
+      case Brand.toyota:
+        return S.current.brandToyota;
+      case Brand.nissan:
+        return S.current.brandNissan;
+      case Brand.bmw:
+        return S.current.brandBMW;
+      case Brand.audi:
+        return S.current.brandAudi;
+      case Brand.honda:
+        return S.current.brandHonda;
+      case Brand.hyundai:
+        return S.current.brandHyundai;
+      case Brand.isuzu:
+        return S.current.brandIsuzu;
+      case Brand.mazda:
+        return S.current.brandMazda;
+      case Brand.kia:
+        return S.current.brandKia;
+      default:
+        return S.current.unknown;
+    }
+  }
+}

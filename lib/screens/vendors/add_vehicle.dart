@@ -3,9 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class AddVehicleForm extends StatefulWidget {
   const AddVehicleForm({super.key});
@@ -20,7 +24,6 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   late TextEditingController _brandController;
   late TextEditingController _modelYearController;
   late TextEditingController _seatsController;
-
   late TextEditingController _pricePerDayController;
   late TextEditingController _colorController;
   late TextEditingController _overviewController;
@@ -29,6 +32,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   late CarType _selectedCarType;
   late FuelType _selectedFuelType;
   late TransmissionType _selectedTransmissionType;
+  Brand? _selectedBrand;
 
   File? _pickedImage;
 
@@ -59,14 +63,38 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
     super.dispose();
   }
 
+  Future<File> _compressImage(File imageFile) async {
+    final img.Image originalImage =
+        img.decodeImage(imageFile.readAsBytesSync())!;
+    final img.Image compressedImage =
+        img.copyResize(originalImage, width: 800); // Adjust the width as needed
+    final Directory tempDir = await getTemporaryDirectory();
+    final String tempPath =
+        '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final File compressedFile = File(tempPath)
+      ..writeAsBytesSync(img.encodeJpg(compressedImage,
+          quality: 50)); // Adjust the quality as needed
+    return compressedFile;
+  }
+
   // Function to upload image to Firebase Storage
   Future<String?> _uploadImageToStorage(File imageFile) async {
     try {
+      // Compress the image
+      File compressedFile = await _compressImage(imageFile);
+
+      // Cache the image
+      await DefaultCacheManager().putFile(
+        compressedFile.path,
+        compressedFile.readAsBytesSync(),
+        fileExtension: 'jpg',
+      );
+
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('vehicle_images')
           .child(DateTime.now().millisecondsSinceEpoch.toString() + '.jpg');
-      final uploadTask = storageRef.putFile(imageFile);
+      final uploadTask = storageRef.putFile(compressedFile);
       final TaskSnapshot snapshot = await uploadTask;
       final imageUrl = await snapshot.ref.getDownloadURL();
       return imageUrl;
@@ -103,22 +131,27 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
           // Get the image URL
           final imageUrl = await storageRef.getDownloadURL();
 
+          // Determine the brand
+          String brand = _selectedBrand != null
+              ? _selectedBrand.toString().split('.').last
+              : _brandController.text;
+
           // Create Vehicle object with image URL and assigned document ID
           final newVehicle = Vehicle(
             id: vehicleId, // Assign the same document ID
-            brand: _brandController.text,
+            brand: _selectedBrand!,
             modelYear: _modelYearController.text,
-            carType: CarType.suv,
+            carType: _selectedCarType,
             seats: int.parse(_seatsController.text),
-            fuelType: FuelType.gasoline,
-            transmission: TransmissionType.automatic,
+            fuelType: _selectedFuelType,
+            transmission: _selectedTransmissionType,
             pricePerDay: int.parse(_pricePerDayController.text),
             rating: 4.8,
             color: _colorController.text,
             overview: _overviewController.text,
             imageUrl: imageUrl,
-            available: true, 
-            isFavorite: false,// Assuming the new vehicle is available
+            available: true,
+            isFavorite: false, // Assuming the new vehicle is available
             vendorId: currentUser
                 .userId!, // Set the current user's ID as the vendor ID
           );
@@ -188,7 +221,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Vehicle'),
+        title: Text(S.of(context).add_vehicle),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -231,7 +264,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                           children: <Widget>[
                             ListTile(
                               leading: Icon(Icons.camera),
-                              title: Text('Take Photo'),
+                              title: Text(S.of(context).take_photo),
                               onTap: () {
                                 Navigator.pop(context);
                                 _getImageFromCamera();
@@ -239,7 +272,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                             ),
                             ListTile(
                               leading: Icon(Icons.photo),
-                              title: Text('Choose from Gallery'),
+                              title: Text(S.of(context).choose_from_gallery),
                               onTap: () {
                                 Navigator.pop(context);
                                 _getImageFromGallery();
@@ -250,56 +283,62 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                       },
                     );
                   },
-                  child: Text('Add Image'),
+                  child: Text(S.of(context).add_image),
+                ),
+                DropdownButtonFormField<Brand>(
+                  decoration: InputDecoration(labelText: S.of(context).brand),
+                  value: _selectedBrand,
+                  onChanged: (Brand? newValue) {
+                    setState(() {
+                      _selectedBrand = newValue;
+                      if (newValue != null) {
+                        _brandController.text = ''; // Clear the text field
+                      }
+                    });
+                  },
+                  items: Brand.values.map((Brand brand) {
+                    return DropdownMenuItem<Brand>(
+                      value: brand,
+                      child: Text(brand.toString().split('.').last),
+                    );
+                  }).toList(),
                 ),
                 TextFormField(
                   controller: _brandController,
-                  decoration: InputDecoration(labelText: 'Brand'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a brand';
-                    }
-                    return null;
-                  },
+                  decoration: InputDecoration(
+                    labelText: 'Brand (if not in list)',
+                  ),
                 ),
-
                 TextFormField(
                   controller: _modelYearController,
-                  decoration: InputDecoration(labelText: 'Model Year'),
+                  decoration:
+                      InputDecoration(labelText: S.of(context).model_year),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a Model Year';
+                      return 'Please enter the model year';
                     }
                     return null;
                   },
                 ),
-                // Car Type Dropdown
-
                 DropdownButtonFormField<CarType>(
-                  decoration: InputDecoration(
-                    labelText: 'Car Type', // Label for the dropdown field
-                  ),
-                  value: _selectedCarType, // The current selected value
+                  decoration:
+                      InputDecoration(labelText: S.of(context).car_type),
+                  value: _selectedCarType,
                   onChanged: (CarType? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedCarType = newValue;
-                      });
-                    }
+                    setState(() {
+                      _selectedCarType = newValue!;
+                    });
                   },
-                  items: CarType.values.map((CarType value) {
+                  items: CarType.values.map((CarType type) {
                     return DropdownMenuItem<CarType>(
-                      value: value,
-                      child: Text(value
-                          .toString()
-                          .split('.')
-                          .last), // Display the enum value
+                      value: type,
+                      child: Text(type.toString().split('.').last),
                     );
                   }).toList(),
                 ),
                 TextFormField(
                   controller: _seatsController,
-                  decoration: InputDecoration(labelText: 'Seats'),
+                  decoration: InputDecoration(labelText: S.of(context).seats),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -308,59 +347,41 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                     return null;
                   },
                 ),
-
-                // Fuel Type Dropdown
                 DropdownButtonFormField<FuelType>(
-                  decoration: InputDecoration(
-                    labelText: 'Fuel Type', // Label for the dropdown field
-                  ),
-                  value: _selectedFuelType, // The current selected value
+                  decoration: InputDecoration(labelText: S.of(context).fuel),
+                  value: _selectedFuelType,
                   onChanged: (FuelType? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedFuelType = newValue;
-                      });
-                    }
+                    setState(() {
+                      _selectedFuelType = newValue!;
+                    });
                   },
-                  items: FuelType.values.map((FuelType value) {
+                  items: FuelType.values.map((FuelType type) {
                     return DropdownMenuItem<FuelType>(
-                      value: value,
-                      child: Text(value
-                          .toString()
-                          .split('.')
-                          .last), // Display the enum value
+                      value: type,
+                      child: Text(type.toString().split('.').last),
                     );
                   }).toList(),
                 ),
-
-                // Transmission Type Dropdown
                 DropdownButtonFormField<TransmissionType>(
-                  decoration: InputDecoration(
-                    labelText:
-                        'Transmission Type', // Label for the dropdown field
-                  ),
-                  value:
-                      _selectedTransmissionType, // The current selected value
+                  decoration:
+                      InputDecoration(labelText: S.of(context).transmission),
+                  value: _selectedTransmissionType,
                   onChanged: (TransmissionType? newValue) {
-                    if (newValue != null) {
-                      setState(() {
-                        _selectedTransmissionType = newValue;
-                      });
-                    }
+                    setState(() {
+                      _selectedTransmissionType = newValue!;
+                    });
                   },
-                  items: TransmissionType.values.map((TransmissionType value) {
+                  items: TransmissionType.values.map((TransmissionType type) {
                     return DropdownMenuItem<TransmissionType>(
-                      value: value,
-                      child: Text(value
-                          .toString()
-                          .split('.')
-                          .last), // Display the enum value
+                      value: type,
+                      child: Text(type.toString().split('.').last),
                     );
                   }).toList(),
                 ),
                 TextFormField(
                   controller: _pricePerDayController,
-                  decoration: InputDecoration(labelText: 'Price Per Day'),
+                  decoration:
+                      InputDecoration(labelText: S.of(context).price_per_day),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -371,17 +392,17 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                 ),
                 TextFormField(
                   controller: _colorController,
-                  decoration: InputDecoration(labelText: 'Color'),
+                  decoration: InputDecoration(labelText: S.of(context).color),
                 ),
                 TextFormField(
                   controller: _overviewController,
-                  decoration: InputDecoration(labelText: 'Overview'),
-                  maxLines: null,
+                  decoration:
+                      InputDecoration(labelText: S.of(context).overview),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: Text('Submit'),
+                  child: Text(S.of(context).submit),
                 ),
               ],
             ),

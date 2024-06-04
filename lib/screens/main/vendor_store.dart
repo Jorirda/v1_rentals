@@ -2,9 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class VendorStorePage extends StatefulWidget {
   final String vendorId;
@@ -57,7 +59,6 @@ class _VendorStorePageState extends State<VendorStorePage> {
     if (vendor != null) {
       return Card(
         color: Theme.of(context).colorScheme.primary,
-        // margin: EdgeInsets.zero,
         margin: EdgeInsets.all(16.0),
         elevation: 3,
         child: Padding(
@@ -79,7 +80,6 @@ class _VendorStorePageState extends State<VendorStorePage> {
                               CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
                               Icon(Icons.error),
-                          cacheManager: CustomCacheManager.instance,
                         ),
                       )
                     : Text(
@@ -96,19 +96,19 @@ class _VendorStorePageState extends State<VendorStorePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          vendor!.businessName ?? 'No Business Name',
+                          vendor!.businessName ??
+                              S.of(context).no_business_name,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                             color: Colors.white,
                           ),
                         ),
-                        ElevatedButton(
-                            onPressed: () {}, child: Text('Follow +')),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Icon(
                           Icons.star,
@@ -130,15 +130,17 @@ class _VendorStorePageState extends State<VendorStorePage> {
                           Icons.star_outline,
                           color: Colors.yellow,
                         ),
-                        SizedBox(
-                          width: 5,
-                        ),
                         Text(
                           '4.0',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 15),
+                        ),
+                        Spacer(),
+                        ElevatedButton(
+                          onPressed: () {},
+                          child: Text(S.of(context).follow),
                         ),
                       ],
                     ),
@@ -177,21 +179,21 @@ class _VendorStorePageState extends State<VendorStorePage> {
                   );
                 },
                 child: SizedBox(
-                  width: 300, // Adjusted size to fit the screen width
+                  width: 300,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 120, // Set height of the image container
-                        width: 120, // Set width of the image container
+                        height: 120,
+                        width: 120,
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: NetworkImage(vehicle.imageUrl ?? ''),
+                            image: NetworkImage(vehicle.imageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                      SizedBox(width: 12), // Add spacing
+                      SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,7 +202,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
                             Row(
                               children: [
                                 Text(
-                                  vehicle.brand,
+                                  '${vehicle.brand.getTranslation()} ${vehicle.modelYear}',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
@@ -240,7 +242,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  '${vehicle.pricePerDay.toString()}/Day',
+                                  '${vehicle.pricePerDay.toString()}/${S.of(context).day}',
                                   style: TextStyle(
                                       color: Colors.red,
                                       fontWeight: FontWeight.bold,
@@ -264,7 +266,6 @@ class _VendorStorePageState extends State<VendorStorePage> {
   }
 
   Widget _buildFilterRail(BuildContext context) {
-    // Define a map for custom icons for each car type
     Map<CarType, IconData> carTypeIcons = {
       CarType.all: Icons.apps,
       CarType.suv: Icons.directions_car,
@@ -276,7 +277,21 @@ class _VendorStorePageState extends State<VendorStorePage> {
       CarType.sports: Icons.sports_score,
       CarType.hybrid: Icons.eco,
       CarType.luxury: Icons.diamond_outlined,
-      CarType.convertible: Icons.directions_car
+      CarType.convertible: Icons.directions_car,
+    };
+
+    Map<CarType, String> carTypeTranslationKeys = {
+      CarType.all: S.of(context).carTypeAll,
+      CarType.suv: S.of(context).carTypeSuv,
+      CarType.sedan: S.of(context).carTypeSedan,
+      CarType.truck: S.of(context).carTypeTruck,
+      CarType.van: S.of(context).carTypeVan,
+      CarType.hatchback: S.of(context).carTypeHatchback,
+      CarType.electric: S.of(context).carTypeElectric,
+      CarType.sports: S.of(context).carTypeSports,
+      CarType.hybrid: S.of(context).carTypeHybrid,
+      CarType.luxury: S.of(context).carTypeLuxury,
+      CarType.convertible: S.of(context).carTypeConvertible,
     };
 
     List<Widget> destinationWidgets = [
@@ -285,29 +300,29 @@ class _VendorStorePageState extends State<VendorStorePage> {
           onTap: () {
             setState(() {
               selectedCarType = carType;
-              _fetchVehicles(); // Update vehicle stream based on selected car type
+              _fetchVehicles();
             });
           },
           child: Column(
             children: [
               Icon(
                 carTypeIcons[carType],
-                size: 24, // Icon size
+                size: 24,
                 color: selectedCarType == carType
                     ? Theme.of(context).colorScheme.primary
-                    : Colors.grey, // Icon color
+                    : Colors.grey,
               ),
               SizedBox(height: 4),
               Text(
-                carTypeToString(carType),
+                carTypeTranslationKeys[carType]!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 12, // Text size
-                    color: selectedCarType == carType
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey,
-                    fontWeight: FontWeight.bold // Text color
-                    ),
+                  fontSize: 12,
+                  color: selectedCarType == carType
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -316,22 +331,18 @@ class _VendorStorePageState extends State<VendorStorePage> {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8), // Make the container rounded
+        borderRadius: BorderRadius.circular(8),
         color: Colors.grey[200],
       ),
-      padding:
-          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Add padding
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: SingleChildScrollView(
-        // Wrap in SingleChildScrollView to make content scrollable
         scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween, // Spread out the widgets
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: destinationWidgets.map((widget) {
             return Padding(
-              padding:
-                  EdgeInsets.symmetric(vertical: 10.0), // Add vertical spacing
+              padding: EdgeInsets.symmetric(vertical: 10.0),
               child: widget,
             );
           }).toList(),
@@ -340,23 +351,16 @@ class _VendorStorePageState extends State<VendorStorePage> {
     );
   }
 
-  int carTypeIndex(CarType carType) {
-    return CarType.values.indexOf(carType);
-  }
-
-  CarType carTypeFromIndex(int index) {
-    return CarType.values[index];
-  }
-
   String carTypeToString(CarType carType) {
     return carType.toString().split('.').last;
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('Vendor Store'),
+        title: Text(S.of(context).store),
         actions: [
           IconButton(
             onPressed: () {},
@@ -378,14 +382,9 @@ class _VendorStorePageState extends State<VendorStorePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildVendorInfo(),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Divider(),
-          // Display vendor info widget
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
           Expanded(
             child: Card(
               shadowColor: Colors.black,
@@ -393,14 +392,12 @@ class _VendorStorePageState extends State<VendorStorePage> {
               margin: EdgeInsets.zero,
               color: Colors.grey[200],
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 30,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 30),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 90, // Adjust the width according to your needs
+                      width: 90,
                       child: _buildFilterRail(context),
                     ),
                     Expanded(
@@ -410,7 +407,8 @@ class _VendorStorePageState extends State<VendorStorePage> {
                           builder: (context, snapshot) {
                             if (snapshot.hasError) {
                               return Center(
-                                child: Text('Error: ${snapshot.error}'),
+                                child: Text(
+                                    '${S.of(context).error_loading_vehicles}: ${snapshot.error}'),
                               );
                             }
 

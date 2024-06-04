@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
-import 'package:v1_rentals/models/location/search_history_model.dart';
+import 'package:v1_rentals/models/search_history_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
-import 'package:v1_rentals/widgets/dropoff_location.dart';
-import 'package:v1_rentals/widgets/pickup_location.dart';
-import 'package:v1_rentals/widgets/location_service.dart';
-
-import 'dart:async';
+import 'package:v1_rentals/providers/location_provider.dart';
+import 'package:v1_rentals/locations/dropoff_location.dart';
+import 'package:v1_rentals/locations/pickup_location.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -17,74 +16,10 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  LatLng _currentPosition =
-      const LatLng(13.081781693391143, -59.48398883384077);
-  String _currentLocation = '';
-
-  final List<SearchHistory> _searchHistory =
-      []; // Update to store SearchHistory objects
-  final List<String> _popularLocations = ['Popular 1', 'Popular 2'];
-  final AuthService _authService = AuthService();
-  final LocationService _locationService =
-      LocationService(); // Ensure you have an instance of LocationService
-
   String _pickupLocation = 'Set Address';
   String _dropoffLocation = 'Set Address';
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeLocation();
-    _fetchSearchHistory(); // Fetch search history when initializing
-  }
-
-  Future<void> _initializeLocation() async {
-    try {
-      LatLng position = await LocationService.getCurrentLocation();
-      String address = await LocationService.updatePosition(position);
-      setState(() {
-        _currentPosition = position;
-        _currentLocation = address;
-      });
-    } catch (e) {
-      _showError('Error initializing location: $e');
-    }
-  }
-
-  Future<void> _fetchSearchHistory() async {
-    try {
-      CustomUser? currentUser = await _authService.getCurrentUser();
-      if (currentUser != null && currentUser.userId != null) {
-        List<SearchHistory> searchHistory =
-            await _locationService.getSearchHistory(currentUser.userId!);
-        setState(() {
-          _searchHistory
-            ..clear()
-            ..addAll(
-                searchHistory.reversed); // Reverse the list and add all items
-        });
-      }
-    } catch (e) {
-      _showError('Error fetching search history: $e');
-    }
-  }
-
-  Future<void> _clearSearchHistory() async {
-    try {
-      CustomUser? currentUser = await _authService.getCurrentUser();
-      if (currentUser != null && currentUser.userId != null) {
-        await _locationService.clearSearchHistory(currentUser.userId!);
-        setState(() {
-          _searchHistory.clear();
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Search history cleared successfully')),
-        );
-      }
-    } catch (e) {
-      _showError('Error clearing search history: $e');
-    }
-  }
+  final AuthService _authService = AuthService();
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -120,7 +55,8 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 
-  Widget _buildCurrentLocation() {
+  Widget _buildCurrentLocation(
+      BuildContext context, LocationProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -131,7 +67,7 @@ class _LocationScreenState extends State<LocationScreen> {
               const Icon(Icons.location_on, color: Colors.red),
               SizedBox(width: 5),
               Text(
-                'Current Location Address',
+                S.of(context).current_location_address,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -145,9 +81,11 @@ class _LocationScreenState extends State<LocationScreen> {
           margin: const EdgeInsets.all(12.0),
           child: ListTile(
             leading: const Icon(Icons.location_on_outlined, color: Colors.red),
-            title: Text(_currentLocation),
+            title: Text(provider.currentLocation),
             trailing: IconButton(
-              onPressed: _initializeLocation,
+              onPressed: () {
+                provider.initializeLocation();
+              },
               icon: const Icon(Icons.my_location),
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -173,11 +111,15 @@ class _LocationScreenState extends State<LocationScreen> {
             ),
           ),
           Spacer(),
-          if (title == 'History')
+          if (title == S.of(context).history)
             TextButton(
-              onPressed: _clearSearchHistory,
+              onPressed: () {
+                final provider =
+                    Provider.of<LocationProvider>(context, listen: false);
+                provider.clearSearchHistory();
+              },
               child: Text(
-                'clear',
+                S.of(context).clear,
                 style: TextStyle(color: Colors.red),
               ),
             ),
@@ -187,7 +129,8 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Widget _buildListSection(List<SearchHistory> items, String headerTitle,
-      IconData headerIcon, ValueChanged<int> onTap) {
+      IconData headerIcon, ValueChanged<int> onTap,
+      {bool showDeleteButton = false, bool showSubtitles = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -211,7 +154,19 @@ class _LocationScreenState extends State<LocationScreen> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                subtitle: Text(items[index].address),
+                subtitle: showSubtitles ? Text(items[index].address) : null,
+                trailing: showDeleteButton
+                    ? IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          final provider = Provider.of<LocationProvider>(
+                              context,
+                              listen: false);
+                          provider.deleteSearchHistoryItem(items[index].id!);
+                        },
+                      )
+                    : null,
+                onTap: () => onTap(index),
               );
             },
             separatorBuilder: (context, index) => const Divider(),
@@ -257,7 +212,8 @@ class _LocationScreenState extends State<LocationScreen> {
     );
   }
 
-  Widget _buildLocationOptions() {
+  Widget _buildLocationOptions(
+      BuildContext context, LocationProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -271,14 +227,14 @@ class _LocationScreenState extends State<LocationScreen> {
               children: [
                 _buildLocationOption(
                   Icons.arrow_circle_up_sharp,
-                  'Pick-up',
+                  S.of(context).pick_up,
                   _pickupLocation,
                   () async {
                     final selectedLocation = await Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => SetPickupLocationScreen(
-                              historyLocations: _searchHistory)),
+                              historyLocations: provider.searchHistory)),
                     );
                     if (selectedLocation != null) {
                       setState(() {
@@ -289,14 +245,14 @@ class _LocationScreenState extends State<LocationScreen> {
                 ),
                 _buildLocationOption(
                   Icons.arrow_circle_down,
-                  'Drop-off',
+                  S.of(context).drop_off,
                   _dropoffLocation,
                   () async {
                     final selectedLocation = await Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => SetDropoffLocationScreen(
-                              historyLocations: _searchHistory)),
+                              historyLocations: provider.searchHistory)),
                     );
                     if (selectedLocation != null) {
                       setState(() {
@@ -315,24 +271,28 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final locationProvider = Provider.of<LocationProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Locations'),
+        title: Text(S.of(context).locations),
       ),
       body: ListView(
         children: [
-          _buildLocationOptions(),
-          _buildCurrentLocation(),
+          _buildLocationOptions(context, locationProvider),
+          _buildCurrentLocation(context, locationProvider),
           _buildListSection(
-            _searchHistory,
-            'History',
+            locationProvider.searchHistory,
+            S.of(context).history,
             Icons.access_time_filled_sharp,
             (index) {
               // Implement the onTap functionality if needed
             },
+            showSubtitles: true,
+            showDeleteButton: true, // Show delete button for history
           ),
           _buildListSection(
-            _popularLocations
+            locationProvider.popularLocations
                 .map((location) => SearchHistory(
                       locationName: location,
                       address: '',
@@ -340,11 +300,13 @@ class _LocationScreenState extends State<LocationScreen> {
                       longitude: 0.0,
                     ))
                 .toList(),
-            'Popular Locations',
+            S.of(context).popular_locations,
             Icons.star,
             (index) {
               // Implement the onTap functionality if needed
             },
+            showDeleteButton:
+                false, // Do not show delete button for popular locations
           ),
         ],
       ),

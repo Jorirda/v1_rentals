@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/vendors/edit_vehicle.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class VehicleDetailsPage extends StatefulWidget {
   final Vehicle vehicle;
@@ -31,7 +33,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vehicle Details'),
+        title: Text(S.of(context).vehicle_details),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -60,7 +62,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('Overview',
+              title: Text(S.of(context).overview,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
@@ -69,19 +71,19 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             Divider(),
             ListTile(
               title: Text(
-                'Brand',
+                S.of(context).brand,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary),
               ),
               subtitle: Text(
-                _vehicle.brand,
+                _vehicle.brand.getTranslation(),
               ),
             ),
             Divider(),
             ListTile(
               title: Text(
-                'Model Year',
+                S.of(context).model_year,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary),
@@ -92,7 +94,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('Type',
+              title: Text(S.of(context).type,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
@@ -100,7 +102,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('Seats',
+              title: Text(S.of(context).seats,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
@@ -108,7 +110,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('Color',
+              title: Text(S.of(context).color,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
@@ -116,7 +118,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('Fuel Type',
+              title: Text(S.of(context).fuel,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
@@ -124,7 +126,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('Transmission',
+              title: Text(S.of(context).transmission,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
@@ -132,11 +134,11 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('Price Per Day',
+              title: Text(S.of(context).price_per_day,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary)),
-              subtitle: Text(_vehicle.pricePerDay.toString()),
+              subtitle: Text('\$${_vehicle.pricePerDay.toString()}'),
             ),
           ],
         ),

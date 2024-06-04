@@ -26,6 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
   var _isAuthenticating = false;
   bool _obscureText = true;
 
+  final AssetImage _backgroundImage =
+      AssetImage('assets/images/car-rental-bg3.jpg');
+
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -69,241 +72,236 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
-
-    return Stack(
-      children: [
+    precacheImage(_backgroundImage, context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          S.of(context).login,
+          style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontSize: 30,
+              fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        actions: [
+          PopupMenuButton<Locale>(
+            icon: const Icon(
+              Icons.language,
+              color: Colors.blue,
+            ),
+            onSelected: (Locale locale) {
+              localeProvider.setLocale(locale);
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  value: const Locale('en'),
+                  child: Text(S.of(context).english),
+                ),
+                PopupMenuItem(
+                  value: const Locale('zh'),
+                  child: Text(S.of(context).chinese),
+                ),
+              ];
+            },
+          ),
+        ],
+      ),
+      body: Stack(children: [
+        // Background image
         Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/car-rental-bg3.jpg'),
-              fit: BoxFit.contain,
+              image: _backgroundImage,
+              fit: BoxFit.fitHeight,
             ),
           ),
         ),
-        Scaffold(
-          appBar: AppBar(
-            title: Text(
-              S.of(context).login,
-              style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            actions: [
-              PopupMenuButton<Locale>(
-                icon: const Icon(
-                  Icons.language,
-                  color: Colors.blue,
-                ),
-                onSelected: (Locale locale) {
-                  localeProvider.setLocale(locale);
-                },
-                itemBuilder: (BuildContext context) {
-                  return [
-                    PopupMenuItem(
-                      value: const Locale('en'),
-                      child: Text(S.of(context).english),
-                    ),
-                    PopupMenuItem(
-                      value: const Locale('zh'),
-                      child: Text(S.of(context).chinese),
-                    ),
-                  ];
-                },
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 150,
+                child: Image.asset('assets/images/v1-rentals-logo.png'),
               ),
-            ],
-          ),
-          backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 150,
-                  child: Image.asset('assets/images/v1-rentals-logo.png'),
-                ),
-                SizedBox(
-                  height: 200,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 25.0, vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            // Email TextField
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.9),
-                                  border: Border.all(
-                                      color: Colors.black.withOpacity(1)),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: TextFormField(
-                                    controller: _emailController,
-                                    keyboardType: TextInputType.emailAddress,
-                                    decoration: InputDecoration(
-                                      hintText: S.of(context).email,
-                                      border: InputBorder.none,
-                                      icon: Icon(
-                                        Icons.email,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return S
-                                            .of(context)
-                                            .please_enter_your_email;
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Password TextField
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.9),
-                                  border: Border.all(
-                                      color: Colors.black.withOpacity(1)),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      spreadRadius: 2,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: Stack(
-                                    alignment: Alignment.centerRight,
-                                    children: [
-                                      TextFormField(
-                                        controller: _passwordController,
-                                        obscureText: _obscureText,
-                                        decoration: InputDecoration(
-                                          hintText: S.of(context).password,
-                                          border: InputBorder.none,
-                                          icon: Icon(
-                                            Icons.password_rounded,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                          ),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return S
-                                                .of(context)
-                                                .please_enter_your_password;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                          _obscureText
-                                              ? Icons.visibility_off
-                                              : Icons.visibility,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _obscureText = !_obscureText;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 30),
-                            if (_isAuthenticating)
-                              const CircularProgressIndicator(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-              ],
-            ),
-          ),
-          bottomNavigationBar: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    child: Text(S.of(context).login),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              SizedBox(
+                height: 200,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      S.of(context).not_a_member,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    // Switch to Sign Up page
-                    GestureDetector(
-                      onTap: widget.showSignUp,
-                      child: Text(
-                        S.of(context).register_now,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // Email TextField
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.9),
+                                border: Border.all(
+                                    color: Colors.black.withOpacity(1)),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: TextFormField(
+                                  controller: _emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                    hintText: S.of(context).email,
+                                    border: InputBorder.none,
+                                    icon: Icon(
+                                      Icons.email,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return S
+                                          .of(context)
+                                          .please_enter_your_email;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Password TextField
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.9),
+                                border: Border.all(
+                                    color: Colors.black.withOpacity(1)),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: [
+                                    TextFormField(
+                                      controller: _passwordController,
+                                      obscureText: _obscureText,
+                                      decoration: InputDecoration(
+                                        hintText: S.of(context).password,
+                                        border: InputBorder.none,
+                                        icon: Icon(
+                                          Icons.password_rounded,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return S
+                                              .of(context)
+                                              .please_enter_your_password;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(
+                                        _obscureText
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscureText = !_obscureText;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          if (_isAuthenticating)
+                            const CircularProgressIndicator(),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 30),
+            ],
           ),
         ),
-      ],
+      ]),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                child: Text(S.of(context).login),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  S.of(context).not_a_member,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                // Switch to Sign Up page
+                GestureDetector(
+                  onTap: widget.showSignUp,
+                  child: Text(
+                    S.of(context).register_now,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

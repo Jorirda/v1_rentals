@@ -138,7 +138,7 @@ class _VendorBookingDetailsScreenState
                                 width: 10,
                               ),
                               Text(
-                                'vendor?.businessName ?? ${S.of(context).no_business_name}',
+                                ' ${widget.booking.vendorBusinessName}',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),

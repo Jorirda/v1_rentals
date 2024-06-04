@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
+import 'package:provider/provider.dart';
+import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/providers/account_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image/image.dart' as img;
 
 class EditAccountScreen extends StatefulWidget {
   const EditAccountScreen(this.onImagePicked, {super.key});
@@ -36,22 +39,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     _addressController = TextEditingController();
 
     if (_user != null) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(_user.uid)
-          .get()
-          .then((DocumentSnapshot documentSnapshot) {
-        if (documentSnapshot.exists) {
-          setState(() {
-            var data = documentSnapshot.data() as Map<String, dynamic>;
-            _fullNameController.text = data['fullname'];
-            _emailController.text = data['email'];
-            _phoneNumberController.text = data['phoneNum'];
-            _addressController.text = data['address'];
-            _imageURL = data['imageURL'];
-          });
-        }
-      });
+      Provider.of<AccountDataProvider>(context, listen: false).fetchUserData();
+      var accountDataProvider =
+          Provider.of<AccountDataProvider>(context, listen: false);
+      if (accountDataProvider.user != null) {
+        _fullNameController.text = accountDataProvider.user!.fullname;
+        _emailController.text = accountDataProvider.user!.email;
+        _phoneNumberController.text = accountDataProvider.user!.phoneNum;
+        _addressController.text = accountDataProvider.user!.address;
+        _imageURL = accountDataProvider.user!.imageURL;
+      }
     }
   }
 
@@ -61,20 +58,30 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        _uploadImageToFirebase();
+        _compressAndUploadImage();
       } else {
         print('No image selected.');
       }
     });
   }
 
-  Future<void> _uploadImageToFirebase() async {
+  Future<void> _compressAndUploadImage() async {
+    final img.Image? image = img.decodeImage(_image.readAsBytesSync());
+    if (image == null) {
+      print('Error decoding image.');
+      return;
+    }
+
+    final img.Image resizedImage = img.copyResize(image, width: 600);
+    final File compressedImageFile = File(_image.path)
+      ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 85));
+
     try {
       await firebase_storage.FirebaseStorage.instance
           .ref('profile_pictures/${_user!.uid}.jpg')
-          .putFile(_image);
+          .putFile(compressedImageFile);
       final String downloadURL = await firebase_storage.FirebaseStorage.instance
-          .ref('profile_pictures/${_user.uid}.jpg')
+          .ref('profile_pictures/${_user!.uid}.jpg')
           .getDownloadURL();
 
       setState(() {
@@ -93,23 +100,18 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   void _saveChanges() async {
     try {
       if (_user != null) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(_user.uid)
-            .update({
+        Map<String, dynamic> updatedData = {
           'fullname': _fullNameController.text,
           'email': _emailController.text,
           'phoneNum': _phoneNumberController.text,
           'address': _addressController.text,
           'imageURL': _imageURL,
-        });
+        };
 
-        // Return the updated user data and the image URL to the Account Screen
-        Navigator.of(context).pop({
-          'fullname': _fullNameController.text,
-          'email': _emailController.text,
-          'imageURL': _imageURL,
-        });
+        await Provider.of<AccountDataProvider>(context, listen: false)
+            .updateUserData(updatedData);
+
+        Navigator.of(context).pop();
       }
     } catch (e) {
       print("Error updating account: $e");
@@ -134,8 +136,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     CircleAvatar(
                       radius: 50,
                       backgroundColor: Colors.grey,
-                      backgroundImage:
-                          _imageURL != null ? NetworkImage(_imageURL!) : null,
+                      backgroundImage: _imageURL != null
+                          ? CachedNetworkImageProvider(_imageURL!)
+                          : null,
                     ),
                     Positioned(
                       bottom: 0,

@@ -1,44 +1,41 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:v1_rentals/models/location/locations_model.dart';
+import 'package:provider/provider.dart';
+import 'package:v1_rentals/models/locations_model.dart';
+import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/models/search_history_model.dart';
+import 'package:v1_rentals/providers/location_provider.dart';
 
-import 'package:v1_rentals/models/location/search_history_model.dart';
-import 'package:v1_rentals/widgets/location_service.dart';
-import 'dart:async';
-import 'package:fluttertoast/fluttertoast.dart';
-
-class SetPickupLocationScreen extends StatefulWidget {
-  const SetPickupLocationScreen({super.key, required this.historyLocations});
+class SetDropoffLocationScreen extends StatefulWidget {
+  const SetDropoffLocationScreen({super.key, required this.historyLocations});
 
   final List<SearchHistory> historyLocations;
 
   @override
-  _SetPickupLocationScreenState createState() =>
-      _SetPickupLocationScreenState();
+  _SetDropoffLocationScreenState createState() =>
+      _SetDropoffLocationScreenState();
 }
 
-class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
+class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
   late TextEditingController _searchController;
   late FocusNode _searchFocusNode;
   bool _isLoading = false;
   bool _showSearchHistory = true;
   List<String> _suggestions = [];
-  List<double> _suggestionDistances = [];
-  List<SearchHistory> _searchHistory = [];
-  List<String> _popularLocations = ['Popular 1', 'Popular 2'];
-  final LocationService _locationService = LocationService();
   Map<String, dynamic> _suggestionMap =
       {}; // Map to store suggestions and their LatLng
-
   Timer? _debounce;
+
+  late LocationProvider _locationProvider;
 
   @override
   void initState() {
     super.initState();
+    _locationProvider = Provider.of<LocationProvider>(context, listen: false);
     _searchController = TextEditingController();
     _searchController.addListener(_onSearchChanged);
     _searchFocusNode = FocusNode();
-    _searchHistory = widget.historyLocations;
   }
 
   @override
@@ -48,11 +45,6 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
     _searchFocusNode.dispose();
     _debounce?.cancel();
     super.dispose();
-  }
-
-  void _confirmSelection(String selectedLocation) {
-    Navigator.pop(context,
-        selectedLocation); // Pass the selected location back to the previous screen
   }
 
   void _onSearchChanged() {
@@ -78,17 +70,16 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
     });
 
     try {
-      final LatLng currentLatLng = await LocationService.getCurrentLocation();
+      final LatLng currentLatLng = await _locationProvider.getCurrentLocation();
       final List<Map<String, dynamic>> suggestions =
-          await LocationService.getSuggestions(query);
+          await _locationProvider.getSuggestions(query);
       final List<String> placeIds = suggestions
           .map((suggestion) => suggestion['place_id'] as String)
           .toList();
       final List<LatLng> suggestionPositions =
-          await LocationService.getSuggestionDetails(placeIds);
-      final List<double> suggestionDistances =
-          await LocationService.calculateDistances(
-              currentLatLng, suggestionPositions);
+          await _locationProvider.getSuggestionDetails(placeIds);
+      final List<double> suggestionDistances = await _locationProvider
+          .calculateDistances(currentLatLng, suggestionPositions);
 
       setState(() {
         _suggestions = suggestions
@@ -115,117 +106,122 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
   }
 
   Widget _buildSearchHistory() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            margin: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(
-                  onPressed: _getCurrentLocation,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.location_on, color: Colors.red),
-                      const SizedBox(width: 5),
-                      Text(
-                        'My Location',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+    return Consumer<LocationProvider>(
+      builder: (context, locationProvider, child) {
+        final searchHistory = locationProvider.searchHistory;
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                margin: const EdgeInsets.all(12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextButton(
+                      onPressed: _getCurrentLocation,
+                      child: Row(
+                        children: [
+                          const Icon(Icons.location_on, color: Colors.red),
+                          const SizedBox(width: 5),
+                          Text(
+                            S.of(context).my_location,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                const VerticalDivider(
-                  width: 1,
-                  thickness: 1,
-                  color: Colors.grey,
-                  indent: 10,
-                  endIndent: 10,
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      const Icon(Icons.map_sharp, color: Colors.red),
-                      const SizedBox(width: 5),
-                      Text(
-                        'Use Map',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                    ),
+                    const VerticalDivider(
+                      width: 1,
+                      thickness: 1,
+                      color: Colors.grey,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Row(
+                        children: [
+                          const Icon(Icons.map_sharp, color: Colors.red),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Use Map',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.access_time_filled,
-                  color: Colors.red,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  'History',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _searchHistory.length,
-                itemBuilder: (context, index) {
-                  final location = _searchHistory[index];
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.location_on_outlined,
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.access_time_filled,
                       color: Colors.red,
                     ),
-                    title: Text(
-                      location.locationName,
+                    const SizedBox(width: 5),
+                    Text(
+                      S.of(context).history,
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
-                    subtitle: Text(location.address),
-                    onTap: () {
-                      setState(() {
-                        _searchController.text = location.locationName;
-                        _searchHistory.removeAt(index);
-                        _searchHistory.insert(0, location);
-                        _showSearchHistory = false;
-                      });
-                      _getSuggestions(location.locationName);
-                    },
-                  );
-                },
-                separatorBuilder: (context, index) => const Divider(),
+                  ],
+                ),
               ),
-            ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Card(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: searchHistory.length,
+                    itemBuilder: (context, index) {
+                      final location = searchHistory[index];
+                      return ListTile(
+                        leading: const Icon(
+                          Icons.location_on_outlined,
+                          color: Colors.red,
+                        ),
+                        title: Text(
+                          location.locationName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        subtitle: Text(location.address),
+                        onTap: () {
+                          setState(() {
+                            _searchController.text = location.locationName;
+                            searchHistory.removeAt(index);
+                            searchHistory.insert(0, location);
+                            _showSearchHistory = false;
+                          });
+                          _getSuggestions(location.locationName);
+                        },
+                      );
+                    },
+                    separatorBuilder: (context, index) => const Divider(),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -268,7 +264,7 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
                   latitude: selectedLatLng.latitude,
                   longitude: selectedLatLng.longitude,
                 );
-                await _locationService.saveSearchHistory(searchHistory);
+                await _locationProvider.saveSearchHistory(searchHistory);
                 // Show confirmation bottom sheet
                 _showConfirmationBottomSheet(
                   suggestion,
@@ -295,9 +291,9 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Confirm your selection:',
-                style: TextStyle(
+              Text(
+                ' ${S.of(context).confirm_your_selection} :',
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
@@ -306,43 +302,49 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
               const SizedBox(height: 20),
               Text(
                 selectedLocation,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 address,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    Locations pickupLocation = Locations(
+                    Locations dropoffLocation = Locations(
                       locationName: selectedLocation,
                       address: address,
                       latitude: selectedLatLng.latitude,
                       longitude: selectedLatLng.longitude,
                     );
 
-                    await _locationService.savePickupLocation(pickupLocation);
+                    await _locationProvider
+                        .saveDropoffLocation(dropoffLocation);
 
                     // Close the bottom sheet
                     Navigator.pop(context);
                     // Return the selected location to the previous screen
                     Navigator.pop(context, selectedLocation);
                   } catch (e) {
-                    print('Error saving pickup location: $e');
+                    print('Error saving dropoff location: $e');
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Error saving pickup location')),
+                          content: Text('Error saving dropoff location')),
                     );
                   }
                 },
-                child: const Text('Confirm Pickup Selection'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                 ),
+                child: Text(S.of(context).confirm_dropoff_location),
               ),
             ],
           ),
@@ -357,14 +359,15 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
     });
 
     try {
-      final LatLng currentLatLng = await LocationService.getCurrentLocation();
-      final String currentLocation =
-          await LocationService.updatePosition(currentLatLng);
+      final LatLng currentLatLng = await _locationProvider.getCurrentLocation();
+      await _locationProvider.updatePosition(currentLatLng); // Corrected line
       setState(() {
         _isLoading = false;
       });
       _showConfirmationBottomSheet(
-          currentLocation, currentLatLng, currentLocation);
+          'Current Location', // Use a generic label or fetch the address separately if needed
+          currentLatLng,
+          'Current Location');
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -379,7 +382,7 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Set Pickup Location'),
+        title: Text(S.of(context).set_dropoff_location),
       ),
       body: Column(
         children: [
@@ -389,7 +392,7 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
               controller: _searchController,
               focusNode: _searchFocusNode,
               decoration: InputDecoration(
-                hintText: 'Search for a location',
+                hintText: S.of(context).search_for_locations,
                 contentPadding: const EdgeInsets.symmetric(
                     vertical: 10.0, horizontal: 15.0),
                 border: OutlineInputBorder(

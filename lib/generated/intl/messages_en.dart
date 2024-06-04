@@ -26,18 +26,29 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "account_screen_title": MessageLookupByLibrary.simpleMessage("Account"),
+        "add_card": MessageLookupByLibrary.simpleMessage("Add Card"),
+        "add_credit_debit":
+            MessageLookupByLibrary.simpleMessage("Add Credit/Debit Card"),
+        "add_image": MessageLookupByLibrary.simpleMessage("Add Image"),
         "add_or_edit_photo":
             MessageLookupByLibrary.simpleMessage("Add or edit photo or avatar"),
+        "add_payment_card":
+            MessageLookupByLibrary.simpleMessage("Add Payment Card"),
+        "add_vehicle": MessageLookupByLibrary.simpleMessage("Add Vehicle"),
         "address": MessageLookupByLibrary.simpleMessage("Address"),
         "address_book": MessageLookupByLibrary.simpleMessage("Address Book"),
         "all": MessageLookupByLibrary.simpleMessage("All"),
+        "all_brands": MessageLookupByLibrary.simpleMessage("All Brands"),
         "all_vehicles_in_collection":
             MessageLookupByLibrary.simpleMessage("All Vehicles in Collection"),
         "already_member":
             MessageLookupByLibrary.simpleMessage("Already a member?"),
         "amount_information":
             MessageLookupByLibrary.simpleMessage("Amount Information"),
+        "back": MessageLookupByLibrary.simpleMessage("Back"),
         "book_now": MessageLookupByLibrary.simpleMessage("Book Now"),
+        "book_your_vehicle":
+            MessageLookupByLibrary.simpleMessage("Book Your Vehicle"),
         "bookingStatusAll": MessageLookupByLibrary.simpleMessage("All"),
         "bookingStatusCancelled":
             MessageLookupByLibrary.simpleMessage("Cancelled"),
@@ -51,6 +62,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "booking_id": MessageLookupByLibrary.simpleMessage("Booking ID"),
         "booking_time": MessageLookupByLibrary.simpleMessage("Booking Time"),
         "bookings": MessageLookupByLibrary.simpleMessage("Bookings"),
+        "brand": MessageLookupByLibrary.simpleMessage("Brand"),
+        "brandAudi": MessageLookupByLibrary.simpleMessage("Audi"),
+        "brandBMW": MessageLookupByLibrary.simpleMessage("BMW"),
+        "brandFord": MessageLookupByLibrary.simpleMessage("Ford"),
+        "brandHonda": MessageLookupByLibrary.simpleMessage("Honda"),
+        "brandHyundai": MessageLookupByLibrary.simpleMessage("Hyundai"),
+        "brandIsuzu": MessageLookupByLibrary.simpleMessage("Isuzu"),
+        "brandKia": MessageLookupByLibrary.simpleMessage("Kia"),
+        "brandMazda": MessageLookupByLibrary.simpleMessage("Mazda"),
+        "brandNissan": MessageLookupByLibrary.simpleMessage("Nissan"),
+        "brandSuzuki": MessageLookupByLibrary.simpleMessage("Suzuki"),
+        "brandToyota": MessageLookupByLibrary.simpleMessage("Toyota"),
         "business_name": MessageLookupByLibrary.simpleMessage("Business Name"),
         "business_registration_number": MessageLookupByLibrary.simpleMessage(
             "Business Registration Number"),
@@ -69,28 +92,65 @@ class MessageLookup extends MessageLookupByLibrary {
         "carTypeSuv": MessageLookupByLibrary.simpleMessage("SUV"),
         "carTypeTruck": MessageLookupByLibrary.simpleMessage("Truck"),
         "carTypeVan": MessageLookupByLibrary.simpleMessage("Van"),
+        "car_type": MessageLookupByLibrary.simpleMessage("Car Type"),
+        "card_holder": MessageLookupByLibrary.simpleMessage("Card Holder"),
+        "categories": MessageLookupByLibrary.simpleMessage("Categories"),
+        "change_image": MessageLookupByLibrary.simpleMessage("Change image"),
         "chat": MessageLookupByLibrary.simpleMessage("Chat"),
         "chinese": MessageLookupByLibrary.simpleMessage("Chinese"),
+        "choose_from_gallery":
+            MessageLookupByLibrary.simpleMessage("Choose from gallery"),
+        "choose_payment_method":
+            MessageLookupByLibrary.simpleMessage("Choose a payment method"),
+        "clear": MessageLookupByLibrary.simpleMessage("Clear"),
         "client": MessageLookupByLibrary.simpleMessage("Client"),
+        "color": MessageLookupByLibrary.simpleMessage("Color"),
         "completed": MessageLookupByLibrary.simpleMessage("Completed"),
         "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+        "confirm_card_changes": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to save changes to this card?"),
+        "confirm_dropoff_location":
+            MessageLookupByLibrary.simpleMessage("Confirm Dropoff Location"),
+        "confirm_pickup_location":
+            MessageLookupByLibrary.simpleMessage("Confirm Pickup Location"),
+        "confirm_remove": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to remove this card?"),
+        "confirm_your_selection":
+            MessageLookupByLibrary.simpleMessage("Confirm your selection"),
         "create_account":
             MessageLookupByLibrary.simpleMessage("Create Account"),
+        "current_location_address":
+            MessageLookupByLibrary.simpleMessage("Current Location Address"),
         "date_of_birth": MessageLookupByLibrary.simpleMessage("Date of Birth"),
+        "day": MessageLookupByLibrary.simpleMessage("Day"),
+        "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "driver_license_number":
             MessageLookupByLibrary.simpleMessage("Driver\'s License Number"),
         "drop_off": MessageLookupByLibrary.simpleMessage("Drop-off"),
         "drop_off_location":
             MessageLookupByLibrary.simpleMessage("Drop-off Location"),
+        "dropoff_date": MessageLookupByLibrary.simpleMessage("Drop-off Date"),
+        "dropoff_time": MessageLookupByLibrary.simpleMessage("Drop-off Time"),
         "edit": MessageLookupByLibrary.simpleMessage("Edit"),
         "edit_account": MessageLookupByLibrary.simpleMessage("Edit Account"),
         "edit_account_button":
             MessageLookupByLibrary.simpleMessage("Edit Account"),
+        "edit_payment_card":
+            MessageLookupByLibrary.simpleMessage("Edit Payment Card"),
+        "edit_vehicle": MessageLookupByLibrary.simpleMessage("Edit vehicle"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "ending_in": MessageLookupByLibrary.simpleMessage("ending in"),
         "english": MessageLookupByLibrary.simpleMessage("English"),
+        "enter_dropoff_location":
+            MessageLookupByLibrary.simpleMessage("Enter drop-off location"),
+        "enter_pickup_location":
+            MessageLookupByLibrary.simpleMessage("Enter pick-up location"),
+        "error_loading_vehicles":
+            MessageLookupByLibrary.simpleMessage("Error loading vehicles."),
         "expiry_date": MessageLookupByLibrary.simpleMessage("Expiry Date"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
         "fleet": MessageLookupByLibrary.simpleMessage("Fleet"),
+        "follow": MessageLookupByLibrary.simpleMessage("Follow"),
         "fuel": MessageLookupByLibrary.simpleMessage("Fuel"),
         "fuelTypeDiesel": MessageLookupByLibrary.simpleMessage("Diesel"),
         "fuelTypeElectric": MessageLookupByLibrary.simpleMessage("Electric"),
@@ -99,58 +159,86 @@ class MessageLookup extends MessageLookupByLibrary {
         "full_name": MessageLookupByLibrary.simpleMessage("Full Name"),
         "hello": MessageLookupByLibrary.simpleMessage("Hello"),
         "help": MessageLookupByLibrary.simpleMessage("Help"),
+        "history": MessageLookupByLibrary.simpleMessage("History"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
         "issuing_country":
             MessageLookupByLibrary.simpleMessage("Issuing Country"),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
+        "locations": MessageLookupByLibrary.simpleMessage("Locations"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "logout": MessageLookupByLibrary.simpleMessage("Logout"),
         "manage_pending_requests":
             MessageLookupByLibrary.simpleMessage("Manage Pending Requests"),
         "manage_requests":
             MessageLookupByLibrary.simpleMessage("Manage Requests"),
+        "mark_as_read": MessageLookupByLibrary.simpleMessage("Mark as read"),
+        "model_year": MessageLookupByLibrary.simpleMessage("Model Year"),
         "my_bookings": MessageLookupByLibrary.simpleMessage("My Bookings"),
+        "my_location": MessageLookupByLibrary.simpleMessage("My Location"),
+        "next": MessageLookupByLibrary.simpleMessage("Next"),
         "no_bookings_found":
             MessageLookupByLibrary.simpleMessage("No bookings found."),
         "no_business_name":
             MessageLookupByLibrary.simpleMessage("No Business Name"),
+        "no_card_found":
+            MessageLookupByLibrary.simpleMessage("No cards found."),
         "no_data_found": MessageLookupByLibrary.simpleMessage("No Data Found"),
         "no_favorites_found":
             MessageLookupByLibrary.simpleMessage("No favorites found."),
         "no_user_logged_in":
             MessageLookupByLibrary.simpleMessage("No User Logged In"),
+        "no_vehicles_found":
+            MessageLookupByLibrary.simpleMessage("No vehicles found."),
         "not_a_member": MessageLookupByLibrary.simpleMessage("Not a member?"),
+        "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
         "ongoing": MessageLookupByLibrary.simpleMessage("Ongoing"),
+        "other_payment_method":
+            MessageLookupByLibrary.simpleMessage("Other payment methods"),
         "other_services":
             MessageLookupByLibrary.simpleMessage("Other services"),
+        "overview": MessageLookupByLibrary.simpleMessage("Overview"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "payment": MessageLookupByLibrary.simpleMessage("Payment"),
         "payment_method":
             MessageLookupByLibrary.simpleMessage("Payment Method"),
         "payment_options":
             MessageLookupByLibrary.simpleMessage("Payment Options"),
+        "payment_overview":
+            MessageLookupByLibrary.simpleMessage("Payment Overview"),
         "pending_request":
             MessageLookupByLibrary.simpleMessage("Pending Requests"),
         "phone_number": MessageLookupByLibrary.simpleMessage("Phone Number"),
         "pick_up": MessageLookupByLibrary.simpleMessage("Pick-up"),
         "pick_up_location":
             MessageLookupByLibrary.simpleMessage("Pick-up Location"),
+        "pickup_date": MessageLookupByLibrary.simpleMessage("Pick-up Date"),
+        "pickup_time": MessageLookupByLibrary.simpleMessage("Pick-up Time"),
         "please_enter_your": m0,
         "please_enter_your_email":
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "please_enter_your_password":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
+        "popular_locations":
+            MessageLookupByLibrary.simpleMessage("Popular Locations"),
+        "price_per_day": MessageLookupByLibrary.simpleMessage("Price Per Day"),
         "recommended_brands":
             MessageLookupByLibrary.simpleMessage("Recommended Brands"),
         "register_now": MessageLookupByLibrary.simpleMessage("Register now"),
+        "remove": MessageLookupByLibrary.simpleMessage("Remove"),
         "rental_details":
             MessageLookupByLibrary.simpleMessage("Rental Details"),
+        "rental_supplier":
+            MessageLookupByLibrary.simpleMessage("Rental Supplier"),
         "rental_vehicle":
             MessageLookupByLibrary.simpleMessage("Rental Vehicle"),
         "renter": MessageLookupByLibrary.simpleMessage("Renter"),
+        "reserve": MessageLookupByLibrary.simpleMessage("Reserve"),
         "reviews": MessageLookupByLibrary.simpleMessage("Reviews"),
         "save_changes": MessageLookupByLibrary.simpleMessage("Save Changes"),
         "search_for_favorite_vehicle": MessageLookupByLibrary.simpleMessage(
             "Search for your favorite vehicle"),
+        "search_for_locations":
+            MessageLookupByLibrary.simpleMessage("Search for locations"),
         "search_for_vehicles":
             MessageLookupByLibrary.simpleMessage("Search for vehicles"),
         "seats": MessageLookupByLibrary.simpleMessage("Seats"),
@@ -158,11 +246,19 @@ class MessageLookup extends MessageLookupByLibrary {
             "Select your preferred language"),
         "select_user_type": MessageLookupByLibrary.simpleMessage(
             "Select a user type and register below with your details."),
+        "set_address": MessageLookupByLibrary.simpleMessage("Set Address"),
+        "set_dropoff_location":
+            MessageLookupByLibrary.simpleMessage("Set Dropoff Location"),
+        "set_pickup_location":
+            MessageLookupByLibrary.simpleMessage("Set Pickup Location"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
         "sign_up": MessageLookupByLibrary.simpleMessage("Sign Up"),
         "something_went_wrong":
             MessageLookupByLibrary.simpleMessage("Something went wrong"),
         "store": MessageLookupByLibrary.simpleMessage("Store"),
+        "submit": MessageLookupByLibrary.simpleMessage("Submit"),
+        "summary": MessageLookupByLibrary.simpleMessage("Summary"),
+        "take_photo": MessageLookupByLibrary.simpleMessage("Take Photo"),
         "tax_identification_number":
             MessageLookupByLibrary.simpleMessage("Tax Identification Number"),
         "title": MessageLookupByLibrary.simpleMessage("V1 Rentals"),
@@ -177,14 +273,23 @@ class MessageLookup extends MessageLookupByLibrary {
         "transmissionManual": MessageLookupByLibrary.simpleMessage("Manual"),
         "type": MessageLookupByLibrary.simpleMessage("Type"),
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
+        "update_card_information":
+            MessageLookupByLibrary.simpleMessage("Update Card Information"),
+        "update_vehicle":
+            MessageLookupByLibrary.simpleMessage("Update vehicle"),
         "userTypeClient": MessageLookupByLibrary.simpleMessage("Client"),
         "userTypeVendor": MessageLookupByLibrary.simpleMessage("Vendor"),
         "user_data_error":
             MessageLookupByLibrary.simpleMessage("Something went wrong"),
         "user_data_not_found":
             MessageLookupByLibrary.simpleMessage("No Data Found"),
+        "vehicle": MessageLookupByLibrary.simpleMessage("Vehicle"),
+        "vehicle_details":
+            MessageLookupByLibrary.simpleMessage("Vehicle Details"),
         "vendor": MessageLookupByLibrary.simpleMessage("Vendor"),
         "view_all": MessageLookupByLibrary.simpleMessage("View All"),
+        "your_credit_debit":
+            MessageLookupByLibrary.simpleMessage("Your credit and debit cards"),
         "your_location": MessageLookupByLibrary.simpleMessage("Your location")
       };
 }

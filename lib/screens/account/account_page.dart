@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
+import 'package:provider/provider.dart';
+import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/models/user_model.dart';
+import 'package:v1_rentals/providers/account_provider.dart';
 import 'package:v1_rentals/screens/account/edit_account.dart';
-import 'package:v1_rentals/screens/account/languages.dart';
+import 'package:v1_rentals/screens/account/languages/languages.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/payment_overview.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -14,34 +16,19 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  User? _user;
-  String? _imageURL;
-
   @override
   void initState() {
     super.initState();
-    _user = FirebaseAuth.instance.currentUser;
-    if (_user != null) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(_user!.uid)
-          .get()
-          .then((DocumentSnapshot documentSnapshot) {
-        if (documentSnapshot.exists) {
-          setState(() {
-            var data = documentSnapshot.data() as Map<String, dynamic>;
-            _imageURL = data['imageURL'];
-          });
-        }
-      }).catchError((error) {
-        print("Failed to fetch user data: $error");
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AccountDataProvider>(context, listen: false).fetchUserData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final localization = S.of(context);
+    final accountDataProvider = Provider.of<AccountDataProvider>(context);
+    final user = accountDataProvider.user;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +40,7 @@ class _AccountScreenState extends State<AccountScreen> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-              _buildUserData(_user, _imageURL, localization),
+              _buildUserData(user, localization),
               const SizedBox(height: 20),
               SizedBox(
                 width: 200,
@@ -65,7 +52,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         builder: (context) => EditAccountScreen(
                           (String? imagePath) {
                             setState(() {
-                              _imageURL = imagePath;
+                              accountDataProvider
+                                  .fetchUserData(); // Refresh data
                             });
                           },
                         ),
@@ -150,7 +138,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildUserData(User? user, String? imageURL, S localization) {
+  Widget _buildUserData(CustomUser? user, S localization) {
     if (user == null) {
       return Text(localization.no_user_logged_in);
     }
@@ -160,63 +148,33 @@ class _AccountScreenState extends State<AccountScreen> {
         CircleAvatar(
           radius: 40,
           backgroundColor: Colors.grey,
-          backgroundImage: imageURL != null ? NetworkImage(imageURL) : null,
+          backgroundImage:
+              user.imageURL != null ? NetworkImage(user.imageURL!) : null,
         ),
         const SizedBox(height: 20),
-        StreamBuilder<DocumentSnapshot>(
-          stream: _getUserDataStream(user),
-          builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Text(localization.something_went_wrong);
-            }
-
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-
-            if (snapshot.data == null || snapshot.data!.data() == null) {
-              return Text(localization.no_data_found);
-            }
-
-            var data = snapshot.data!.data() as Map<String, dynamic>;
-
-            return Column(
-              children: [
-                Text(
-                  '${data['fullname']}',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  '${data['email']}',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-                Text(
-                  '${data['userType']}',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            );
-          },
+        Text(
+          '${user.fullname}',
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          '${user.email}',
+          style: const TextStyle(
+            color: Colors.grey,
+          ),
+        ),
+        Text(
+          '+(246) ${user.phoneNum}',
+          style: const TextStyle(
+            color: Colors.grey,
+          ),
         ),
       ],
     );
-  }
-
-  Stream<DocumentSnapshot> _getUserDataStream(User user) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .snapshots();
   }
 }
 

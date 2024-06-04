@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class EditPaymentCardScreen extends StatefulWidget {
   final String cardId;
@@ -11,6 +12,7 @@ class EditPaymentCardScreen extends StatefulWidget {
   final String cvvCode;
 
   const EditPaymentCardScreen({
+    super.key,
     required this.cardId,
     required this.cardNumber,
     required this.expiryDate,
@@ -84,7 +86,7 @@ class _EditPaymentCardScreenState extends State<EditPaymentCardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Payment Card'),
+        title: Text(S.of(context).edit_payment_card),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -127,32 +129,31 @@ class _EditPaymentCardScreenState extends State<EditPaymentCardScreen> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("Confirm"),
-                      content: Text(
-                          "Are you sure you want to save changes to this card?"),
+                      title: Text(S.of(context).confirm),
+                      content: Text(S.of(context).confirm_card_changes),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Text("Cancel"),
+                          child: Text(S.of(context).cancel),
                         ),
                         TextButton(
                           onPressed: () {
                             _updatePaymentCard();
                             Navigator.of(context).pop();
                           },
-                          child: Text("Save Changes"),
+                          child: Text(S.of(context).save_changes),
                         ),
                       ],
                     );
                   },
                 );
               },
-              child: Text('Update Card Information'),
               style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white),
+              child: Text(S.of(context).update_card_information),
             ),
           ],
         ),

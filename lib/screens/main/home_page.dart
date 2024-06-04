@@ -1,15 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:provider/provider.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
+import 'package:v1_rentals/providers/notification_provider.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
-import 'package:v1_rentals/widgets/location_page.dart';
+import 'package:v1_rentals/locations/location_page.dart';
+import 'package:v1_rentals/screens/main/categories.dart';
+import 'package:v1_rentals/screens/main/notifications_screen.dart';
 import 'package:v1_rentals/screens/main/search_page.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -47,6 +52,11 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _getInitialInfo() {
     recommendBrands = RecommendModel.getRecommendedBrands();
+    print('Recommend Brands Length: ${recommendBrands.length}');
+    // Print the contents of recommendBrands for debugging
+    // recommendBrands.forEach((brand) {
+    //   print('Brand Name: ${brand.}, Icon Path: ${brand.iconPath}');
+    // });
   }
 
   Future<void> _loadCurrentUser() async {
@@ -87,12 +97,15 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context); // Needed for AutomaticKeepAliveClientMixin
+    List<RecommendModel> recommendBrands =
+        RecommendModel.getRecommendedBrands();
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _onRefresh,
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(), // Ensure scrollability
+            physics:
+                const AlwaysScrollableScrollPhysics(), // Ensure scrollability
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -105,9 +118,7 @@ class _HomeScreenState extends State<HomeScreen>
                         height: 20,
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,11 +129,15 @@ class _HomeScreenState extends State<HomeScreen>
                               child: _currentUser?.imageURL != null
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(45),
-                                      child: Image.network(
-                                        _currentUser!.imageURL!,
+                                      child: CachedNetworkImage(
+                                        imageUrl: _currentUser!.imageURL!,
                                         width: 70,
                                         height: 70,
                                         fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
                                       ),
                                     )
                                   : Text(
@@ -142,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              LocationScreen(),
+                                              const LocationScreen(),
                                         ),
                                       );
                                     },
@@ -165,9 +180,7 @@ class _HomeScreenState extends State<HomeScreen>
                                             maxLines: 1,
                                           ),
                                         ),
-                                        const Icon(
-                                          Icons.arrow_drop_down,
-                                        ),
+                                        const Icon(Icons.arrow_drop_down),
                                       ],
                                     ),
                                   ),
@@ -176,16 +189,55 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  color: Colors.white),
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.notifications,
-                                  color: Theme.of(context).primaryColor,
-                                ),
+                                borderRadius: BorderRadius.circular(100),
+                                color: Colors.white,
                               ),
-                            )
+                              child: Stack(
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Provider.of<NotificationProvider>(context,
+                                              listen: false)
+                                          .markAsRead();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const NotificationScreen()),
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.notifications,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Consumer<NotificationProvider>(
+                                      builder: (context, notificationProvider,
+                                          child) {
+                                        return notificationProvider
+                                                    .notificationCount >
+                                                0
+                                            ? CircleAvatar(
+                                                radius: 8,
+                                                backgroundColor: Colors.red,
+                                                child: Text(
+                                                  '${notificationProvider.notificationCount}',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              )
+                                            : Container();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -199,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             Text(
                               '${S.of(context).hello},${_currentUser?.fullname ?? ""} \u{1F44B}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -207,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             Text(
                               S.of(context).search_for_favorite_vehicle,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,
@@ -245,14 +297,15 @@ class _HomeScreenState extends State<HomeScreen>
                                       color: Colors.white),
                                   child: Row(
                                     children: [
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 15),
                                         child: Icon(Icons.search,
                                             color: Colors.red),
                                       ),
                                       Text(S.of(context).search_for_vehicles,
-                                          style: TextStyle(color: Colors.grey)),
+                                          style: const TextStyle(
+                                              color: Colors.grey)),
                                     ],
                                   ),
                                 ),
@@ -261,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       )
                     ],
@@ -280,14 +333,21 @@ class _HomeScreenState extends State<HomeScreen>
                       children: [
                         Text(
                           S.of(context).recommended_brands,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CategoriesScreen()),
+                            );
+                          },
                           child: Text(
                             S.of(context).view_all,
                             style: TextStyle(
@@ -306,46 +366,57 @@ class _HomeScreenState extends State<HomeScreen>
                   child: ListView.separated(
                     itemCount: recommendBrands.length,
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                    ),
-                    separatorBuilder: (context, index) => const SizedBox(
-                      width: 25,
-                    ),
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 25),
                     itemBuilder: (context, index) {
-                      return Container(
-                        width: 100,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              width: 150,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(20),
-                                border:
-                                    Border.all(color: Colors.black, width: 1),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 3,
-                                    offset: const Offset(
-                                        3, 2), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                    recommendBrands[index].iconPath),
+                      return InkWell(
+                        onTap: () {
+                          print(
+                              'Tapped on brand: ${recommendBrands[index].brand}'); // Debug print
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CategoriesScreen(
+                                selectedBrand:
+                                    recommendBrands[index].brand.name,
                               ),
                             ),
-                          ],
+                          );
+                        },
+                        child: Container(
+                          width: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                width: 150,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                  borderRadius: BorderRadius.circular(20),
+                                  border:
+                                      Border.all(color: Colors.black, width: 1),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: const Offset(3, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                      recommendBrands[index].iconPath),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -371,7 +442,14 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CategoriesScreen()),
+                            );
+                          },
                           child: Text(
                             S.of(context).view_all,
                             style: TextStyle(
@@ -425,7 +503,9 @@ class _HomeScreenState extends State<HomeScreen>
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            vehicles[index].brand,
+                                            vehicles[index]
+                                                .brand
+                                                .getTranslation(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 color: Theme.of(context)
@@ -485,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
-                                                '${vehicles[index].pricePerDay}/Day',
+                                                '${vehicles[index].pricePerDay}/${S.of(context).day}',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20,

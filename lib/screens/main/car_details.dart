@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,7 +25,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   bool isFavorite = false;
 
   CustomUser? vendor;
-  late List<Map<String, dynamic>> features;
+  late List<Map<String, dynamic>> features = [];
 
   @override
   void initState() {
@@ -100,6 +101,21 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           'title': S.of(context).transmission,
           'icon': Icons.settings,
           'subtitle': widget.vehicle.getTransmissionTypeString(),
+        },
+        {
+          'title': 'F/M Radio',
+          'icon': Icons.radio,
+          'subtitle': '',
+        },
+        {
+          'title': 'A/C',
+          'icon': Icons.air,
+          'subtitle': '',
+        },
+        {
+          'title': 'Luggage',
+          'icon': Icons.luggage,
+          'subtitle': '',
         },
       ];
     });
@@ -203,47 +219,37 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      vendor!.businessName ?? S.of(context).no_business_name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                        ),
-                        Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                        ),
-                        Icon(
-                          Icons.star_outline,
-                          color: Colors.yellow,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
                         Text(
+                          vendor!.businessName ??
+                              S.of(context).no_business_name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Spacer(),
+                        const Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                        ),
+                        const Text(
                           '4.0',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 15),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {},
+                            child: Text('${S.of(context).follow} +'))
                       ],
                     ),
                   ],
@@ -369,7 +375,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '\$${widget.vehicle.pricePerDay}/Day',
+                            '\$${widget.vehicle.pricePerDay}/${S.of(context).day}',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 25,
@@ -396,7 +402,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        widget.vehicle.brand,
+                        '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.modelYear}',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,

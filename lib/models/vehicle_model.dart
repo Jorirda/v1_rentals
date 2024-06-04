@@ -1,6 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
 
+enum Brand {
+  suzuki,
+  ford,
+  toyota,
+  nissan,
+  bmw,
+  audi,
+  honda,
+  hyundai,
+  isuzu,
+  mazda,
+  kia,
+}
+
 enum CarType {
   all,
   suv,
@@ -29,7 +43,7 @@ enum FuelType {
 
 class Vehicle {
   String id;
-  String brand;
+  Brand brand;
   String modelYear;
   CarType carType;
   int seats;
@@ -67,7 +81,8 @@ class Vehicle {
     Map data = doc.data() as Map<String, dynamic>;
     return Vehicle(
       id: doc.id,
-      brand: data['brand'] ?? '',
+      brand: Brand.values
+          .firstWhere((e) => e.toString() == 'Brand.${data['brand']}'),
       modelYear: data['modelYear'] ?? '',
       carType: CarType.values
           .firstWhere((e) => e.toString() == 'CarType.${data['carType']}'),
@@ -90,7 +105,7 @@ class Vehicle {
   // Convert Vehicle object to Map
   Map<String, dynamic> toMap() {
     return {
-      'brand': brand,
+      'brand': brand.toString().split('.').last,
       'modelYear': modelYear,
       'carType': carType.toString().split('.').last,
       'seats': seats,
@@ -117,5 +132,35 @@ class Vehicle {
 
   String getTransmissionTypeString() {
     return transmission.getTranslation();
+  }
+
+  // Helper method to convert a string to a Brand enum value
+  static Brand getBrandFromString(String brandString) {
+    switch (brandString.toLowerCase()) {
+      case 'suzuki':
+        return Brand.suzuki;
+      case 'ford':
+        return Brand.ford;
+      case 'toyota':
+        return Brand.toyota;
+      case 'nissan':
+        return Brand.nissan;
+      case 'bmw':
+        return Brand.bmw;
+      case 'audi':
+        return Brand.audi;
+      case 'honda':
+        return Brand.honda;
+      case 'hyundai':
+        return Brand.hyundai;
+      case 'isuzu':
+        return Brand.isuzu;
+      case 'mazda':
+        return Brand.mazda;
+      case 'kia':
+        return Brand.kia;
+      default:
+        throw Exception('Invalid brand string: $brandString');
+    }
   }
 }

@@ -4,11 +4,9 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:convert';
-
 import 'package:v1_rentals/auth/auth_service.dart';
-
-import 'package:v1_rentals/models/location/locations_model.dart';
-import 'package:v1_rentals/models/location/search_history_model.dart';
+import 'package:v1_rentals/models/locations_model.dart';
+import 'package:v1_rentals/models/search_history_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 
 class LocationService {
@@ -134,16 +132,16 @@ class LocationService {
     }
   }
 
-  Future<void> saveSearchHistory(SearchHistory history) async {
+  Future<void> saveSearchHistory(String userId, SearchHistory history) async {
     try {
-      final String userId = await getCurrentUserId();
       await _firestore
           .collection('users')
           .doc(userId)
           .collection('searchHistory')
           .add(history.toMap());
+      print('Search history saved successfully');
     } catch (e) {
-      throw e;
+      print('Error saving search history: $e');
     }
   }
 
@@ -170,7 +168,7 @@ class LocationService {
 
       return snapshot.docs
           .map((doc) =>
-              SearchHistory.fromMap(doc.data() as Map<String, dynamic>))
+              SearchHistory.fromMap(doc.data() as Map<String, dynamic>, doc.id))
           .toList();
     } catch (e) {
       throw Exception('Error fetching search history: $e');
@@ -198,15 +196,17 @@ class LocationService {
     }
   }
 
-  //   Future<void> clearSearchHistory(String userId) async {
-  //   try {
-  //     QuerySnapshot snapshot = await _firestore.collection('users').doc(userId).collection('searchHistory').get();
-  //     for (DocumentSnapshot document in snapshot.docs) {
-  //       await _firestore.collection('users').doc(userId).collection('searchHistory').doc(document.id).delete();
-  //     }
-  //     print('Search history cleared successfully');
-  //   } catch (e) {
-  //     print('Error clearing search history: $e');
-  //   }
-  // }
+  Future<void> deleteSearchHistoryItem(String userId, String documentId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('searchHistory')
+          .doc(documentId)
+          .delete();
+      print('Search history item deleted successfully');
+    } catch (e) {
+      print('Error deleting search history item: $e');
+    }
+  }
 }

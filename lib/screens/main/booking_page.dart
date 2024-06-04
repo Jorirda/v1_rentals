@@ -1,19 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
-import 'package:v1_rentals/auth/push_notifications.dart';
+import 'package:v1_rentals/auth/email_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
-import 'package:v1_rentals/models/location/search_history_model.dart';
+import 'package:v1_rentals/models/notification_model.dart';
+import 'package:v1_rentals/models/search_history_model.dart';
 import 'package:v1_rentals/models/payment_card_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/add_payment_card.dart';
 import 'package:intl/intl.dart';
-import 'package:v1_rentals/widgets/dropoff_location.dart';
+import 'package:v1_rentals/locations/dropoff_location.dart';
+import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/locations/location_service.dart';
+import 'package:v1_rentals/locations/pickup_location.dart';
 
-import 'package:v1_rentals/widgets/location_service.dart';
-import 'package:v1_rentals/widgets/pickup_location.dart';
+import '../../providers/notification_provider.dart';
 
 enum PaymentMethod {
   Card,
@@ -42,6 +46,8 @@ class _BookingScreenState extends State<BookingScreen> {
   PaymentCard? _selectedPaymentCard;
 
   String? vendorBusinessName;
+
+  String? vendorEmail;
   String? userFullName;
 
   final AuthService _authService = AuthService();
@@ -50,24 +56,27 @@ class _BookingScreenState extends State<BookingScreen> {
       []; // Update to store SearchHistory objects
 
   final LocationService _locationService = LocationService();
-
   @override
   void initState() {
     super.initState();
-    // Initialize booking model with default values or empty
+
     booking = Booking(
-      userId: FirebaseAuth.instance.currentUser?.uid ??
-          '', // Initialize with current user's ID if available
-      vehicleId: widget.vehicle.id,
-      vendorId: widget.vehicle.vendorId,
-      pickupDate: DateTime.now(), // Initialize with current date/time
-      dropoffDate: DateTime.now().add(Duration(days: 1)),
       id: FirebaseFirestore.instance.collection('bookings').doc().id,
-      createdAt: DateTime.now(), // Initialize createdAt with current time
-      pickupTime: TimeOfDay.fromDateTime(
-          DateTime.now()), // Initialize with current time of day
-      dropoffTime: TimeOfDay.fromDateTime(
-          DateTime.now()), // Initialize with current time of day
+      userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+      userEmail: FirebaseAuth.instance.currentUser?.email,
+      userFullName: '', // You will need to fetch this value
+      vehicleId: widget.vehicle.id,
+      vehicleDescription:
+          '${widget.vehicle.brand} ${widget.vehicle.modelYear}', // Assuming vehicle has a modelYear property
+      vendorId: widget.vehicle.vendorId,
+      vendorEmail: '', // You will need to fetch this value
+      vendorBusinessName: '', // You will need to fetch this value
+      vendorContactInformation: '', // You will need to fetch this value
+      pickupDate: DateTime.now(),
+      pickupTime: TimeOfDay.fromDateTime(DateTime.now()),
+      dropoffDate: DateTime.now().add(Duration(days: 1)),
+      dropoffTime:
+          TimeOfDay.fromDateTime(DateTime.now().add(Duration(days: 1))),
       pickupLocation: '',
       dropoffLocation: '',
       totalPrice: widget.vehicle.pricePerDay,
@@ -75,6 +84,9 @@ class _BookingScreenState extends State<BookingScreen> {
       status: BookingStatus.pending,
       paymentStatus: false,
       paymentMethod: PaymentMethod.Card.toString(),
+      createdAt: DateTime.now(),
+      clientImageURL: '',
+      vendorImageURL: '',
     );
 
     fetchUserPaymentCards(); // Fetch user's payment cards when the screen initializes
@@ -158,7 +170,8 @@ class _BookingScreenState extends State<BookingScreen> {
       CustomUser? user = await _authService.getCurrentUser();
       if (user != null) {
         setState(() {
-          userFullName = user.fullname;
+          booking.userFullName = user.fullname;
+          booking.clientImageURL = user.imageURL!;
         });
       }
     } catch (e) {
@@ -178,7 +191,9 @@ class _BookingScreenState extends State<BookingScreen> {
           CustomUser vendor =
               CustomUser.fromMap(userSnapshot.data() as Map<String, dynamic>?);
           setState(() {
-            vendorBusinessName = vendor.businessName;
+            booking.vendorBusinessName = vendor.businessName!;
+            booking.vendorEmail = vendor.email;
+            booking.vendorImageURL = vendor.imageURL!;
           });
         }
       }
@@ -192,7 +207,7 @@ class _BookingScreenState extends State<BookingScreen> {
       Step(
         state: currentStep > 0 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 0,
-        title: Text('Reserve'),
+        title: Text(S.of(context).reserve),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -206,7 +221,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   width: 5,
                 ),
                 Text(
-                  'PICK-UP',
+                  S.of(context).pick_up,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -224,7 +239,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
-                      'Pick-up Date',
+                      S.of(context).pickup_date,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -240,7 +255,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     leading: Icon(Icons.access_time,
                         color: Theme.of(context).colorScheme.primary),
                     title: Text(
-                      'Pick-up Time',
+                      S.of(context).pickup_time,
                       style: TextStyle(
                           fontWeight: FontWeight.w700, fontSize: 15.9),
                     ),
@@ -265,7 +280,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   width: 5,
                 ),
                 Text(
-                  'DROP-OFF',
+                  S.of(context).drop_off,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -283,7 +298,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
-                      'Drop-off Date',
+                      S.of(context).dropoff_date,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
@@ -300,7 +315,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
-                      'Drop-off Time',
+                      S.of(context).dropoff_time,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
@@ -328,7 +343,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   width: 5,
                 ),
                 Text(
-                  'Location',
+                  S.of(context).locations,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -340,7 +355,7 @@ class _BookingScreenState extends State<BookingScreen> {
               height: 10,
             ),
             Text(
-              'Pick-up Location',
+              S.of(context).pick_up_location,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16, // Adjust font size for better readability
@@ -354,7 +369,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 Expanded(
                   child: TextFormField(
                     decoration: InputDecoration(
-                      hintText: 'Enter pick-up location',
+                      hintText: S.of(context).enter_pickup_location,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -381,8 +396,8 @@ class _BookingScreenState extends State<BookingScreen> {
             const SizedBox(
                 height:
                     20), // Add spacing between pick-up and drop-off sections
-            const Text(
-              'Drop-off Location',
+            Text(
+              S.of(context).drop_off_location,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16, // Adjust font size for better readability
@@ -396,7 +411,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 Expanded(
                   child: TextFormField(
                     decoration: InputDecoration(
-                      hintText: 'Enter drop-off location',
+                      hintText: S.of(context).enter_dropoff_location,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -420,21 +435,21 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                Checkbox(
-                  value: setSameLocation,
-                  onChanged: (value) {
-                    setState(() {
-                      setSameLocation = value!;
-                    });
-                  },
-                ),
-                Text(
-                  'Set pick-up and drop-off as the same location',
-                ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     Checkbox(
+            //       value: setSameLocation,
+            //       onChanged: (value) {
+            //         setState(() {
+            //           setSameLocation = value!;
+            //         });
+            //       },
+            //     ),
+            //     Text(
+            //       'Set pick-up and drop-off as the same location',
+            //     ),
+            //   ],
+            // ),
           ],
         ),
 
@@ -443,21 +458,24 @@ class _BookingScreenState extends State<BookingScreen> {
       Step(
         state: currentStep > 1 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 1,
-        title: const Text('Payment'),
+        title: Text(S.of(context).payment),
         content: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Payment Total: USD\$150.00',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                '${S.of(context).total_rental_price} : USD\$150.00',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red),
               ),
               SizedBox(
                 height: 20,
               ),
               Text(
-                'Choose a payment method',
+                S.of(context).choose_payment_method,
                 style: TextStyle(
                     fontSize: 20,
                     color: Theme.of(context).colorScheme.primary,
@@ -478,8 +496,8 @@ class _BookingScreenState extends State<BookingScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Your credit and debit cards',
+                        Text(
+                          S.of(context).your_credit_debit,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -522,7 +540,7 @@ class _BookingScreenState extends State<BookingScreen> {
                                 width: 5,
                               ),
                               Text(
-                                'Add a credit or debit card',
+                                S.of(context).add_credit_debit,
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
@@ -552,8 +570,8 @@ class _BookingScreenState extends State<BookingScreen> {
                         SizedBox(
                           height: 20,
                         ),
-                        const Text(
-                          'Other payment methods',
+                        Text(
+                          S.of(context).other_payment_method,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -628,7 +646,7 @@ class _BookingScreenState extends State<BookingScreen> {
       Step(
         state: currentStep > 2 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 2,
-        title: const Text('Summary'),
+        title: Text(S.of(context).summary),
         content: _buildSummaryWidget(),
       ),
     ];
@@ -675,7 +693,7 @@ class _BookingScreenState extends State<BookingScreen> {
             Row(
               children: [
                 Text(
-                  'Summary',
+                  S.of(context).summary,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -704,19 +722,19 @@ class _BookingScreenState extends State<BookingScreen> {
             SizedBox(height: 10),
             // Display car name
             Text(
-              'Rental Vehicle: ${widget.vehicle.brand}', // Assuming 'name' is the property for the car name
+              '${S.of(context).rental_vehicle}: ${widget.vehicle.brand}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              'Rental Supplier: $vendorBusinessName', // Assuming 'name' is the property for the car name
+              '${S.of(context).rental_supplier}: ${booking.vendorBusinessName}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              'Renter: $userFullName', // Assuming 'name' is the property for the car name
+              '${S.of(context).renter}: ${booking.userFullName}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
@@ -725,39 +743,39 @@ class _BookingScreenState extends State<BookingScreen> {
             Divider(),
             // Display pick-up date and time
             Text(
-              'Pick-up: ${DateFormat('yyyy-MM-dd').format(booking.pickupDate)} at ${booking.pickupTime.format(context)}',
+              '${S.of(context).pick_up}: ${DateFormat('yyyy-MM-dd').format(booking.pickupDate)} at ${booking.pickupTime.format(context)}',
             ),
             SizedBox(height: 5),
             // Display drop-off date and time
             Text(
-              'Drop-off: ${DateFormat('yyyy-MM-dd').format(booking.dropoffDate)} at ${booking.dropoffTime.format(context)}',
+              '${S.of(context).drop_off}: ${DateFormat('yyyy-MM-dd').format(booking.dropoffDate)} at ${booking.dropoffTime.format(context)}',
             ),
             SizedBox(height: 5),
             // Display pick-up location
             Text(
-              'Pick-up Location: ${pickupLocationController.text}',
+              '${S.of(context).pick_up_location}: ${pickupLocationController.text}',
             ),
             SizedBox(height: 5),
             // Display drop-off location
             Text(
-              'Drop-off Location: ${dropoffLocationController.text}',
+              '${S.of(context).drop_off_location}: ${dropoffLocationController.text}',
             ),
             SizedBox(height: 10),
             Divider(),
             // Display selected payment method and card information
             Text(
-              'Payment Method: ${_selectedPaymentMethod?.toString().split('.').last ?? 'N/A'}',
+              '${S.of(context).payment_method} : ${_selectedPaymentMethod?.toString().split('.').last ?? 'N/A'}',
             ),
             if (_selectedPaymentCard != null) ...[
               Text(
-                'Bank Card: - Visa ending in ${_selectedPaymentCard?.lastFourDigits}',
+                'Bank Card: - Visa ${S.of(context).ending_in} ${_selectedPaymentCard?.lastFourDigits}',
               ),
             ],
             Divider(),
             SizedBox(height: 10),
             // Display total price
             Text(
-              'Total Price: USD\$${booking.totalPrice.toStringAsFixed(2)}',
+              '${S.of(context).total_price}: USD\$${booking.totalPrice.toStringAsFixed(2)}',
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
             ),
           ],
@@ -769,10 +787,10 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget buildPaymentCardRadioTile(PaymentCard card) {
     return RadioListTile<PaymentCard>(
       title: Text(
-        'Visa ending in ${card.lastFourDigits}',
+        'Visa ${S.of(context).ending_in} .. ${card.lastFourDigits}',
         style: TextStyle(fontWeight: FontWeight.w500),
       ),
-      subtitle: Text('Card Holder: ${card.cardHolderName}'),
+      subtitle: Text('${S.of(context).card_holder}: ${card.cardHolderName}'),
       value: card,
       groupValue: _selectedPaymentCard,
       secondary: Image.asset('assets/images/credit-card.png'),
@@ -841,7 +859,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(' Vehicle Booking Process'),
+        title: Text(S.of(context).book_your_vehicle),
       ),
       body: Stepper(
         type: StepperType.horizontal,
@@ -888,7 +906,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
                           foregroundColor: Colors.white),
-                      child: const Text('BACK'),
+                      child: Text(S.of(context).back),
                     ),
                   ),
                 SizedBox(
@@ -900,7 +918,9 @@ class _BookingScreenState extends State<BookingScreen> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).primaryColor,
                         foregroundColor: Colors.white),
-                    child: Text(isLastStep ? 'CONFIRM' : 'NEXT'),
+                    child: Text(isLastStep
+                        ? S.of(context).confirm
+                        : S.of(context).next),
                   ),
                 ),
               ],
@@ -936,12 +956,75 @@ class _BookingScreenState extends State<BookingScreen> {
           .collection('bookings')
           .doc(bookingId)
           .set({'bookingId': bookingId});
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(booking.vendorId)
           .collection('bookings')
           .doc(bookingId)
           .set({'bookingId': bookingId});
+
+      // Fetch user and vendor images
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(booking.userId)
+          .get();
+      DocumentSnapshot vendorSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(booking.vendorId)
+          .get();
+
+      String userImageURL = userSnapshot['imageURL'] ?? '';
+      String vendorImageURL = vendorSnapshot['imageURL'] ?? '';
+
+      // Create notifications for user and vendor
+      NotificationModel userNotification = NotificationModel(
+        title: 'Booking Confirmation',
+        body: 'Your booking has been confirmed.',
+        timestamp: DateTime.now(),
+        userImageURL: vendorImageURL, // Vendor image for the user
+        vehicleImageURL: booking.imageUrl,
+        bookingId: bookingId, // Add this field
+      );
+
+      NotificationModel vendorNotification = NotificationModel(
+        title: 'New Booking',
+        body: 'You have received a new booking.',
+        timestamp: DateTime.now(),
+        userImageURL: userImageURL, // User image for the vendor
+        vehicleImageURL: booking.imageUrl,
+        bookingId: bookingId, // Add this field
+      );
+
+      // Add notifications to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(booking.userId)
+          .collection('notifications')
+          .add(userNotification.toMap());
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(booking.vendorId)
+          .collection('notifications')
+          .add(vendorNotification.toMap());
+
+      // Send notifications to user and vendor using NotificationProvider
+      final notificationProvider =
+          Provider.of<NotificationProvider>(context, listen: false);
+      await notificationProvider.sendUserNotification(booking.userId);
+      await notificationProvider.sendVendorNotification(booking.vendorId);
+
+      // Send booking confirmation emails to user and vendor
+      // EmailService emailService = EmailService();
+      // await emailService.sendBookingEmails(
+      //   booking.userEmail ?? '',
+      //   booking.vendorEmail ?? '',
+      //   booking.userFullName,
+      //   booking.vendorBusinessName,
+      //   booking,
+      //   _selectedPaymentCard?.lastFourDigits,
+      // );
 
       // Show success SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -950,10 +1033,6 @@ class _BookingScreenState extends State<BookingScreen> {
           backgroundColor: Colors.green,
         ),
       );
-
-      // Send notifications to user and vendor using PushNotificationService
-      await pushNotificationService.sendUserNotification(booking.userId);
-      await pushNotificationService.sendVendorNotification(booking.vendorId);
 
       // Close the page
       Navigator.of(context).pop();

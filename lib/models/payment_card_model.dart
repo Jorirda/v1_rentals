@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class PaymentCard {
   final String cardId;
   final String cardNumber;

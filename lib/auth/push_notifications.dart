@@ -140,61 +140,6 @@ class PushNotificationService {
     }
   }
 
-  // Future<void> sendNotification(
-  //     String title, String body, String fcmToken) async {
-  //   try {
-  //     // Load the service account key from the assets directory
-  //     final serviceAccountKeyString =
-  //         await rootBundle.loadString('assets/keys/serviceAccountKey.json');
-  //     final serviceAccountKey = jsonDecode(serviceAccountKeyString);
-
-  //     // Define the scopes required for the FCM API
-  //     final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-
-  //     // Create a service account client
-  //     final client = await clientViaServiceAccount(
-  //       ServiceAccountCredentials.fromJson(serviceAccountKey),
-  //       scopes,
-  //     );
-
-  //     // Define the FCM endpoint
-  //     final url =
-  //         'https://fcm.googleapis.com/v1/projects/v1-rentals-test/messages:send';
-
-  //     // Create the payload
-  //     final payload = {
-  //       'message': {
-  //         'token': fcmToken,
-  //         'notification': {
-  //           'title': title,
-  //           'body': body,
-  //         },
-  //         'data': {
-  //           'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-  //         },
-  //       },
-  //     };
-
-  //     // Send the notification
-  //     final response = await client.post(
-  //       Uri.parse(url),
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: jsonEncode(payload),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       print('Notification sent successfully');
-  //     } else {
-  //       print('Failed to send notification: ${response.statusCode}');
-  //       print('Response: ${response.body}');
-  //     }
-
-  //     client.close();
-  //   } catch (e) {
-  //     print('Error sending notification: $e');
-  //   }
-  // }
-
   Future<void> sendUserNotification(String userId) async {
     try {
       String? fcmToken = await _getUserFcmToken(userId);

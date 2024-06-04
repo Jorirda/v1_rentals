@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart'; // Import your Vehicle model here
 import 'package:v1_rentals/screens/vendors/add_vehicle.dart';
 import 'package:v1_rentals/auth/auth_service.dart';
 import 'package:v1_rentals/screens/vendors/vendor_vehicle_details.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 
 class FleetScreen extends StatelessWidget {
   const FleetScreen({Key? key});
@@ -13,7 +15,7 @@ class FleetScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fleet Management'),
+        title: Text(S.of(context).fleet),
         actions: [
           IconButton(
             onPressed: () {
@@ -57,7 +59,7 @@ class FleetScreen extends StatelessWidget {
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(
-                    child: Text('No vehicles found.'),
+                    child: Text(S.of(context).no_vehicles_found),
                   );
                 }
                 return ListView.builder(
@@ -72,7 +74,7 @@ class FleetScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 16),
                           child: Text(
-                            'Vehicle ${index + 1}', // You can customize the header text as needed
+                            '${'Vehicle'} ${index + 1}', // You can customize the header text as needed
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
@@ -119,7 +121,7 @@ class FleetScreen extends StatelessWidget {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        vehicle.brand,
+                                        vehicle.brand.getTranslation(),
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/screens/main/filter_page.dart';
@@ -48,7 +49,10 @@ class _SearchScreenState extends State<SearchScreen> {
   void _handleSearch() {
     setState(() {
       _searchResults = widget.vehicles.where((vehicle) {
-        return vehicle.brand.toLowerCase().contains(_searchQuery.toLowerCase());
+        return vehicle.brand
+            .toString()
+            .toLowerCase()
+            .contains(_searchQuery.toLowerCase());
       }).toList();
 
       // Remove any existing duplicates of the search query
@@ -177,7 +181,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _searchResults[index].brand,
+                                _searchResults[index].brand.getTranslation(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,

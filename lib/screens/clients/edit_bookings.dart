@@ -227,7 +227,6 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       dropoffTime: _dropoffTime,
       pickupLocation: _pickupLocation,
       dropoffLocation: _dropoffLocation,
-
       status: widget.booking.status,
       paymentMethod: widget.booking.paymentMethod,
       paymentStatus: widget.booking.paymentStatus,
@@ -237,6 +236,11 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       vehicleId: widget.booking.vehicleId,
       vendorId: widget.booking.vendorId,
       imageUrl: widget.booking.imageUrl,
+      userFullName: widget.booking.userFullName,
+      vehicleDescription: widget.booking.vehicleDescription,
+      vendorBusinessName: widget.booking.vendorBusinessName,
+      clientImageURL: widget.booking.clientImageURL,
+      vendorImageURL: widget.booking.vendorImageURL,
     );
 
     // Update the booking in Firestore
