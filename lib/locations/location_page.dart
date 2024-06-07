@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/models/search_history_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/providers/location_provider.dart';
@@ -16,8 +16,8 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  String _pickupLocation = 'Set Address';
-  String _dropoffLocation = 'Set Address';
+  String _pickupLocation = '';
+  String _dropoffLocation = '';
 
   final AuthService _authService = AuthService();
 
@@ -214,6 +214,8 @@ class _LocationScreenState extends State<LocationScreen> {
 
   Widget _buildLocationOptions(
       BuildContext context, LocationProvider provider) {
+    _pickupLocation = S.of(context).set_address;
+    _dropoffLocation = S.of(context).set_address;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

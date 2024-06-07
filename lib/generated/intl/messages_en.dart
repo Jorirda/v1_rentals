@@ -74,6 +74,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "brandNissan": MessageLookupByLibrary.simpleMessage("Nissan"),
         "brandSuzuki": MessageLookupByLibrary.simpleMessage("Suzuki"),
         "brandToyota": MessageLookupByLibrary.simpleMessage("Toyota"),
+        "brand_alt":
+            MessageLookupByLibrary.simpleMessage("Brand (if not in list)"),
         "business_name": MessageLookupByLibrary.simpleMessage("Business Name"),
         "business_registration_number": MessageLookupByLibrary.simpleMessage(
             "Business Registration Number"),
@@ -123,6 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Current Location Address"),
         "date_of_birth": MessageLookupByLibrary.simpleMessage("Date of Birth"),
         "day": MessageLookupByLibrary.simpleMessage("Day"),
+        "days_ago": MessageLookupByLibrary.simpleMessage("days ago"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "driver_license_number":
             MessageLookupByLibrary.simpleMessage("Driver\'s License Number"),
@@ -143,12 +146,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "english": MessageLookupByLibrary.simpleMessage("English"),
         "enter_dropoff_location":
             MessageLookupByLibrary.simpleMessage("Enter drop-off location"),
+        "enter_model": MessageLookupByLibrary.simpleMessage(
+            "Please enter the model of the car"),
+        "enter_model_year":
+            MessageLookupByLibrary.simpleMessage("Please enter the model year"),
+        "enter_num_seats": MessageLookupByLibrary.simpleMessage(
+            "Please enter the number of seats"),
         "enter_pickup_location":
             MessageLookupByLibrary.simpleMessage("Enter pick-up location"),
+        "enter_price_per_day": MessageLookupByLibrary.simpleMessage(
+            "Please enter the price per day"),
         "error_loading_vehicles":
             MessageLookupByLibrary.simpleMessage("Error loading vehicles."),
         "expiry_date": MessageLookupByLibrary.simpleMessage("Expiry Date"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
+        "features": MessageLookupByLibrary.simpleMessage("Features"),
         "fleet": MessageLookupByLibrary.simpleMessage("Fleet"),
         "follow": MessageLookupByLibrary.simpleMessage("Follow"),
         "fuel": MessageLookupByLibrary.simpleMessage("Fuel"),
@@ -161,8 +173,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "help": MessageLookupByLibrary.simpleMessage("Help"),
         "history": MessageLookupByLibrary.simpleMessage("History"),
         "home": MessageLookupByLibrary.simpleMessage("Home"),
+        "hours_ago": MessageLookupByLibrary.simpleMessage("hours ago"),
         "issuing_country":
             MessageLookupByLibrary.simpleMessage("Issuing Country"),
+        "just_now": MessageLookupByLibrary.simpleMessage("Just now"),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
         "locations": MessageLookupByLibrary.simpleMessage("Locations"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
@@ -172,6 +186,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "manage_requests":
             MessageLookupByLibrary.simpleMessage("Manage Requests"),
         "mark_as_read": MessageLookupByLibrary.simpleMessage("Mark as read"),
+        "minutes_ago": MessageLookupByLibrary.simpleMessage("minutes ago"),
+        "model": MessageLookupByLibrary.simpleMessage("Model"),
         "model_year": MessageLookupByLibrary.simpleMessage("Model Year"),
         "my_bookings": MessageLookupByLibrary.simpleMessage("My Bookings"),
         "my_location": MessageLookupByLibrary.simpleMessage("My Location"),
@@ -220,6 +236,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
         "popular_locations":
             MessageLookupByLibrary.simpleMessage("Popular Locations"),
+        "popular_vehicles":
+            MessageLookupByLibrary.simpleMessage("Popular Vehicles"),
         "price_per_day": MessageLookupByLibrary.simpleMessage("Price Per Day"),
         "recommended_brands":
             MessageLookupByLibrary.simpleMessage("Recommended Brands"),
@@ -249,6 +267,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "set_address": MessageLookupByLibrary.simpleMessage("Set Address"),
         "set_dropoff_location":
             MessageLookupByLibrary.simpleMessage("Set Dropoff Location"),
+        "set_pickup_drop_off": MessageLookupByLibrary.simpleMessage(
+            "Set pick-up and drop-off as the same location"),
         "set_pickup_location":
             MessageLookupByLibrary.simpleMessage("Set Pickup Location"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
@@ -286,10 +306,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "vehicle": MessageLookupByLibrary.simpleMessage("Vehicle"),
         "vehicle_details":
             MessageLookupByLibrary.simpleMessage("Vehicle Details"),
+        "vehicles_for_you":
+            MessageLookupByLibrary.simpleMessage("Vehicles For You"),
+        "vehicles_near_you":
+            MessageLookupByLibrary.simpleMessage("Vehicles Near You"),
         "vendor": MessageLookupByLibrary.simpleMessage("Vendor"),
         "view_all": MessageLookupByLibrary.simpleMessage("View All"),
         "your_credit_debit":
             MessageLookupByLibrary.simpleMessage("Your credit and debit cards"),
+        "your_fleet": MessageLookupByLibrary.simpleMessage("Your Fleet"),
         "your_location": MessageLookupByLibrary.simpleMessage("Your location")
       };
 }

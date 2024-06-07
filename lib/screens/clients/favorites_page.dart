@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/screens/main/vendor_store.dart';
+import 'package:v1_rentals/providers/favorites_provider.dart';
 
 class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({Key? key}) : super(key: key);
@@ -15,54 +17,16 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  late Future<List<Vehicle>> favoritesFuture;
-  List<Vehicle> _allFavorites = [];
-  List<Vehicle> _filteredFavorites = [];
   TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    favoritesFuture = fetchFavorites();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  Future<List<Vehicle>> fetchFavorites() async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      throw Exception('User not logged in');
-    }
-
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser.uid)
-        .collection('favorites')
-        .get();
-
-    List<Vehicle> vehicles = [];
-    for (var doc in querySnapshot.docs) {
-      String vehicleId = doc.id;
-      DocumentSnapshot vehicleDoc = await FirebaseFirestore.instance
-          .collection('vehicles')
-          .doc(vehicleId)
-          .get();
-      if (vehicleDoc.exists) {
-        Vehicle vehicle = Vehicle.fromMap(vehicleDoc);
-        vehicles.add(vehicle);
-      }
-    }
-    return vehicles;
-  }
-
-  void _onSearchChanged() {
-    String searchQuery = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredFavorites = _allFavorites.where((vehicle) {
-        return vehicle.brand.toString().toLowerCase().contains(searchQuery) ||
-            vehicle.modelYear.toLowerCase().contains(searchQuery) ||
-            vehicle.pricePerDay.toString().contains(searchQuery) ||
-            vehicle.color.toLowerCase().contains(searchQuery);
-      }).toList();
+    final favoritesProvider =
+        Provider.of<FavoritesProvider>(context, listen: false);
+    favoritesProvider.fetchFavorites();
+    _searchController.addListener(() {
+      favoritesProvider.filterFavorites(_searchController.text.toLowerCase());
     });
   }
 
@@ -98,28 +62,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<Vehicle>>(
-              future: favoritesFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-
-                if (_allFavorites.isEmpty && snapshot.hasData) {
-                  _allFavorites = snapshot.data!;
-                  _filteredFavorites = _allFavorites;
-                }
-
-                if (_filteredFavorites.isEmpty) {
+            child: Consumer<FavoritesProvider>(
+              builder: (context, provider, child) {
+                if (provider.filteredFavorites.isEmpty) {
                   return Center(child: Text('No favorites found'));
                 }
 
                 return ListView.builder(
-                  itemCount: _filteredFavorites.length,
+                  itemCount: provider.filteredFavorites.length,
                   itemBuilder: (context, index) {
-                    final vehicle = _filteredFavorites[index];
+                    final vehicle = provider.filteredFavorites[index];
                     return FutureBuilder<DocumentSnapshot>(
                       future: FirebaseFirestore.instance
                           .collection('users')
@@ -169,16 +121,44 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     },
                                     child: Row(
                                       children: [
-                                        Icon(Icons.storefront_sharp,
+                                        const Icon(Icons.storefront_sharp,
                                             color: Colors.red),
-                                        Text(businessName),
-                                        Icon(Icons.arrow_forward),
-                                        Spacer(),
-                                        IconButton(
-                                          onPressed: () {},
-                                          icon: Icon(Icons.favorite),
-                                          color: Colors.red,
-                                        )
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Text(
+                                          businessName,
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        const Icon(Icons.arrow_forward),
+                                        const Spacer(),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: IconButton(
+                                            icon: Icon(
+                                              provider.isFavorite(vehicle.id)
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: Colors.red,
+                                            ),
+                                            onPressed: () {
+                                              if (provider
+                                                  .isFavorite(vehicle.id)) {
+                                                provider
+                                                    .removeFavorite(vehicle);
+                                              } else {
+                                                provider.addFavorite(vehicle);
+                                              }
+                                            },
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -189,7 +169,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Container(
+                                      SizedBox(
                                         width: 150,
                                         height:
                                             100, // Set the desired height here
@@ -216,7 +196,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                '${vehicle.brand} ${vehicle.modelYear}',
+                                                '${vehicle.brand.getTranslation()} ${vehicle.model} ',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20),
@@ -225,26 +205,56 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                 height: 10,
                                               ),
                                               Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
                                                 children: [
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.yellow,
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.settings,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        vehicle
+                                                            .getTransmissionTypeString(),
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Text(
-                                                    '${vehicle.rating}',
-                                                    style:
-                                                        TextStyle(fontSize: 15),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.star,
+                                                        color: Theme.of(context)
+                                                            .primaryColor,
+                                                      ),
+                                                      Text(
+                                                        '${vehicle.rating}',
+                                                        style: TextStyle(
+                                                            fontSize: 15),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
                                               SizedBox(
                                                 height: 10,
                                               ),
-                                              Text(
-                                                '\$${vehicle.pricePerDay}/Day',
-                                                style: TextStyle(
-                                                    color: Colors.red,
-                                                    fontSize: 20),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'USD\$${vehicle.pricePerDay}/${S.of(context).day}',
+                                                    style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 20),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),

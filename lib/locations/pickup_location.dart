@@ -117,7 +117,7 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
               Card(
                 margin: const EdgeInsets.all(12),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
                       onPressed: _getCurrentLocation,
@@ -142,22 +142,22 @@ class _SetPickupLocationScreenState extends State<SetPickupLocationScreen> {
                       indent: 10,
                       endIndent: 10,
                     ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Row(
-                        children: [
-                          const Icon(Icons.map_sharp, color: Colors.red),
-                          const SizedBox(width: 5),
-                          Text(
-                            'Use Map',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // TextButton(
+                    //   onPressed: () {},
+                    //   child: Row(
+                    //     children: [
+                    //       const Icon(Icons.map_sharp, color: Colors.red),
+                    //       const SizedBox(width: 5),
+                    //       Text(
+                    //         'Use Map',
+                    //         style: TextStyle(
+                    //           fontWeight: FontWeight.bold,
+                    //           color: Theme.of(context).colorScheme.primary,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

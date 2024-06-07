@@ -48,7 +48,13 @@ class PaymentOverviewScreen extends StatelessWidget {
                     builder: (context, paymentProvider, child) {
                       final cards = paymentProvider.cards;
                       if (cards.isEmpty) {
-                        return Center(child: Text(S.of(context).no_card_found));
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(child: Text(S.of(context).no_card_found)),
+                          ],
+                        );
                       } else {
                         return Column(
                           children: cards
@@ -58,42 +64,6 @@ class PaymentOverviewScreen extends StatelessWidget {
                       }
                     },
                   ),
-
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => AddPaymentCardScreen(),
-                  //       ),
-                  //     );
-                  //   },
-                  //   child: Card(
-                  //     margin: EdgeInsets.all(20),
-                  //     elevation: 3,
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(10),
-                  //     ),
-                  //     child: const Padding(
-                  //       padding: EdgeInsets.all(8),
-                  //       child: Column(
-                  //         crossAxisAlignment: CrossAxisAlignment.start,
-                  //         children: [
-                  //           ListTile(
-                  //             title: Text(
-                  //               '+ Add Credit/Debit Card',
-                  //               textAlign: TextAlign.center,
-                  //             ),
-                  //             subtitle: Text(
-                  //               'Add your bank account',
-                  //               textAlign: TextAlign.center,
-                  //             ),
-                  //           )
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // )
                 ],
               ),
             ),

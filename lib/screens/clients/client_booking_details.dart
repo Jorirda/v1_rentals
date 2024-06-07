@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/clients/edit_bookings.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
-import 'package:v1_rentals/auth/push_notifications.dart';
+import 'package:v1_rentals/auth/notification_service.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 
 class ClientBookingDetailsScreen extends StatefulWidget {

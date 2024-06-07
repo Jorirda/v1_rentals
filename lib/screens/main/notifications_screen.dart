@@ -7,7 +7,7 @@ import 'package:v1_rentals/providers/booking_provider.dart';
 import 'package:v1_rentals/providers/notification_provider.dart';
 import 'package:v1_rentals/screens/clients/client_booking_details.dart';
 import 'package:v1_rentals/screens/vendors/vendor_booking_details.dart';
-
+import 'package:v1_rentals/generated/l10n.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -38,14 +38,14 @@ class NotificationScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifications \u{1F514}'),
+        title: Text('${S.of(context).notifications}\u{1F514}'),
         actions: [
           TextButton(
             onPressed: () {
               notificationProvider.markAsRead();
             },
             child: Text(
-              'Mark as Read',
+              S.of(context).mark_as_read,
               style: TextStyle(),
             ),
           ),

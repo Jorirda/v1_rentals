@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
-import 'package:v1_rentals/auth/push_notifications.dart';
+import 'package:v1_rentals/services/auth_service.dart';
+import 'package:v1_rentals/auth/notification_service.dart';
 import 'package:v1_rentals/models/notification_model.dart';
 
 class NotificationProvider with ChangeNotifier {

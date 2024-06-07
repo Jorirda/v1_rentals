@@ -7,7 +7,7 @@ import 'package:v1_rentals/generated/l10n.dart';
 class VehicleDetailsPage extends StatefulWidget {
   final Vehicle vehicle;
 
-  const VehicleDetailsPage({Key? key, required this.vehicle}) : super(key: key);
+  const VehicleDetailsPage({super.key, required this.vehicle});
 
   @override
   _VehicleDetailsPageState createState() => _VehicleDetailsPageState();
@@ -57,10 +57,10 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Colors.grey,
                     ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(S.of(context).overview,
                   style: TextStyle(
@@ -68,7 +68,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.overview),
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(
                 S.of(context).brand,
@@ -80,7 +80,19 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                 _vehicle.brand.getTranslation(),
               ),
             ),
-            Divider(),
+            const Divider(),
+            ListTile(
+              title: Text(
+                S.of(context).model,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+              subtitle: Text(
+                _vehicle.model,
+              ),
+            ),
+            const Divider(),
             ListTile(
               title: Text(
                 S.of(context).model_year,
@@ -92,7 +104,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                 _vehicle.modelYear,
               ),
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(S.of(context).type,
                   style: TextStyle(
@@ -100,7 +112,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.carType.toString().split('.').last),
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(S.of(context).seats,
                   style: TextStyle(
@@ -108,7 +120,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.seats.toString()),
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(S.of(context).color,
                   style: TextStyle(
@@ -116,7 +128,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.color),
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(S.of(context).fuel,
                   style: TextStyle(
@@ -124,7 +136,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.fuelType.toString().split('.').last),
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(S.of(context).transmission,
                   style: TextStyle(
@@ -132,7 +144,7 @@ class _VehicleDetailsPageState extends State<VehicleDetailsPage> {
                       color: Theme.of(context).colorScheme.primary)),
               subtitle: Text(_vehicle.transmission.toString().split('.').last),
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               title: Text(S.of(context).price_per_day,
                   style: TextStyle(

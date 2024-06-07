@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/models/user_model.dart';
 
 class AccountDataProvider with ChangeNotifier {

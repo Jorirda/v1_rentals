@@ -44,6 +44,7 @@ enum FuelType {
 class Vehicle {
   String id;
   Brand brand;
+  String model;
   String modelYear;
   CarType carType;
   int seats;
@@ -61,6 +62,7 @@ class Vehicle {
   Vehicle({
     required this.id,
     required this.brand,
+    required this.model,
     required this.carType,
     required this.seats,
     required this.fuelType,
@@ -83,6 +85,7 @@ class Vehicle {
       id: doc.id,
       brand: Brand.values
           .firstWhere((e) => e.toString() == 'Brand.${data['brand']}'),
+      model: data['model'] ?? '',
       modelYear: data['modelYear'] ?? '',
       carType: CarType.values
           .firstWhere((e) => e.toString() == 'CarType.${data['carType']}'),
@@ -106,6 +109,7 @@ class Vehicle {
   Map<String, dynamic> toMap() {
     return {
       'brand': brand.toString().split('.').last,
+      'model': model,
       'modelYear': modelYear,
       'carType': carType.toString().split('.').last,
       'seats': seats,

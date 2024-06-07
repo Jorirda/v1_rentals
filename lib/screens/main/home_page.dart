@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
 import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/home_model.dart';
@@ -425,6 +425,8 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(
                   height: 30,
                 ),
+
+                //Popular Vehicles
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Container(
@@ -434,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          S.of(context).all_vehicles_in_collection,
+                          S.of(context).popular_vehicles,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -464,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 SizedBox(
-                  height: 240,
+                  height: 350,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: vehicles.length,
@@ -481,7 +483,7 @@ class _HomeScreenState extends State<HomeScreen>
                         },
                         child: Container(
                           margin: const EdgeInsets.all(8),
-                          width: 280,
+                          width: 250,
                           child: Card(
                             elevation: 2,
                             shape: RoundedRectangleBorder(
@@ -499,73 +501,260 @@ class _HomeScreenState extends State<HomeScreen>
                                         CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            vehicles[index]
-                                                .brand
-                                                .getTranslation(),
+                                            '${vehicles[index].brand.getTranslation()} ${vehicles[index].model}',
                                             style: TextStyle(
-                                                fontSize: 16,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
+                                                fontSize: 20,
+                                                color: Colors.black,
                                                 fontWeight: FontWeight.bold),
                                             textAlign: TextAlign.center,
                                           ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                vehicles[index]
-                                                    .rating
-                                                    .toString(),
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 4),
-                                              const Icon(
-                                                Icons.star,
-                                                color: Colors.yellow,
-                                              ),
-                                            ],
-                                          ),
                                         ],
                                       ),
-                                      const Divider(),
                                       const SizedBox(
-                                        height: 5,
+                                        height: 15,
                                       ),
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceAround,
                                         children: [
                                           Row(
                                             children: [
-                                              const Icon(Icons.settings),
+                                              Icon(
+                                                Icons.calendar_today,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                vehicles[index].modelYear,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.settings,
+                                                  color: Theme.of(context)
+                                                      .primaryColor),
                                               const SizedBox(width: 4),
                                               Text(
                                                 vehicles[index]
                                                     .getTransmissionTypeString(),
                                                 style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary),
+                                                    color: Colors.grey),
                                               ),
                                             ],
                                           ),
                                           Row(
                                             children: [
                                               Icon(
-                                                Icons.monetization_on,
+                                                Icons.star,
                                                 color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
+                                                    .primaryColor,
                                               ),
                                               const SizedBox(width: 4),
                                               Text(
-                                                '${vehicles[index].pricePerDay}/${S.of(context).day}',
+                                                vehicles[index]
+                                                    .rating
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 15,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'USD\$${vehicles[index].pricePerDay}/${S.of(context).day}',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                    color: Colors.red),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                //Vehicles For You
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          S.of(context).vehicles_for_you,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CategoriesScreen()),
+                            );
+                          },
+                          child: Text(
+                            S.of(context).view_all,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 350,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: vehicles.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CarDetailsScreen(vehicles[index]),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(8),
+                          width: 250,
+                          child: Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildVehicleImage(vehicles[
+                                    index]), // Use the method to build image
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '${vehicles[index].brand.getTranslation()} ${vehicles[index].model}',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 15,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_today,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                vehicles[index].modelYear,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.settings,
+                                                  color: Theme.of(context)
+                                                      .primaryColor),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                vehicles[index]
+                                                    .getTransmissionTypeString(),
+                                                style: TextStyle(
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.star,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                vehicles[index]
+                                                    .rating
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 15,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'USD\$${vehicles[index].pricePerDay}/${S.of(context).day}',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20,
@@ -595,36 +784,55 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildVehicleImage(Vehicle vehicle) {
-    if (vehicle.imageUrl.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-        child: CachedNetworkImage(
-          imageUrl: vehicle.imageUrl,
-          cacheManager:
-              CustomCacheManager.instance, // Use the custom cache manager
-          width: 280,
-          height: 120,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
+    return Stack(
+      children: [
+        if (vehicle.imageUrl.isNotEmpty)
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: CachedNetworkImage(
+              imageUrl: vehicle.imageUrl,
+              cacheManager:
+                  CustomCacheManager.instance, // Use the custom cache manager
+              width: 280,
+              height: 180,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                width: 280,
+                height: 120,
+                color: Colors.grey,
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
+            ),
+          )
+        else
+          Container(
             width: 280,
             height: 120,
             color: Colors.grey,
-            child: const Center(child: CircularProgressIndicator()),
+            child: const Icon(Icons.image, size: 50, color: Colors.white),
           ),
-          errorWidget: (context, url, error) => const Icon(Icons.error),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.favorite_outline, color: Colors.white),
+              onPressed: () {
+                // Add your favorite button press logic here
+              },
+            ),
+          ),
         ),
-      );
-    } else {
-      return Container(
-        width: 280,
-        height: 120,
-        color: Colors.grey,
-        child: const Icon(Icons.image, size: 50, color: Colors.white),
-      );
-    }
+      ],
+    );
   }
 }
 

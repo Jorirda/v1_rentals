@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/l10n/locale_provider.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/generated/l10n.dart';

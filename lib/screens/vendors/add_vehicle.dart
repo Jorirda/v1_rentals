@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/generated/l10n.dart';
@@ -22,6 +22,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late TextEditingController _brandController;
+  late TextEditingController _modelController;
   late TextEditingController _modelYearController;
   late TextEditingController _seatsController;
   late TextEditingController _pricePerDayController;
@@ -40,6 +41,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   void initState() {
     super.initState();
     _brandController = TextEditingController();
+    _modelController = TextEditingController();
     _modelYearController = TextEditingController();
     _selectedCarType = CarType.sedan;
     _seatsController = TextEditingController();
@@ -54,6 +56,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   @override
   void dispose() {
     _brandController.dispose();
+    _modelController.dispose();
     _modelYearController.dispose();
     _seatsController.dispose();
     _pricePerDayController.dispose();
@@ -140,6 +143,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
           final newVehicle = Vehicle(
             id: vehicleId, // Assign the same document ID
             brand: _selectedBrand!,
+            model: _modelController.text,
             modelYear: _modelYearController.text,
             carType: _selectedCarType,
             seats: int.parse(_seatsController.text),
@@ -306,8 +310,18 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                 TextFormField(
                   controller: _brandController,
                   decoration: InputDecoration(
-                    labelText: 'Brand (if not in list)',
+                    labelText: S.of(context).brand_alt,
                   ),
+                ),
+                TextFormField(
+                  controller: _modelController,
+                  decoration: InputDecoration(labelText: S.of(context).model),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return S.of(context).enter_model;
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   controller: _modelYearController,
@@ -315,7 +329,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                       InputDecoration(labelText: S.of(context).model_year),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter the model year';
+                      return S.of(context).enter_model_year;
                     }
                     return null;
                   },
@@ -342,7 +356,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter the number of seats';
+                      return S.of(context).enter_num_seats;
                     }
                     return null;
                   },
@@ -385,7 +399,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter the price per day';
+                      return S.of(context).enter_price_per_day;
                     }
                     return null;
                   },

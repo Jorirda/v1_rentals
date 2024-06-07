@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
@@ -378,7 +378,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             '\$${widget.vehicle.pricePerDay}/${S.of(context).day}',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 25,
+                                fontSize: 35,
                                 color: Colors.red),
                           ),
                           Row(
@@ -388,13 +388,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 20,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: Colors.black,
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(
+                              Icon(
                                 Icons.star,
-                                color: Colors.yellow,
+                                color: Theme.of(context).primaryColor,
                               ),
                             ],
                           ),
@@ -402,7 +402,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.modelYear}',
+                        '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model}  ${widget.vehicle.modelYear}',
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,

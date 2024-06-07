@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:v1_rentals/models/locations_model.dart';
 import 'package:v1_rentals/models/search_history_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
-import 'package:v1_rentals/locations/location_service.dart';
+import 'package:v1_rentals/services/location_service.dart';
 
 class LocationProvider with ChangeNotifier {
   final LocationService _locationService = LocationService();

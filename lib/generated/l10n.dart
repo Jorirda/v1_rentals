@@ -600,6 +600,16 @@ class S {
     );
   }
 
+  /// `Set pick-up and drop-off as the same location`
+  String get set_pickup_drop_off {
+    return Intl.message(
+      'Set pick-up and drop-off as the same location',
+      name: 'set_pickup_drop_off',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Locations`
   String get locations {
     return Intl.message(
@@ -935,6 +945,16 @@ class S {
     return Intl.message(
       'Your credit and debit cards',
       name: 'your_credit_debit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Fleet`
+  String get your_fleet {
+    return Intl.message(
+      'Your Fleet',
+      name: 'your_fleet',
       desc: '',
       args: [],
     );
@@ -2015,6 +2035,146 @@ class S {
     return Intl.message(
       'Edit vehicle',
       name: 'edit_vehicle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Just now`
+  String get just_now {
+    return Intl.message(
+      'Just now',
+      name: 'just_now',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `minutes ago`
+  String get minutes_ago {
+    return Intl.message(
+      'minutes ago',
+      name: 'minutes_ago',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `hours ago`
+  String get hours_ago {
+    return Intl.message(
+      'hours ago',
+      name: 'hours_ago',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `days ago`
+  String get days_ago {
+    return Intl.message(
+      'days ago',
+      name: 'days_ago',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Brand (if not in list)`
+  String get brand_alt {
+    return Intl.message(
+      'Brand (if not in list)',
+      name: 'brand_alt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Model`
+  String get model {
+    return Intl.message(
+      'Model',
+      name: 'model',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter the model of the car`
+  String get enter_model {
+    return Intl.message(
+      'Please enter the model of the car',
+      name: 'enter_model',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter the model year`
+  String get enter_model_year {
+    return Intl.message(
+      'Please enter the model year',
+      name: 'enter_model_year',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter the number of seats`
+  String get enter_num_seats {
+    return Intl.message(
+      'Please enter the number of seats',
+      name: 'enter_num_seats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter the price per day`
+  String get enter_price_per_day {
+    return Intl.message(
+      'Please enter the price per day',
+      name: 'enter_price_per_day',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Popular Vehicles`
+  String get popular_vehicles {
+    return Intl.message(
+      'Popular Vehicles',
+      name: 'popular_vehicles',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Vehicles For You`
+  String get vehicles_for_you {
+    return Intl.message(
+      'Vehicles For You',
+      name: 'vehicles_for_you',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Vehicles Near You`
+  String get vehicles_near_you {
+    return Intl.message(
+      'Vehicles Near You',
+      name: 'vehicles_near_you',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Features`
+  String get features {
+    return Intl.message(
+      'Features',
+      name: 'features',
       desc: '',
       args: [],
     );

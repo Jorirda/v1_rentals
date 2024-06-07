@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image/image.dart' as img;
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
@@ -25,6 +25,7 @@ class EditVehicleScreen extends StatefulWidget {
 }
 
 class _EditVehicleScreenState extends State<EditVehicleScreen> {
+  late TextEditingController _modelController;
   late TextEditingController _modelYearController;
   late TextEditingController _seatsController;
   late TextEditingController _pricePerDayController;
@@ -44,7 +45,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
   @override
   void initState() {
     super.initState();
-
+    _modelController = TextEditingController(text: widget.vehicle.model);
     _modelYearController =
         TextEditingController(text: widget.vehicle.modelYear);
     _seatsController =
@@ -156,6 +157,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         final updatedVehicle = Vehicle(
           id: widget.vehicle.id,
           brand: Vehicle.getBrandFromString(_selectedBrand.getTranslation()),
+          model: _modelController.text,
           modelYear: _modelYearController.text,
           carType: _selectedCarType,
           seats: int.parse(_seatsController.text),
@@ -344,7 +346,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         ],
       ),
       body: _updating
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: EdgeInsets.all(16.0),
               child: Form(
@@ -366,6 +368,11 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                           child: Text(type.toString().split('.').last),
                         );
                       }).toList(),
+                    ),
+                    TextFormField(
+                      controller: _modelController,
+                      decoration:
+                          InputDecoration(labelText: S.of(context).model),
                     ),
                     TextFormField(
                       controller: _modelYearController,

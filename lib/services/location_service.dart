@@ -4,7 +4,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:convert';
-import 'package:v1_rentals/auth/auth_service.dart';
+import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/models/locations_model.dart';
 import 'package:v1_rentals/models/search_history_model.dart';
 import 'package:v1_rentals/models/user_model.dart';

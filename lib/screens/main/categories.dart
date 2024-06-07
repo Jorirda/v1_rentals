@@ -80,37 +80,33 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).categories),
-        actions: [
-          Container(
-            width: 250,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Stack(
-              alignment: Alignment.centerRight,
-              children: [
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: S.of(context).search_for_vehicles,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 10),
-                  ),
-                  onChanged: (value) => _filterVehicles(),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.search, color: Colors.red),
-                  onPressed: () => _filterVehicles(),
-                ),
-              ],
-            ),
+        title: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(30),
           ),
-        ],
+          child: Stack(
+            alignment: Alignment.centerRight,
+            children: [
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: S.of(context).search_for_vehicles,
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                ),
+                onChanged: (value) => _filterVehicles(),
+              ),
+              IconButton(
+                icon: const Icon(Icons.search, color: Colors.red),
+                onPressed: () => _filterVehicles(),
+              ),
+            ],
+          ),
+        ),
       ),
       body: Row(
         children: [
@@ -261,56 +257,60 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             Row(
                               children: [
                                 Text(
-                                  '${vehicle.brand.getTranslation()} ${vehicle.modelYear}',
+                                  '${vehicle.brand.getTranslation()} ${vehicle.model}',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15),
                                 ),
                               ],
                             ),
                             const Divider(),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.settings),
-                                    SizedBox(width: 4),
-                                    Text(vehicle.getTransmissionTypeString()),
+                                    Icon(
+                                      Icons.settings,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      vehicle.getTransmissionTypeString(),
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
                                   ],
                                 ),
-                                VerticalDivider(),
                                 Row(
                                   children: [
                                     Icon(
                                       Icons.star,
-                                      color: Colors.yellow,
+                                      color: Theme.of(context).primaryColor,
                                     ),
                                     SizedBox(width: 4),
-                                    Text(vehicle.rating.toString()),
+                                    Text(
+                                      vehicle.rating.toString(),
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
                                   ],
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5),
+                            SizedBox(height: 10),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.monetization_on,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                SizedBox(width: 4),
                                 Text(
-                                  '${vehicle.pricePerDay.toString()}/${S.of(context).day}',
+                                  'USD\$${vehicle.pricePerDay}/${S.of(context).day}',
                                   style: const TextStyle(
                                       color: Colors.red,
                                       fontWeight: FontWeight.bold,
