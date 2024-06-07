@@ -23,16 +23,14 @@ void main() {
     // Mock Firebase initialization
     final mockFirebaseApp = MockFirebaseApp();
     final mockFirebaseAuth = MockFirebaseAuth();
-    when(mockFirebaseApp.name).thenReturn('MockApp');
-    when(mockFirebaseApp.options).thenReturn(const FirebaseOptions(
-      apiKey: 'test_api_key',
-      appId: 'test_app_id',
-      messagingSenderId: 'test_messaging_sender_id',
-      projectId: 'test_project_id',
-    ));
+
+    // Mock Firebase app initialization
     when(Firebase.initializeApp()).thenAnswer((_) async => mockFirebaseApp);
+
+    // Ensure FirebaseAuth.instance returns the mock
     when(FirebaseAuth.instance).thenReturn(mockFirebaseAuth);
 
+    // Initialize Firebase app
     await Firebase.initializeApp();
   });
 
