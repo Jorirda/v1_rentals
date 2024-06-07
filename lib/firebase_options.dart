@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart'
 /// );
 /// ```
 class DefaultFirebaseOptions {
+  static const secretKey = String.fromEnvironment('FIREBASE_API_KEY_ANDROID');
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       throw UnsupportedError(
@@ -50,20 +51,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBB_ZoA9p8xtCDiqAe_BYRlkeJTp_wN5RY',
-    appId: '1:334896733266:android:37e882c7d0d7ffc3e7538b',
-    messagingSenderId: '334896733266',
-    projectId: 'v1-rentals-test',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_ANDROID'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_ANDROID'),
+    messagingSenderId:
+        String.fromEnvironment('FIREBASE_MESSAGING_SENDOR_ID_ANDROID'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID_ANDROID'),
     storageBucket: 'v1-rentals-test.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD8c2_1nXuqkH3YTo7X3Ysgwn6Tb49owNM',
-    appId: '1:334896733266:ios:728fcd09c4000300e7538b',
-    messagingSenderId: '334896733266',
-    projectId: 'v1-rentals-test',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY_IOS'),
+    appId: String.fromEnvironment('FIREBASE_APP_ID_IOS'),
+    messagingSenderId:
+        String.fromEnvironment('FIREBASE_MESSAGING_SENDOR_ID_IOS'),
+    projectId: String.fromEnvironment('FIREBASE_PROJECT_ID_IOS'),
     storageBucket: 'v1-rentals-test.appspot.com',
     iosBundleId: 'com.example.v1Rentals',
   );
-
 }
