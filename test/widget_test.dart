@@ -1,19 +1,50 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
 import 'package:v1_rentals/main.dart';
+import 'package:v1_rentals/providers/account_provider.dart';
+import 'package:v1_rentals/providers/auth_provider.dart';
+import 'package:v1_rentals/providers/booking_provider.dart';
+import 'package:v1_rentals/providers/email_provider.dart';
+import 'package:v1_rentals/providers/favorites_provider.dart';
+import 'package:v1_rentals/providers/location_provider.dart';
+import 'package:v1_rentals/providers/notification_provider.dart';
+import 'package:v1_rentals/providers/payment_provider.dart';
+import 'package:v1_rentals/l10n/locale_provider.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LocaleProvider()),
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => AccountDataProvider()),
+          ChangeNotifierProvider(create: (_) => PaymentProvider()),
+          ChangeNotifierProvider(create: (_) => BookingProvider()),
+          ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+          ChangeNotifierProxyProvider<AuthProvider, NotificationProvider>(
+            create: (context) => NotificationProvider(),
+            update: (context, authProvider, notificationProvider) {
+              notificationProvider
+                  ?.updateUserId(authProvider.currentUser?.userId);
+              return notificationProvider!;
+            },
+          ),
+          ChangeNotifierProvider(create: (_) => EmailProvider()),
+          ChangeNotifierProxyProvider<AuthProvider, LocationProvider>(
+            create: (context) =>
+                LocationProvider(context.read<AuthProvider>().currentUser),
+            update: (context, authProvider, locationProvider) {
+              locationProvider?.updateUser(authProvider.currentUser);
+              return locationProvider!;
+            },
+          ),
+        ],
+        child: MyApp(),
+      ),
+    );
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
