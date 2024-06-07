@@ -23,7 +23,7 @@ void main() {
     // Mock Firebase initialization
     final mockFirebaseApp = MockFirebaseApp();
     final mockFirebaseAuth = MockFirebaseAuth();
-    when(mockFirebaseApp.name).thenReturn('[DEFAULT]');
+    when(mockFirebaseApp.name).thenReturn('MockApp');
     when(mockFirebaseApp.options).thenReturn(const FirebaseOptions(
       apiKey: 'test_api_key',
       appId: 'test_app_id',
