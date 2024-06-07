@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/main.dart';
+import 'package:v1_rentals/firebase_options.dart';
 import 'package:v1_rentals/providers/account_provider.dart';
 import 'package:v1_rentals/providers/auth_provider.dart';
 import 'package:v1_rentals/providers/booking_provider.dart';
@@ -13,6 +15,14 @@ import 'package:v1_rentals/providers/payment_provider.dart';
 import 'package:v1_rentals/l10n/locale_provider.dart';
 
 void main() {
+  setUpAll(() async {
+    // Initialize Firebase
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  });
+
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
