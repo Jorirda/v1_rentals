@@ -63,17 +63,17 @@ class _VendorBookingDetailsScreenState
             userTitle,
             userBody,
             (await AuthService().getUserData(widget.booking.userId))
-                    ?.fcmToken ??
+                    .fcmToken ??
                 '');
         await pushNotificationService.sendNotification(
             vendorTitle,
             vendorBody,
             (await AuthService().getUserData(widget.booking.vendorId))
-                    ?.fcmToken ??
+                    .fcmToken ??
                 '');
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -90,7 +90,7 @@ class _VendorBookingDetailsScreenState
             future: Future.wait([_vehicleFuture, _vendorFuture, _clientFuture]),
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
@@ -113,7 +113,7 @@ class _VendorBookingDetailsScreenState
                   ),
 
                   // Display vehicle image
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Card(
@@ -134,29 +134,29 @@ class _VendorBookingDetailsScreenState
                                     ? NetworkImage(vendor!.imageURL!)
                                     : null,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
                                 ' ${widget.booking.vendorBusinessName}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Text(
                               '${S.of(context).booking_id} : ${widget.booking.id}'),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           Text(
                             '${S.of(context).rental_vehicle} : ${vehicleSnapshot['brand']}', // Example field from vehicle document
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           GestureDetector(
@@ -194,7 +194,7 @@ class _VendorBookingDetailsScreenState
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
                   Card(
                     elevation: 2,
@@ -210,22 +210,22 @@ class _VendorBookingDetailsScreenState
                               // Display renter
                               Text(
                                 '${S.of(context).renter} : ${client?.fullname}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 client?.phoneNum ?? 'Client Phone #',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
                           Text(
                             client?.address ?? 'Client Address',
-                            style: TextStyle(color: Colors.grey),
+                            style: const TextStyle(color: Colors.grey),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                         ],
@@ -233,7 +233,7 @@ class _VendorBookingDetailsScreenState
                     ),
                   ),
 
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
                   Card(
                     elevation: 2,
@@ -245,52 +245,52 @@ class _VendorBookingDetailsScreenState
                         children: [
                           Text(
                             S.of(context).rental_details,
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
 
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                           Row(
                             children: [
                               Text(S.of(context).booking_time),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 '${DateFormat('yyyy-MM-dd').format(widget.booking.pickupDate)} at ${widget.booking.pickupTime.format(context)}',
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
 
                           // Display drop-off date and time
                           Row(
                             children: [
                               Text(S.of(context).drop_off),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 ' ${DateFormat('yyyy-MM-dd').format(widget.booking.dropoffDate)} at ${widget.booking.dropoffTime.format(context)}',
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           // Display pick-up location
                           Row(
                             children: [
                               Text(S.of(context).pick_up_location),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 ' ${widget.booking.pickupLocation}',
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           // Display drop-off location
                           Row(
                             children: [
                               Text(S.of(context).drop_off_location),
-                              Spacer(),
+                              const Spacer(),
                               Text(
-                                '${widget.booking.dropoffLocation}',
+                                widget.booking.dropoffLocation,
                               ),
                             ],
                           ),
@@ -299,7 +299,7 @@ class _VendorBookingDetailsScreenState
                     ),
                   ),
                   // Display pick-up date and time
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Card(
                     elevation: 2,
                     margin: EdgeInsets.zero,
@@ -310,16 +310,16 @@ class _VendorBookingDetailsScreenState
                         children: [
                           Text(
                             S.of(context).transaction_details,
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           // Display payment method
                           Row(
                             children: [
                               Text(S.of(context).payment_method),
-                              Spacer(),
+                              const Spacer(),
                               Text(
-                                '${widget.booking.paymentMethod}',
+                                widget.booking.paymentMethod,
                               ),
                             ],
                           ),
@@ -329,50 +329,50 @@ class _VendorBookingDetailsScreenState
                               'Bank Card: - Visa ending in ${widget.booking.paymentMethod}', // Example field from booking model
                             ),
                           ],
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                           Row(
                             children: [
                               Text(S.of(context).booking_time),
-                              Spacer(),
+                              const Spacer(),
                               Text(
-                                '${DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.booking.createdAt)}', // Specify the desired time format
+                                DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.booking.createdAt), // Specify the desired time format
                               ),
                             ],
                           ),
-                          SizedBox(height: 30),
+                          const SizedBox(height: 30),
                           Text(
                             S.of(context).amount_information,
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Row(
                             children: [
                               Text(S.of(context).total_price),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 '\$ ${widget.booking.totalPrice.toStringAsFixed(2)}',
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           Row(
                             children: [
                               Text(S.of(context).other_services),
-                              Spacer(),
-                              Text('\$ 0.00'),
+                              const Spacer(),
+                              const Text('\$ 0.00'),
                             ],
                           ),
-                          Divider(),
+                          const Divider(),
                           Row(
                             children: [
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 '${S.of(context).total_rental_price} : \$${widget.booking.totalPrice.toStringAsFixed(2)}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.red),
                               ),
@@ -401,15 +401,15 @@ class _VendorBookingDetailsScreenState
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Decline'),
-                          content: Text(
+                          title: const Text('Decline'),
+                          content: const Text(
                               'Are you sure you want to decline this booking?'),
                           actions: [
                             TextButton(
                               onPressed: () async {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Cancel'),
+                              child: const Text('Cancel'),
                             ),
                             TextButton(
                               onPressed: () async {
@@ -423,21 +423,21 @@ class _VendorBookingDetailsScreenState
                                   print('Error declining booking: $e');
                                 }
                               },
-                              child: Text('Confirm'),
+                              child: const Text('Confirm'),
                             ),
                           ],
                         );
                       },
                     );
                   },
-                  child: Text('Decline'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
+                  child: const Text('Decline'),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Expanded(
@@ -447,15 +447,15 @@ class _VendorBookingDetailsScreenState
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Confirm'),
-                          content: Text(
+                          title: const Text('Confirm'),
+                          content: const Text(
                               'Are you sure you want to accept this booking?'),
                           actions: [
                             TextButton(
                               onPressed: () async {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Cancel'),
+                              child: const Text('Cancel'),
                             ),
                             TextButton(
                               onPressed: () async {
@@ -469,18 +469,18 @@ class _VendorBookingDetailsScreenState
                                   print('Error accepting booking: $e');
                                 }
                               },
-                              child: Text('Confirm'),
+                              child: const Text('Confirm'),
                             ),
                           ],
                         );
                       },
                     );
                   },
-                  child: Text('Accept'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                   ),
+                  child: const Text('Accept'),
                 ),
               ),
             ],

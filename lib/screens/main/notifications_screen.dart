@@ -46,7 +46,7 @@ class NotificationScreen extends StatelessWidget {
             },
             child: Text(
               S.of(context).mark_as_read,
-              style: TextStyle(),
+              style: const TextStyle(),
             ),
           ),
         ],
@@ -66,7 +66,7 @@ class NotificationScreen extends StatelessWidget {
             ),
             title: Text(
               notification.title,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +74,7 @@ class NotificationScreen extends StatelessWidget {
                 Text(notification.body),
                 Text(
                   timeAgo(notification.timestamp),
-                  style: TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
@@ -85,8 +85,8 @@ class NotificationScreen extends StatelessWidget {
                 width: 70,
                 height: 70,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+                placeholder: (context, url) => const CircularProgressIndicator(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
             isThreeLine: true,
@@ -113,7 +113,7 @@ class NotificationScreen extends StatelessWidget {
                 }
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error fetching booking details')),
+                  const SnackBar(content: Text('Error fetching booking details')),
                 );
               }
             },

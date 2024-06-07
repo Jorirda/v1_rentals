@@ -115,7 +115,7 @@ class LocationService {
           .collection('pickupLocations')
           .add(location.toMap());
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -128,7 +128,7 @@ class LocationService {
           .collection('dropoffLocations')
           .add(location.toMap());
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 

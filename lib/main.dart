@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth_wrapper.dart';
 import 'package:v1_rentals/auth/notification_service.dart';
 import 'package:v1_rentals/providers/favorites_provider.dart';
-import 'package:v1_rentals/services/email_service.dart';
 import 'package:v1_rentals/l10n/locale_provider.dart';
 import 'package:v1_rentals/providers/account_provider.dart';
 import 'package:v1_rentals/providers/auth_provider.dart';
@@ -78,12 +77,14 @@ void main() async {
           },
         ),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<LocaleProvider>(
@@ -105,7 +106,7 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: S.delegate.supportedLocales,
-          home: AuthenticationWrapper(),
+          home: const AuthenticationWrapper(),
         );
       },
     );
@@ -132,7 +133,7 @@ class _MainScreenState extends State<MainScreen> {
         onPageChanged: (index) {
           setState(() => _selectedIndex = index);
         },
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: const [
           HomeScreen(),
           CategoriesScreen(),
@@ -188,7 +189,7 @@ class _VendorMainScreenState extends State<VendorMainScreen> {
         onPageChanged: (index) {
           setState(() => _selectedIndex = index);
         },
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: const [
           HomeScreen(),
           CategoriesScreen(),

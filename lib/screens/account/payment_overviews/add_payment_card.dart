@@ -6,6 +6,8 @@ import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 
 class AddPaymentCardScreen extends StatefulWidget {
+  const AddPaymentCardScreen({super.key});
+
   @override
   _AddPaymentCardScreenState createState() => _AddPaymentCardScreenState();
 }

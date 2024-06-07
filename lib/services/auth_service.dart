@@ -154,7 +154,7 @@ class AuthService {
           .doc(booking.id)
           .update(booking.toMap());
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 

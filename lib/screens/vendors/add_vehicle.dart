@@ -96,7 +96,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
       final storageRef = FirebaseStorage.instance
           .ref()
           .child('vehicle_images')
-          .child(DateTime.now().millisecondsSinceEpoch.toString() + '.jpg');
+          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
       final uploadTask = storageRef.putFile(compressedFile);
       final TaskSnapshot snapshot = await uploadTask;
       final imageUrl = await snapshot.ref.getDownloadURL();
@@ -179,7 +179,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
         } else {
           // Show an error message or handle the case where the current user is not a vendor
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Only vendors can add vehicles.'),
               backgroundColor: Colors.red,
             ),
@@ -246,7 +246,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: _pickedImage == null
-                        ? Icon(
+                        ? const Icon(
                             Icons.add_a_photo,
                             size: 50,
                             color: Colors.grey,
@@ -257,7 +257,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                           ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     showModalBottomSheet(
@@ -267,7 +267,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             ListTile(
-                              leading: Icon(Icons.camera),
+                              leading: const Icon(Icons.camera),
                               title: Text(S.of(context).take_photo),
                               onTap: () {
                                 Navigator.pop(context);
@@ -275,7 +275,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                               },
                             ),
                             ListTile(
-                              leading: Icon(Icons.photo),
+                              leading: const Icon(Icons.photo),
                               title: Text(S.of(context).choose_from_gallery),
                               onTap: () {
                                 Navigator.pop(context);
@@ -413,7 +413,7 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                   decoration:
                       InputDecoration(labelText: S.of(context).overview),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitForm,
                   child: Text(S.of(context).submit),

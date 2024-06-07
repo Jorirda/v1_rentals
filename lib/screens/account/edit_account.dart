@@ -81,7 +81,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           .ref('profile_pictures/${_user!.uid}.jpg')
           .putFile(compressedImageFile);
       final String downloadURL = await firebase_storage.FirebaseStorage.instance
-          .ref('profile_pictures/${_user!.uid}.jpg')
+          .ref('profile_pictures/${_user.uid}.jpg')
           .getDownloadURL();
 
       setState(() {
@@ -175,7 +175,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               const SizedBox(
                 height: 5,
               ),
-              Divider(
+              const Divider(
                 indent: 60,
                 endIndent: 60,
               ),

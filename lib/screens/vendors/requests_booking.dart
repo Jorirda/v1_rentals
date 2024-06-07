@@ -25,7 +25,7 @@ class RequestedBookingsScreen extends StatelessWidget {
         stream: AuthService().getVendorBookingsStream(BookingStatus.pending),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -49,9 +49,9 @@ class RequestedBookingsScreen extends StatelessWidget {
                 },
                 child: Card(
                   elevation: 2,
-                  margin: EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(20),
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -60,7 +60,7 @@ class RequestedBookingsScreen extends StatelessWidget {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return CircularProgressIndicator();
+                              return const CircularProgressIndicator();
                             } else if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else {
@@ -81,12 +81,12 @@ class RequestedBookingsScreen extends StatelessWidget {
                                             ? NetworkImage(imageUrl)
                                             : null,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
                                       Text(
-                                        '$businessName',
-                                        style: TextStyle(
+                                        businessName,
+                                        style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600),
                                       ),
@@ -101,12 +101,12 @@ class RequestedBookingsScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   Text(
                                     '${booking.createdAt}',
-                                    style: TextStyle(color: Colors.grey),
+                                    style: const TextStyle(color: Colors.grey),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5,
                                   ),
                                   Row(
@@ -117,25 +117,25 @@ class RequestedBookingsScreen extends StatelessWidget {
                                             .colorScheme
                                             .primary,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
-                                      Text('${booking.pickupLocation}')
+                                      Text(booking.pickupLocation)
                                     ],
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5,
                                   ),
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.arrow_circle_down_sharp,
                                         color: Colors.red,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 5,
                                       ),
-                                      Text('${booking.dropoffLocation}')
+                                      Text(booking.dropoffLocation)
                                     ],
                                   )
                                 ],
@@ -143,19 +143,19 @@ class RequestedBookingsScreen extends StatelessWidget {
                             }
                           },
                         ),
-                        SizedBox(height: 10),
-                        Divider(),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
+                        const Divider(),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             Text(
                               '${S.of(context).total_price}: ',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 15, fontWeight: FontWeight.w600),
                             ),
                             Text(
                               '\$${booking.totalPrice.toStringAsFixed(2)}',
-                              style: TextStyle(color: Colors.red, fontSize: 20),
+                              style: const TextStyle(color: Colors.red, fontSize: 20),
                             ),
                           ],
                         ),

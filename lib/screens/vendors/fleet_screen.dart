@@ -9,7 +9,7 @@ import 'package:v1_rentals/screens/vendors/vendor_vehicle_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 
 class FleetScreen extends StatefulWidget {
-  const FleetScreen({Key? key}) : super(key: key);
+  const FleetScreen({super.key});
 
   @override
   _FleetScreenState createState() => _FleetScreenState();
@@ -59,7 +59,7 @@ class _FleetScreenState extends State<FleetScreen>
                   controller: searchController,
                   style: const TextStyle(color: Colors.black), // Set text color
                   decoration: InputDecoration(
-                    suffixIcon: Icon(
+                    suffixIcon: const Icon(
                       Icons.search,
                       color: Colors.red,
                     ),

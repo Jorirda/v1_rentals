@@ -41,7 +41,7 @@ class _LocationScreenState extends State<LocationScreen> {
           Icon(icon, color: Colors.red, size: 40),
           Text(title,
               style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                  const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
           Tooltip(
             message: subtitle,
             child: Text(
@@ -65,7 +65,7 @@ class _LocationScreenState extends State<LocationScreen> {
           child: Row(
             children: [
               const Icon(Icons.location_on, color: Colors.red),
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               Text(
                 S.of(context).current_location_address,
                 style: TextStyle(
@@ -110,7 +110,7 @@ class _LocationScreenState extends State<LocationScreen> {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          Spacer(),
+          const Spacer(),
           if (title == S.of(context).history)
             TextButton(
               onPressed: () {
@@ -120,7 +120,7 @@ class _LocationScreenState extends State<LocationScreen> {
               },
               child: Text(
                 S.of(context).clear,
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
         ],
@@ -195,7 +195,7 @@ class _LocationScreenState extends State<LocationScreen> {
                       await _authService.updateUserAddress(
                           currentUser.userId!, selectedLocation);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Address updated successfully')),
+                        const SnackBar(content: Text('Address updated successfully')),
                       );
                     } else {
                       _showError('No user signed in or userId is null');

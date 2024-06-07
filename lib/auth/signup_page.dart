@@ -128,7 +128,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         centerTitle: true,
         actions: [
           PopupMenuButton<Locale>(
-            icon: Icon(
+            icon: const Icon(
               Icons.language,
               color: Colors.blue,
             ),
@@ -182,7 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 // Welcome Text
                 Text(
                   S.of(context).select_user_type,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
                   ),
                 ),
@@ -249,7 +249,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               children: [
                 Text(
                   S.of(context).already_member,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(
                   width: 4,

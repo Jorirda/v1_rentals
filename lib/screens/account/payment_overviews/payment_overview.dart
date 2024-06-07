@@ -33,15 +33,15 @@ class PaymentOverviewScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 20.0),
+                    padding: const EdgeInsets.only(left: 20.0),
                     child: Text(
                       S.of(context).add_credit_debit,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   Consumer<PaymentProvider>(
@@ -81,7 +81,7 @@ class PaymentOverviewScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddPaymentCardScreen(),
+                    builder: (context) => const AddPaymentCardScreen(),
                   ),
                 );
               },
@@ -153,13 +153,13 @@ class PaymentOverviewScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Text(
-                        S.of(context).edit,
-                      ),
                       style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor:
                               Theme.of(context).colorScheme.primary),
+                      child: Text(
+                        S.of(context).edit,
+                      ),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -191,12 +191,12 @@ class PaymentOverviewScreen extends StatelessWidget {
                           },
                         );
                       },
-                      child: Text(
-                        S.of(context).delete,
-                      ),
                       style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.red),
+                      child: Text(
+                        S.of(context).delete,
+                      ),
                     ),
                   ],
                 ),

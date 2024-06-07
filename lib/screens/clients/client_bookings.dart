@@ -8,7 +8,7 @@ import 'package:v1_rentals/screens/clients/pending_bookings.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 
 class ClientBookings extends StatelessWidget {
-  const ClientBookings({Key? key});
+  const ClientBookings({super.key});
 
   Future<Map<String, dynamic>> getVendorInfo(String vendorId) async {
     CustomUser? userData = await AuthService().getUserData(vendorId);
@@ -30,7 +30,7 @@ class ClientBookings extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PendingBookingsScreen(),
+                    builder: (context) => const PendingBookingsScreen(),
                   ),
                 );
               },
@@ -71,7 +71,7 @@ class ClientBookings extends StatelessWidget {
       stream: AuthService().getCurrentUserBookingsStream(status),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -98,9 +98,9 @@ class ClientBookings extends StatelessWidget {
               },
               child: Card(
                 elevation: 2,
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -109,7 +109,7 @@ class ClientBookings extends StatelessWidget {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           } else {
@@ -152,7 +152,7 @@ class ClientBookings extends StatelessWidget {
                                 const SizedBox(height: 10),
                                 Text(
                                   '${booking.createdAt}',
-                                  style: TextStyle(color: Colors.grey),
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
                                 const SizedBox(
                                   height: 5,

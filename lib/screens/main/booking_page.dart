@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:v1_rentals/services/auth_service.dart';
-import 'package:v1_rentals/services/email_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/notification_model.dart';
@@ -75,9 +74,9 @@ class _BookingScreenState extends State<BookingScreen> {
       vendorContactInformation: '', // You will need to fetch this value
       pickupDate: DateTime.now(),
       pickupTime: TimeOfDay.fromDateTime(DateTime.now()),
-      dropoffDate: DateTime.now().add(Duration(days: 1)),
+      dropoffDate: DateTime.now().add(const Duration(days: 1)),
       dropoffTime:
-          TimeOfDay.fromDateTime(DateTime.now().add(Duration(days: 1))),
+          TimeOfDay.fromDateTime(DateTime.now().add(const Duration(days: 1))),
       pickupLocation: '',
       dropoffLocation: '',
       totalPrice: widget.vehicle.pricePerDay,
@@ -214,11 +213,11 @@ class _BookingScreenState extends State<BookingScreen> {
           children: [
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.arrow_circle_up,
                   color: Colors.red,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Text(
@@ -241,7 +240,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     title: Text(
                       S.of(context).pickup_date,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -259,7 +258,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     title: Text(
                       S.of(context).pickup_time,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontWeight: FontWeight.w700, fontSize: 15.9),
                     ),
                     subtitle: Text(
@@ -270,16 +269,16 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.arrow_circle_down,
                   color: Colors.red,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Text(
@@ -302,7 +301,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     title: Text(
                       S.of(context).dropoff_date,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
                       '${booking.dropoffDate.day}/${booking.dropoffDate.month}/${booking.dropoffDate.year}',
@@ -318,7 +317,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     ),
                     title: Text(
                       S.of(context).dropoff_time,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(
                       '${booking.dropoffTime.hour}:${booking.dropoffTime.minute}',
@@ -337,11 +336,11 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.location_on,
                   color: Colors.red,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Text(
@@ -358,7 +357,7 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
             Text(
               S.of(context).pick_up_location,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16, // Adjust font size for better readability
               ),
@@ -400,7 +399,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     20), // Add spacing between pick-up and drop-off sections
             Text(
               S.of(context).drop_off_location,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16, // Adjust font size for better readability
               ),
@@ -471,13 +470,13 @@ class _BookingScreenState extends State<BookingScreen> {
         isActive: currentStep >= 1,
         title: Text(S.of(context).payment),
         content: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 '${S.of(context).total_rental_price} : USD\$150.00',
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.red),
@@ -503,7 +502,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -530,24 +529,24 @@ class _BookingScreenState extends State<BookingScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddPaymentCardScreen(),
+                                builder: (context) => const AddPaymentCardScreen(),
                               ),
                             );
                           },
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.add,
                                 color: Colors.grey,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
-                              Icon(
+                              const Icon(
                                 Icons.credit_card,
                                 color: Colors.black,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               Text(
@@ -557,19 +556,19 @@ class _BookingScreenState extends State<BookingScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Icon(
+                              const Icon(
                                 Icons.navigate_next,
                               ),
-                              Container(
+                              SizedBox(
                                 width: 32,
                                 height: 32,
                                 child:
                                     Image.asset('assets/images/visa_icon.png'),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
-                              Container(
+                              SizedBox(
                                 width: 32,
                                 height: 32,
                                 child: Image.asset(
@@ -578,12 +577,12 @@ class _BookingScreenState extends State<BookingScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Text(
                           S.of(context).other_payment_method,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
@@ -594,7 +593,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           children: [
                             // PayPal payment option
                             RadioListTile<PaymentMethod>(
-                              title: Text(
+                              title: const Text(
                                 'PayPal',
                                 style: TextStyle(fontWeight: FontWeight.w500),
                               ),
@@ -611,7 +610,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             ),
                             // Apple Pay payment option
                             RadioListTile<PaymentMethod>(
-                              title: Text(
+                              title: const Text(
                                 'Apple Pay',
                                 style: TextStyle(fontWeight: FontWeight.w500),
                               ),
@@ -628,7 +627,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             ),
                             // Google Pay payment option
                             RadioListTile<PaymentMethod>(
-                              title: Text(
+                              title: const Text(
                                 'Google Pay',
                                 style: TextStyle(fontWeight: FontWeight.w500),
                               ),
@@ -705,19 +704,19 @@ class _BookingScreenState extends State<BookingScreen> {
               children: [
                 Text(
                   S.of(context).summary,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
-                Icon(Icons.notes),
+                const Icon(Icons.notes),
               ],
             ),
-            SizedBox(height: 10),
-            Divider(),
+            const SizedBox(height: 10),
+            const Divider(),
             // Display vehicle image
             Container(
               height: 200, // Adjust the height as needed
@@ -746,7 +745,7 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
             Text(
               '${S.of(context).renter}: ${booking.userFullName}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -787,7 +786,7 @@ class _BookingScreenState extends State<BookingScreen> {
             // Display total price
             Text(
               '${S.of(context).total_price}: USD\$${booking.totalPrice.toStringAsFixed(2)}',
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
             ),
           ],
         ),
@@ -799,7 +798,7 @@ class _BookingScreenState extends State<BookingScreen> {
     return RadioListTile<PaymentCard>(
       title: Text(
         'Visa ${S.of(context).ending_in} .. ${card.lastFourDigits}',
-        style: TextStyle(fontWeight: FontWeight.w500),
+        style: const TextStyle(fontWeight: FontWeight.w500),
       ),
       subtitle: Text('${S.of(context).card_holder}: ${card.cardHolderName}'),
       value: card,
@@ -907,7 +906,7 @@ class _BookingScreenState extends State<BookingScreen> {
         controlsBuilder: (context, details) {
           final isLastStep = currentStep == getSteps().length - 1;
           return Container(
-            margin: EdgeInsets.only(top: 50),
+            margin: const EdgeInsets.only(top: 50),
             child: Row(
               children: [
                 if (currentStep != 0)
@@ -920,7 +919,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       child: Text(S.of(context).back),
                     ),
                   ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 Expanded(
@@ -1039,7 +1038,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
       // Show success SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Booking successfully saved.'),
           backgroundColor: Colors.green,
         ),
@@ -1051,7 +1050,7 @@ class _BookingScreenState extends State<BookingScreen> {
       print('Error sending booking data to Firebase: $e');
       // Show error message if booking data couldn't be saved
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Failed to save booking. Please try again.'),
           backgroundColor: Colors.red,
         ),

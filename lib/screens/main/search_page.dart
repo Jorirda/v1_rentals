@@ -7,7 +7,7 @@ import 'package:v1_rentals/screens/main/filter_page.dart';
 class SearchScreen extends StatefulWidget {
   final List<Vehicle> vehicles;
 
-  const SearchScreen(this.vehicles, {Key? key}) : super(key: key);
+  const SearchScreen(this.vehicles, {super.key});
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -68,11 +68,11 @@ class _SearchScreenState extends State<SearchScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FilterPage(
+        builder: (context) => const FilterPage(
           initialCarType: null, // Initial values for filters
           initialFuelType: null,
           initialTransmissionType: null,
-          initialPriceRange: const RangeValues(0, 1000),
+          initialPriceRange: RangeValues(0, 1000),
         ),
       ),
     );
@@ -102,10 +102,10 @@ class _SearchScreenState extends State<SearchScreen> {
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: const Icon(Icons.search),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
-                    icon: Icon(Icons.clear),
+                    icon: const Icon(Icons.clear),
                     onPressed: _clearSearch,
                   )
                 : null,
@@ -133,7 +133,7 @@ class _SearchScreenState extends State<SearchScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
           )
         ],
       ),
@@ -228,7 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 const Divider(),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
                     'Recent Searches',
                     style: TextStyle(

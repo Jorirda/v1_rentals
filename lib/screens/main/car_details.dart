@@ -203,14 +203,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           height: 90,
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
-                              CircularProgressIndicator(),
+                              const CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                              const Icon(Icons.error),
                           cacheManager: CustomCacheManager.instance,
                         ),
                       )
                     : Text(
-                        vendor?.fullname?[0].toUpperCase() ?? "",
+                        vendor?.fullname[0].toUpperCase() ?? "",
                         style: const TextStyle(fontSize: 18),
                       ),
               ),
@@ -260,7 +260,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         ),
       );
     } else {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
   }
 
@@ -287,7 +287,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       spreadRadius: 1,
                       blurRadius: 5,
                       offset:
-                          Offset(0, 3), // changes the position of the shadow
+                          const Offset(0, 3), // changes the position of the shadow
                     ),
                   ],
                 ),
@@ -295,7 +295,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
                 ),
               ),
             ),
@@ -320,7 +320,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                            Offset(0, 3), // changes the position of the shadow
+                            const Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
@@ -329,8 +329,8 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       await toggleFavorite(widget.vehicle.id);
                     },
                     icon: isFavorite
-                        ? Icon(Icons.favorite, color: Colors.red)
-                        : Icon(
+                        ? const Icon(Icons.favorite, color: Colors.red)
+                        : const Icon(
                             Icons.favorite_outline,
                             color: Colors.white,
                           ),
@@ -349,7 +349,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         spreadRadius: 1,
                         blurRadius: 5,
                         offset:
-                            Offset(0, 3), // changes the position of the shadow
+                            const Offset(0, 3), // changes the position of the shadow
                       ),
                     ],
                   ),
@@ -357,7 +357,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     onPressed: () {
                       // Add your action here
                     },
-                    icon: Icon(Icons.share, color: Colors.white),
+                    icon: const Icon(Icons.share, color: Colors.white),
                   ),
                 ),
               ),
@@ -376,7 +376,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         children: [
                           Text(
                             '\$${widget.vehicle.pricePerDay}/${S.of(context).day}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 35,
                                 color: Colors.red),
@@ -385,7 +385,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             children: [
                               Text(
                                 widget.vehicle.rating.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 20,
                                   color: Colors.black,
@@ -400,10 +400,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model}  ${widget.vehicle.modelYear}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
@@ -411,11 +411,11 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       Text(
                         widget.vehicle.overview,
                         maxLines: 3,
-                        style: TextStyle(color: Colors.grey),
+                        style: const TextStyle(color: Colors.grey),
                       ),
-                      SizedBox(height: 20),
-                      Divider(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      const SizedBox(height: 10),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -444,18 +444,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                               .colorScheme
                                               .primary,
                                         ),
-                                        SizedBox(height: 8),
+                                        const SizedBox(height: 8),
                                         Text(
                                           feature['title'],
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         Text(
                                           feature['subtitle'],
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.grey,
                                           ),
                                         ),
@@ -468,10 +468,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           }).toList(),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Divider(),
+                      const Divider(),
                     ],
                   ),
                 ),
@@ -479,19 +479,19 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Text(
                     S.of(context).vendor,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
                   ),
                 ),
                 buildVendorInfo(),
-                Divider(),
+                const Divider(),
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Text(
                     S.of(context).reviews,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -539,7 +539,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   ),
                   Text(
                     S.of(context).store,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -557,7 +557,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   ),
                   Text(
                     S.of(context).call,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -575,13 +575,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   ),
                   Text(
                     S.of(context).chat,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 width: 30,
               ),
               Expanded(

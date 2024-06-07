@@ -7,7 +7,7 @@ import 'package:v1_rentals/screens/vendors/vendor_booking_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 
 class VendorBookings extends StatefulWidget {
-  const VendorBookings({Key? key}) : super(key: key);
+  const VendorBookings({super.key});
 
   @override
   _VendorBookingsState createState() => _VendorBookingsState();
@@ -25,8 +25,8 @@ class _VendorBookingsState extends State<VendorBookings>
 
   Future<Map<String, dynamic>> getVendorInfo(String vendorId) async {
     CustomUser? userData = await AuthService().getUserData(vendorId);
-    String businessName = userData?.businessName ?? 'Unknown Business';
-    String? imageUrl = userData?.imageURL;
+    String businessName = userData.businessName ?? 'Unknown Business';
+    String? imageUrl = userData.imageURL;
     return {'businessName': businessName, 'imageUrl': imageUrl};
   }
 
@@ -41,7 +41,7 @@ class _VendorBookingsState extends State<VendorBookings>
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => RequestedBookingsScreen()));
+                        builder: (context) => const RequestedBookingsScreen()));
               },
               child: Text(S.of(context).manage_requests))
         ],
@@ -72,7 +72,7 @@ class _VendorBookingsState extends State<VendorBookings>
       stream: AuthService().getVendorBookingsStream(status),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -96,9 +96,9 @@ class _VendorBookingsState extends State<VendorBookings>
               },
               child: Card(
                 elevation: 2,
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -107,7 +107,7 @@ class _VendorBookingsState extends State<VendorBookings>
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           } else {
@@ -127,12 +127,12 @@ class _VendorBookingsState extends State<VendorBookings>
                                           ? NetworkImage(imageUrl)
                                           : null,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      '$businessName',
-                                      style: TextStyle(
+                                      businessName,
+                                      style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w600),
                                     ),
@@ -150,12 +150,12 @@ class _VendorBookingsState extends State<VendorBookings>
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 Text(
                                   '${booking.createdAt}',
-                                  style: TextStyle(color: Colors.grey),
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Row(
@@ -165,25 +165,25 @@ class _VendorBookingsState extends State<VendorBookings>
                                       color:
                                           Theme.of(context).colorScheme.primary,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
-                                    Text('${booking.pickupLocation}')
+                                    Text(booking.pickupLocation)
                                   ],
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.arrow_circle_down_sharp,
                                       color: Colors.red,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
-                                    Text('${booking.dropoffLocation}')
+                                    Text(booking.dropoffLocation)
                                   ],
                                 )
                               ],
@@ -191,19 +191,19 @@ class _VendorBookingsState extends State<VendorBookings>
                           }
                         },
                       ),
-                      SizedBox(height: 10),
-                      Divider(),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      const Divider(),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           Text(
-                            S.of(context).total_price + ": ",
-                            style: TextStyle(
+                            "${S.of(context).total_price}: ",
+                            style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w600),
                           ),
                           Text(
                             '\$${booking.totalPrice.toStringAsFixed(2)}',
-                            style: TextStyle(color: Colors.red, fontSize: 20),
+                            style: const TextStyle(color: Colors.red, fontSize: 20),
                           ),
                         ],
                       ),

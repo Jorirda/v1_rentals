@@ -3,21 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
-import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/screens/main/vendor_store.dart';
 import 'package:v1_rentals/providers/favorites_provider.dart';
 
 class FavoriteScreen extends StatefulWidget {
-  const FavoriteScreen({Key? key}) : super(key: key);
+  const FavoriteScreen({super.key});
 
   @override
   _FavoriteScreenState createState() => _FavoriteScreenState();
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -54,10 +53,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: S.of(context).search_for_favorite_vehicle,
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.search),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
               ),
             ),
           ),
@@ -65,7 +64,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             child: Consumer<FavoritesProvider>(
               builder: (context, provider, child) {
                 if (provider.filteredFavorites.isEmpty) {
-                  return Center(child: Text('No favorites found'));
+                  return const Center(child: Text('No favorites found'));
                 }
 
                 return ListView.builder(
@@ -80,7 +79,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       builder: (context, vendorSnapshot) {
                         if (vendorSnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                         } else if (vendorSnapshot.hasError) {
                           return Center(
                               child: Text('Error: ${vendorSnapshot.error}'));
@@ -103,7 +102,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             );
                           },
                           child: Card(
-                            margin: EdgeInsets.all(8),
+                            margin: const EdgeInsets.all(8),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -123,14 +122,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                       children: [
                                         const Icon(Icons.storefront_sharp,
                                             color: Colors.red),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         ),
                                         Text(
                                           businessName,
                                           style: const TextStyle(fontSize: 20),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 5,
                                         ),
                                         const Icon(Icons.arrow_forward),
@@ -180,10 +179,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                             imageUrl: vehicle.imageUrl,
                                             fit: BoxFit.cover,
                                             placeholder: (context, url) =>
-                                                CircularProgressIndicator(),
+                                                const CircularProgressIndicator(),
                                             errorWidget:
                                                 (context, url, error) =>
-                                                    Icon(Icons.error),
+                                                    const Icon(Icons.error),
                                           ),
                                         ),
                                       ),
@@ -197,11 +196,11 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                             children: [
                                               Text(
                                                 '${vehicle.brand.getTranslation()} ${vehicle.model} ',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 10,
                                               ),
                                               Row(
@@ -220,7 +219,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                       Text(
                                                         vehicle
                                                             .getTransmissionTypeString(),
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             color: Colors.grey),
                                                       ),
                                                     ],
@@ -234,14 +233,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                       ),
                                                       Text(
                                                         '${vehicle.rating}',
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontSize: 15),
                                                       ),
                                                     ],
                                                   ),
                                                 ],
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 height: 10,
                                               ),
                                               Row(
@@ -250,7 +249,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                 children: [
                                                   Text(
                                                     'USD\$${vehicle.pricePerDay}/${S.of(context).day}',
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.red,
                                                         fontSize: 20),
                                                   ),

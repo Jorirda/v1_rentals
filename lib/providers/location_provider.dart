@@ -16,7 +16,7 @@ class LocationProvider with ChangeNotifier {
   ]; // Define a list of popular locations
   List<SearchHistory> _searchHistory = [];
   String _currentLocation = '';
-  LatLng _currentPosition = LatLng(0, 0);
+  LatLng _currentPosition = const LatLng(0, 0);
   bool _isLoading = false;
   LatLng? _currentLatLng;
   String? _currentPlaceName;
@@ -76,7 +76,7 @@ class LocationProvider with ChangeNotifier {
         final Placemark place = placemarks.first;
 
         // Fetch place details from Google Places API
-        final String apiKey = LocationService.apiKey;
+        const String apiKey = LocationService.apiKey;
         final String url =
             'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentLatLng!.latitude},${_currentLatLng!.longitude}&radius=50&key=$apiKey';
 
@@ -102,7 +102,7 @@ class LocationProvider with ChangeNotifier {
       _currentPlaceName = null;
       _currentAddress = null;
       notifyListeners();
-      throw e;
+      rethrow;
     }
 
     _isLoading = false;

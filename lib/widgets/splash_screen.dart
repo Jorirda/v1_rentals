@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -9,13 +11,13 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               width: 200,
               height: 200,
               child: Image.asset('assets/images/v1-rentals-logo.png'),
             ),
-            SizedBox(height: 20),
-            CircularProgressIndicator(), // Display circular progress indicator
+            const SizedBox(height: 20),
+            const CircularProgressIndicator(), // Display circular progress indicator
           ],
         ),
       ),

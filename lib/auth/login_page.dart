@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
 
   final AssetImage _backgroundImage =
-      AssetImage('assets/images/car-rental-bg3.jpg');
+      const AssetImage('assets/images/car-rental-bg3.jpg');
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 150,
                 child: Image.asset('assets/images/v1-rentals-logo.png'),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 200,
               ),
               Padding(

@@ -60,10 +60,8 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
     _selectedTransmissionType = widget.vehicle.transmission;
     _vehicle = widget.vehicle;
     _selectedBrand = widget.vehicle.brand;
-    if (widget.vehicle.imageUrl != null) {
-      _loadImageFromUrl(widget.vehicle.imageUrl!);
+    _loadImageFromUrl(widget.vehicle.imageUrl);
     }
-  }
 
   Future<void> _loadImageFromUrl(String imageUrl) async {
     try {
@@ -188,7 +186,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         widget.onUpdate(updatedVehicle);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Updated Successfully.'),
             backgroundColor: Colors.green,
           ),
@@ -197,7 +195,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('User is not authenticated.'),
             backgroundColor: Colors.red,
           ),
@@ -233,14 +231,12 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
             .doc(widget.vehicle.id)
             .delete();
 
-        if (widget.vehicle.imageUrl != null) {
-          final storageRef =
-              FirebaseStorage.instance.refFromURL(widget.vehicle.imageUrl!);
-          await storageRef.delete();
-        }
-
+        final storageRef =
+            FirebaseStorage.instance.refFromURL(widget.vehicle.imageUrl);
+        await storageRef.delete();
+      
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Vehicle Deleted Successfully.'),
             backgroundColor: Colors.green,
           ),
@@ -248,7 +244,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         Navigator.of(context).pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('User is not authenticated.'),
             backgroundColor: Colors.red,
           ),
@@ -269,8 +265,8 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this vehicle?'),
+          title: const Text('Confirm Deletion'),
+          content: const Text('Are you sure you want to delete this vehicle?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -309,7 +305,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              leading: Icon(Icons.camera),
+              leading: const Icon(Icons.camera),
               title: Text(S.of(context).take_photo),
               onTap: () {
                 Navigator.of(context).pop();
@@ -317,7 +313,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.photo_album),
+              leading: const Icon(Icons.photo_album),
               title: Text(S.of(context).choose_from_gallery),
               onTap: () {
                 Navigator.of(context).pop();
@@ -337,7 +333,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
         title: Text(S.of(context).edit_vehicle),
         actions: [
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.delete,
               color: Colors.red,
             ),
@@ -348,7 +344,7 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
       body: _updating
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Form(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -452,11 +448,11 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                         );
                       }).toList(),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     _pickedImage != null
                         ? Image.file(_pickedImage!)
-                        : CircularProgressIndicator(),
-                    SizedBox(height: 20),
+                        : const CircularProgressIndicator(),
+                    const SizedBox(height: 20),
                     Row(
                       children: [
                         Expanded(
@@ -465,15 +461,15 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
                             child: Text(S.of(context).change_image),
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: _submitForm,
-                            child: Text(S.of(context).update_vehicle),
                             style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor:
                                     Theme.of(context).primaryColor),
+                            child: Text(S.of(context).update_vehicle),
                           ),
                         ),
                       ],

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:mockito/mockito.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:v1_rentals/main.dart';
-import 'package:v1_rentals/firebase_options.dart';
+import 'package:v1_rentals/mock_firebase.dart';
 import 'package:v1_rentals/providers/account_provider.dart';
-import 'package:v1_rentals/providers/auth_provider.dart';
+import 'package:v1_rentals/providers/auth_provider.dart' as app_auth;
 import 'package:v1_rentals/providers/booking_provider.dart';
 import 'package:v1_rentals/providers/email_provider.dart';
 import 'package:v1_rentals/providers/favorites_provider.dart';
@@ -16,11 +18,22 @@ import 'package:v1_rentals/l10n/locale_provider.dart';
 
 void main() {
   setUpAll(() async {
-    // Initialize Firebase
     TestWidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+
+    // Mock Firebase initialization
+    final mockFirebaseApp = MockFirebaseApp();
+    final mockFirebaseAuth = MockFirebaseAuth();
+    when(mockFirebaseApp.name).thenReturn('[DEFAULT]');
+    when(mockFirebaseApp.options).thenReturn(const FirebaseOptions(
+      apiKey: 'test_api_key',
+      appId: 'test_app_id',
+      messagingSenderId: 'test_messaging_sender_id',
+      projectId: 'test_project_id',
+    ));
+    when(Firebase.initializeApp()).thenAnswer((_) async => mockFirebaseApp);
+    when(FirebaseAuth.instance).thenReturn(mockFirebaseAuth);
+
+    await Firebase.initializeApp();
   });
 
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -29,12 +42,13 @@ void main() {
       MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => LocaleProvider()),
-          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => app_auth.AuthProvider()),
           ChangeNotifierProvider(create: (_) => AccountDataProvider()),
           ChangeNotifierProvider(create: (_) => PaymentProvider()),
           ChangeNotifierProvider(create: (_) => BookingProvider()),
           ChangeNotifierProvider(create: (_) => FavoritesProvider()),
-          ChangeNotifierProxyProvider<AuthProvider, NotificationProvider>(
+          ChangeNotifierProxyProvider<app_auth.AuthProvider,
+              NotificationProvider>(
             create: (context) => NotificationProvider(),
             update: (context, authProvider, notificationProvider) {
               notificationProvider
@@ -43,9 +57,9 @@ void main() {
             },
           ),
           ChangeNotifierProvider(create: (_) => EmailProvider()),
-          ChangeNotifierProxyProvider<AuthProvider, LocationProvider>(
-            create: (context) =>
-                LocationProvider(context.read<AuthProvider>().currentUser),
+          ChangeNotifierProxyProvider<app_auth.AuthProvider, LocationProvider>(
+            create: (context) => LocationProvider(
+                context.read<app_auth.AuthProvider>().currentUser),
             update: (context, authProvider, locationProvider) {
               locationProvider?.updateUser(authProvider.currentUser);
               return locationProvider!;

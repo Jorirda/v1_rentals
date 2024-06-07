@@ -95,7 +95,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => PaymentOverviewScreen(),
+                      builder: (context) => const PaymentOverviewScreen(),
                     ),
                   );
                 },
@@ -108,7 +108,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => LanguageScreen(),
+                      builder: (context) => const LanguageScreen(),
                     ),
                   );
                 },
@@ -153,7 +153,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: 20),
         Text(
-          '${user.fullname}',
+          user.fullname,
           style: const TextStyle(
             color: Colors.black,
             fontSize: 22,
@@ -162,7 +162,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          '${user.email}',
+          user.email,
           style: const TextStyle(
             color: Colors.grey,
           ),

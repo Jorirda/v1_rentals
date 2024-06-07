@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
@@ -10,7 +9,7 @@ import 'package:v1_rentals/screens/main/car_details.dart';
 class CategoriesScreen extends StatefulWidget {
   final String? selectedBrand;
 
-  const CategoriesScreen({Key? key, this.selectedBrand}) : super(key: key);
+  const CategoriesScreen({super.key, this.selectedBrand});
 
   @override
   _CategoriesScreenState createState() => _CategoriesScreenState();
@@ -183,7 +182,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                                   Text(S.of(context).error_loading_vehicles),
                                   ElevatedButton(
                                     onPressed: _loadVehicles,
-                                    child: Text('Retry'),
+                                    child: const Text('Retry'),
                                   ),
                                 ],
                               ),
@@ -267,7 +266,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                               children: [
                                 Text(
                                   '${vehicle.brand.getTranslation()} ${vehicle.model}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15),
                                 ),
@@ -286,7 +285,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                                     const SizedBox(width: 4),
                                     Text(
                                       vehicle.getTransmissionTypeString(),
-                                      style: TextStyle(color: Colors.grey),
+                                      style: const TextStyle(color: Colors.grey),
                                     ),
                                   ],
                                 ),
@@ -296,16 +295,16 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                                       Icons.star,
                                       color: Theme.of(context).primaryColor,
                                     ),
-                                    SizedBox(width: 4),
+                                    const SizedBox(width: 4),
                                     Text(
                                       vehicle.rating.toString(),
-                                      style: TextStyle(color: Colors.grey),
+                                      style: const TextStyle(color: Colors.grey),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [

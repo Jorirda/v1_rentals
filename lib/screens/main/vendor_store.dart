@@ -59,7 +59,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
     if (vendor != null) {
       return Card(
         color: Theme.of(context).colorScheme.primary,
-        margin: EdgeInsets.all(16.0),
+        margin: const EdgeInsets.all(16.0),
         elevation: 3,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -77,13 +77,13 @@ class _VendorStorePageState extends State<VendorStorePage> {
                           height: 90,
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
-                              CircularProgressIndicator(),
+                              const CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+                              const Icon(Icons.error),
                         ),
                       )
                     : Text(
-                        vendor?.fullname?[0].toUpperCase() ?? "",
+                        vendor?.fullname[0].toUpperCase() ?? "",
                         style: const TextStyle(fontSize: 18),
                       ),
               ),
@@ -98,7 +98,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
                         Text(
                           vendor!.businessName ??
                               S.of(context).no_business_name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                             color: Colors.white,
@@ -110,34 +110,34 @@ class _VendorStorePageState extends State<VendorStorePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.star,
                           color: Colors.yellow,
                         ),
-                        Icon(
+                        const Icon(
                           Icons.star,
                           color: Colors.yellow,
                         ),
-                        Icon(
+                        const Icon(
                           Icons.star,
                           color: Colors.yellow,
                         ),
-                        Icon(
+                        const Icon(
                           Icons.star,
                           color: Colors.yellow,
                         ),
-                        Icon(
+                        const Icon(
                           Icons.star_outline,
                           color: Colors.yellow,
                         ),
-                        Text(
+                        const Text(
                           '4.0',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 15),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         ElevatedButton(
                           onPressed: () {},
                           child: Text(S.of(context).follow),
@@ -152,7 +152,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
         ),
       );
     } else {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
   }
 
@@ -193,17 +193,17 @@ class _VendorStorePageState extends State<VendorStorePage> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             Row(
                               children: [
                                 Text(
                                   '${vehicle.brand.getTranslation()} ${vehicle.modelYear}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                   ),
@@ -215,35 +215,35 @@ class _VendorStorePageState extends State<VendorStorePage> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.settings),
-                                    SizedBox(width: 4),
+                                    const Icon(Icons.settings),
+                                    const SizedBox(width: 4),
                                     Text(vehicle.getTransmissionTypeString()),
                                   ],
                                 ),
-                                VerticalDivider(),
+                                const VerticalDivider(),
                                 Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.star,
                                       color: Colors.yellow,
                                     ),
-                                    SizedBox(width: 4),
+                                    const SizedBox(width: 4),
                                     Text(vehicle.rating.toString()),
                                   ],
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             Row(
                               children: [
                                 Icon(
                                   Icons.monetization_on,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text(
                                   '${vehicle.pricePerDay.toString()}/${S.of(context).day}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.red,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
@@ -258,7 +258,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
           ],
         );
       }).toList(),
@@ -312,7 +312,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
                     ? Theme.of(context).colorScheme.primary
                     : Colors.grey,
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 carTypeTranslationKeys[carType]!,
                 textAlign: TextAlign.center,
@@ -334,7 +334,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey[200],
       ),
-      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -342,7 +342,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: destinationWidgets.map((widget) {
             return Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.0),
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
               child: widget,
             );
           }).toList(),
@@ -382,9 +382,9 @@ class _VendorStorePageState extends State<VendorStorePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildVendorInfo(),
-          SizedBox(height: 10),
-          Divider(),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
+          const Divider(),
+          const SizedBox(height: 10),
           Expanded(
             child: Card(
               shadowColor: Colors.black,
@@ -414,7 +414,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
 
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return Center(
+                              return const Center(
                                 child: CircularProgressIndicator(),
                               );
                             }

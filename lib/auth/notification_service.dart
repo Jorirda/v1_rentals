@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -19,7 +17,7 @@ class PushNotificationService {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final InitializationSettings initializationSettings =
+    const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
 
     await _flutterLocalNotificationsPlugin.initialize(
@@ -51,10 +49,8 @@ class PushNotificationService {
 
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         print('Message clicked!');
-        if (message.data != null) {
-          // Handle the notification click
-        }
-      });
+        // Handle the notification click
+            });
     }
   }
 
@@ -103,7 +99,7 @@ class PushNotificationService {
       );
 
       // Define the FCM endpoint
-      final url =
+      const url =
           'https://fcm.googleapis.com/v1/projects/v1-rentals-test/messages:send';
 
       // Create the payload

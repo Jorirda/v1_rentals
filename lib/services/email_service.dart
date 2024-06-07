@@ -17,7 +17,7 @@ class EmailService {
       url,
       headers: {
         'Authorization':
-            'Basic ' + base64Encode(utf8.encode('api:$_mailgunApiKey')),
+            'Basic ${base64Encode(utf8.encode('api:$_mailgunApiKey'))}',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: {

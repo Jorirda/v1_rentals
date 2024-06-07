@@ -89,7 +89,7 @@ class _EditPaymentCardScreenState extends State<EditPaymentCardScreen> {
         title: Text(S.of(context).edit_payment_card),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -104,7 +104,7 @@ class _EditPaymentCardScreenState extends State<EditPaymentCardScreen> {
               cardType: CardType.visa,
               isHolderNameVisible: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CreditCardForm(
               formKey: formKey,
               cardNumber: cardNumberController.text,
@@ -121,7 +121,7 @@ class _EditPaymentCardScreenState extends State<EditPaymentCardScreen> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Show confirmation dialog before deleting the card

@@ -14,7 +14,7 @@ class AuthenticationWrapper extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
     switch (authProvider.status) {
       case AuthStatus.loading:
-        return SplashScreen();
+        return const SplashScreen();
       case AuthStatus.authenticated:
         final userType = authProvider.currentUser!.userType;
         print('Authenticated user type: $userType');

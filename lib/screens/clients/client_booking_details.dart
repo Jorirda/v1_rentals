@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:v1_rentals/services/auth_service.dart';
 
 import 'package:v1_rentals/models/booking_model.dart';
-import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
@@ -15,7 +14,7 @@ import 'package:v1_rentals/generated/l10n.dart';
 class ClientBookingDetailsScreen extends StatefulWidget {
   final Booking booking;
 
-  const ClientBookingDetailsScreen({Key? key, required this.booking});
+  const ClientBookingDetailsScreen({super.key, required this.booking});
 
   @override
   _ClientBookingDetailsScreenState createState() =>
@@ -75,7 +74,7 @@ class _ClientBookingDetailsScreenState
                 '');
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -93,7 +92,7 @@ class _ClientBookingDetailsScreenState
             future: Future.wait([_vehicleFuture, _vendorFuture, _clientFuture]),
             builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
@@ -116,7 +115,7 @@ class _ClientBookingDetailsScreenState
                   ),
 
                   // Display vehicle image
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Card(
@@ -137,29 +136,29 @@ class _ClientBookingDetailsScreenState
                                     ? NetworkImage(vendor!.imageURL!)
                                     : null,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
                                 vendor?.businessName ?? "",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Text(
                               '${S.of(context).booking_id}: ${widget.booking.id}'),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           Text(
                             '${S.of(context).rental_vehicle}: ${vehicleSnapshot['brand']}', // Example field from vehicle document
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           GestureDetector(
@@ -197,7 +196,7 @@ class _ClientBookingDetailsScreenState
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
                   Card(
                     elevation: 2,
@@ -213,22 +212,22 @@ class _ClientBookingDetailsScreenState
                               // Display renter
                               Text(
                                 '${S.of(context).renter}: ${client?.fullname}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 client?.phoneNum ?? "",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
                           Text(
                             client?.address ?? "",
-                            style: TextStyle(color: Colors.grey),
+                            style: const TextStyle(color: Colors.grey),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                         ],
@@ -236,7 +235,7 @@ class _ClientBookingDetailsScreenState
                     ),
                   ),
 
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
                   Card(
                     elevation: 2,
@@ -248,50 +247,50 @@ class _ClientBookingDetailsScreenState
                         children: [
                           Text(
                             S.of(context).rental_details,
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                           Row(
                             children: [
                               Text(S.of(context).pick_up),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 '${DateFormat('yyyy-MM-dd').format(widget.booking.pickupDate)} at ${widget.booking.pickupTime.format(context)}',
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           // Display drop-off date and time
                           Row(
                             children: [
                               Text(S.of(context).drop_off),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 ' ${DateFormat('yyyy-MM-dd').format(widget.booking.dropoffDate)} at ${widget.booking.dropoffTime.format(context)}',
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           // Display pick-up location
                           Row(
                             children: [
                               Text(S.of(context).pick_up_location),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 ' ${widget.booking.pickupLocation}',
                               ),
                             ],
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           // Display drop-off location
                           Row(
                             children: [
                               Text(S.of(context).drop_off_location),
-                              Spacer(),
+                              const Spacer(),
                               Text(
-                                '${widget.booking.dropoffLocation}',
+                                widget.booking.dropoffLocation,
                               ),
                             ],
                           ),
@@ -301,7 +300,7 @@ class _ClientBookingDetailsScreenState
                   ),
                   // Display pick-up date and time
 
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Card(
                     elevation: 2,
                     margin: EdgeInsets.zero,
@@ -312,16 +311,16 @@ class _ClientBookingDetailsScreenState
                         children: [
                           Text(
                             S.of(context).transaction_details,
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           // Display payment method
                           Row(
                             children: [
                               Text(S.of(context).payment_method),
-                              Spacer(),
+                              const Spacer(),
                               Text(
-                                '${widget.booking.paymentMethod}',
+                                widget.booking.paymentMethod,
                               ),
                             ],
                           ),
@@ -337,9 +336,11 @@ class _ClientBookingDetailsScreenState
                           Row(
                             children: [
                               Text(S.of(context).booking_time),
-                              Spacer(),
+                              const Spacer(),
                               Text(
-                                '${DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.booking.createdAt)}', // Specify the desired time format
+                                DateFormat('yyyy-MM-dd HH:mm:ss').format(widget
+                                    .booking
+                                    .createdAt), // Specify the desired time format
                               ),
                             ],
                           ),
@@ -348,7 +349,7 @@ class _ClientBookingDetailsScreenState
                           ),
                           Text(
                             S.of(context).amount_information,
-                            style: TextStyle(fontWeight: FontWeight.w600),
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(
                             height: 10,
@@ -358,13 +359,13 @@ class _ClientBookingDetailsScreenState
                               Text(
                                 S.of(context).total_rental_price,
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 '\$ ${widget.booking.totalPrice.toStringAsFixed(2)}',
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                           Row(
@@ -372,19 +373,19 @@ class _ClientBookingDetailsScreenState
                               Text(
                                 S.of(context).other_services,
                               ),
-                              Spacer(),
-                              Text(
+                              const Spacer(),
+                              const Text(
                                 '\$ 0.00',
                               ),
                             ],
                           ),
-                          Divider(),
+                          const Divider(),
                           Row(
                             children: [
-                              Spacer(),
+                              const Spacer(),
                               Text(
                                 '${S.of(context).total_rental_price}: \$${widget.booking.totalPrice.toStringAsFixed(2)}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.red),
                               ),
@@ -436,11 +437,11 @@ class _ClientBookingDetailsScreenState
                       },
                     );
                   },
-                  child: Text(S.of(context).cancel),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
+                  child: Text(S.of(context).cancel),
                 ),
               ),
               Expanded(
@@ -454,11 +455,11 @@ class _ClientBookingDetailsScreenState
                       ),
                     );
                   },
-                  child: Text(S.of(context).edit),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                   ),
+                  child: Text(S.of(context).edit),
                 ),
               ),
             ],

@@ -21,7 +21,7 @@ class LanguageScreen extends StatelessWidget {
           children: [
             Text(
               '${S.of(context).select_language} :',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 20,

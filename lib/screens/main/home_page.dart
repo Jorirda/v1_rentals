@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Padding(
@@ -135,9 +135,9 @@ class _HomeScreenState extends State<HomeScreen>
                                         height: 70,
                                         fit: BoxFit.cover,
                                         placeholder: (context, url) =>
-                                            CircularProgressIndicator(),
+                                            const CircularProgressIndicator(),
                                         errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
+                                            const Icon(Icons.error),
                                       ),
                                     )
                                   : Text(
@@ -437,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen>
                       children: [
                         Text(
                           S.of(context).popular_vehicles,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -504,7 +504,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         children: [
                                           Text(
                                             '${vehicles[index].brand.getTranslation()} ${vehicles[index].model}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 20,
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.bold),
@@ -529,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               const SizedBox(width: 4),
                                               Text(
                                                 vehicles[index].modelYear,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.grey),
                                               ),
@@ -544,7 +544,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               Text(
                                                 vehicles[index]
                                                     .getTransmissionTypeString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     color: Colors.grey),
                                               ),
                                             ],
@@ -561,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 vehicles[index]
                                                     .rating
                                                     .toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.grey),
                                               ),
@@ -580,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen>
                                             children: [
                                               Text(
                                                 'USD\$${vehicles[index].pricePerDay}/${S.of(context).day}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20,
                                                     color: Colors.red),
@@ -612,7 +612,7 @@ class _HomeScreenState extends State<HomeScreen>
                       children: [
                         Text(
                           S.of(context).vehicles_for_you,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
@@ -679,7 +679,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         children: [
                                           Text(
                                             '${vehicles[index].brand.getTranslation()} ${vehicles[index].model}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 20,
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.bold),
@@ -704,7 +704,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               const SizedBox(width: 4),
                                               Text(
                                                 vehicles[index].modelYear,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.grey),
                                               ),
@@ -719,7 +719,7 @@ class _HomeScreenState extends State<HomeScreen>
                                               Text(
                                                 vehicles[index]
                                                     .getTransmissionTypeString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     color: Colors.grey),
                                               ),
                                             ],
@@ -736,7 +736,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 vehicles[index]
                                                     .rating
                                                     .toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.grey),
                                               ),
@@ -755,7 +755,7 @@ class _HomeScreenState extends State<HomeScreen>
                                             children: [
                                               Text(
                                                 'USD\$${vehicles[index].pricePerDay}/${S.of(context).day}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20,
                                                     color: Colors.red),

@@ -3,12 +3,12 @@ import 'package:v1_rentals/models/vehicle_model.dart';
 
 class FilterPage extends StatefulWidget {
   const FilterPage({
-    Key? key,
+    super.key,
     required this.initialCarType,
     required this.initialFuelType,
     required this.initialTransmissionType,
     required this.initialPriceRange,
-  }) : super(key: key);
+  });
 
   final CarType? initialCarType;
   final FuelType? initialFuelType;
@@ -164,11 +164,11 @@ class _FilterPageState extends State<FilterPage> {
                     Navigator.pop(
                         context); // Pop the FilterPage to reset filters
                   },
-                  child: Text('Reset'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.red,
                   ),
+                  child: const Text('Reset'),
                 ),
               ),
               const SizedBox(

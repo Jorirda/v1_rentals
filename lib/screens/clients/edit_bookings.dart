@@ -8,7 +8,7 @@ import 'package:v1_rentals/services/auth_service.dart';
 class EditBookingScreen extends StatefulWidget {
   final Booking booking;
 
-  const EditBookingScreen({Key? key, required this.booking}) : super(key: key);
+  const EditBookingScreen({super.key, required this.booking});
 
   @override
   _EditBookingScreenState createState() => _EditBookingScreenState();
@@ -37,14 +37,14 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Booking'),
+        title: const Text('Edit Booking'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pick-up Date and Time'),
+            const Text('Pick-up Date and Time'),
             Row(
               children: [
                 Expanded(
@@ -66,12 +66,12 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Pick-up Date',
                     ),
                   ),
                 ),
-                SizedBox(width: 16.0),
+                const SizedBox(width: 16.0),
                 Expanded(
                   child: TextFormField(
                     readOnly: true,
@@ -89,15 +89,15 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Pick-up Time',
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16.0),
-            Text('Drop-off Date and Time'),
+            const SizedBox(height: 16.0),
+            const Text('Drop-off Date and Time'),
             Row(
               children: [
                 Expanded(
@@ -119,12 +119,12 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Drop-off Date',
                     ),
                   ),
                 ),
-                SizedBox(width: 16.0),
+                const SizedBox(width: 16.0),
                 Expanded(
                   child: TextFormField(
                     readOnly: true,
@@ -142,14 +142,14 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Drop-off Time',
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextFormField(
               initialValue: _pickupLocation,
               onChanged: (value) {
@@ -157,11 +157,11 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                   _pickupLocation = value;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Pick-up Location',
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextFormField(
               initialValue: _dropoffLocation,
               onChanged: (value) {
@@ -169,16 +169,16 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                   _dropoffLocation = value;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Drop-off Location',
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 _showConfirmationDialog();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),
@@ -192,14 +192,14 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Update'),
-          content: Text('Are you sure you want to update this booking?'),
+          title: const Text('Confirm Update'),
+          content: const Text('Are you sure you want to update this booking?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -207,7 +207,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                 _updateBooking();
                 Navigator.of(context).pop(); // Dismiss the dialog
               },
-              child: Text('Confirm'),
+              child: const Text('Confirm'),
             ),
           ],
         );
@@ -259,13 +259,13 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       await pushNotificationService.sendNotification(
           userTitle,
           userBody,
-          (await AuthService().getUserData(widget.booking.userId))?.fcmToken ??
+          (await AuthService().getUserData(widget.booking.userId)).fcmToken ??
               '');
       await pushNotificationService.sendNotification(
           vendorTitle,
           vendorBody,
           (await AuthService().getUserData(widget.booking.vendorId))
-                  ?.fcmToken ??
+                  .fcmToken ??
               '');
 
       // Show a success message, navigate back, or perform any other action
