@@ -32,6 +32,12 @@ jobs:
         echo "FIREBASE_PROJECT_ID_ANDROID=${{ secrets.FIREBASE_PROJECT_ID_ANDROID }}" >> $GITHUB_ENV
         echo "FIREBASE_PROJECT_ID_IOS=${{ secrets.FIREBASE_PROJECT_ID_IOS }}" >> $GITHUB_ENV
 
+    - name: Create .env file
+      run: |
+        echo "FCM_SERVICE_ACCOUNT_KEY=${{ secrets.FCM_SERVICE_ACCOUNT_KEY }}" >> $GITHUB_ENV
+        echo "MAILGUN_API_KEY=${{ secrets.MAILGUN_API_KEY }}" >> $GITHUB_ENV
+        echo "MAILGUN_DOMAIN=${{ secrets.MAILGUN_DOMAIN }}" >> $GITHUB_ENV
+
     - name: Install dependencies
       run: flutter pub get
 
