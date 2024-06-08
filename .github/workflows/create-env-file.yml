@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  create-env:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Create .env file
+      run: |
+        echo "FCM_SERVICE_ACCOUNT_KEY=${{ secrets.FCM_SERVICE_ACCOUNT_KEY }}" >> .env
+        echo "FIREBASE_API_KEY_ANDROID=${{ secrets.FIREBASE_API_KEY_ANDROID }}" >> .env
+        echo "FIREBASE_API_KEY_IOS=${{ secrets.FIREBASE_API_KEY_IOS }}" >> .env
+        echo "FIREBASE_API_KEY_LOCATION=${{ secrets.FIREBASE_API_KEY_LOCATION }}" >> .env
+        echo "FIREBASE_APP_ID_ANDROID=${{ secrets.FIREBASE_APP_ID_ANDROID }}" >> .env
+        echo "FIREBASE_APP_ID_IOS=${{ secrets.FIREBASE_APP_ID_IOS }}" >> .env
+        echo "FIREBASE_MESSAGING_SENDER_ID_ANDROID=${{ secrets.FIREBASE_MESSAGING_SENDER_ID_ANDROID }}" >> .env
+        echo "FIREBASE_MESSAGING_SENDER_ID_IOS=${{ secrets.FIREBASE_MESSAGING_SENDER_ID_IOS }}" >> .env
+        echo "FIREBASE_PROJECT_ID_ANDROID=${{ secrets.FIREBASE_PROJECT_ID_ANDROID }}" >> .env
+        echo "FIREBASE_PROJECT_ID_IOS=${{ secrets.FIREBASE_PROJECT_ID_IOS }}" >> .env
+        echo "MAILGUN_API_KEY=${{ secrets.MAILGUN_API_KEY }}" >> .env
+        echo "MAILGUN_DOMAIN=${{ secrets.MAILGUN_DOMAIN }}" >> .env
+
+    - name: Display .env content
+      run: cat .env
