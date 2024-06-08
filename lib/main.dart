@@ -32,6 +32,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   // Check if Firebase is already initialized
   if (Firebase.apps.isEmpty) {
@@ -43,7 +44,7 @@ void main() async {
   }
   AccountDataProvider().fetchUserData();
   // Load environment variables from the .env file
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
