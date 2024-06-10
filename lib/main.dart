@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth_wrapper.dart';
 import 'package:v1_rentals/auth/notification_service.dart';
 import 'package:v1_rentals/providers/favorites_provider.dart';
-import 'package:v1_rentals/services/email_service.dart';
+import 'package:v1_rentals/providers/vehicle_provider.dart';
 import 'package:v1_rentals/l10n/locale_provider.dart';
 import 'package:v1_rentals/providers/account_provider.dart';
 import 'package:v1_rentals/providers/auth_provider.dart';
@@ -55,6 +55,17 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, VehicleProvider>(
+          create: (context) => VehicleProvider(null),
+          update: (context, authProvider, vehicleProvider) {
+            if (vehicleProvider == null) {
+              return VehicleProvider(authProvider.currentUser?.userId);
+            } else {
+              vehicleProvider.updateUserId(authProvider.currentUser?.userId);
+              return vehicleProvider;
+            }
+          },
+        ),
         ChangeNotifierProxyProvider<AuthProvider, NotificationProvider>(
           create: (context) => NotificationProvider(),
           update: (context, authProvider, notificationProvider) {

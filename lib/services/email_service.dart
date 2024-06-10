@@ -2,12 +2,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
-
 import 'package:v1_rentals/models/booking_model.dart';
+import 'package:path_provider/path_provider.dart';
 
 class EmailService {
   final String _mailgunApiKey = dotenv.env['MAILGUN_API_KEY'] ?? '';
   final String _mailgunDomain = dotenv.env['MAILGUN_DOMAIN'] ?? '';
+
+  Future<String> getImagePath() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final imagePath = '${directory.path}/assets/images/v1-rentals-logo.png';
+
+    return imagePath;
+  }
 
   Future<void> sendEmail(String to, String subject, String body) async {
     final url =
@@ -49,41 +56,45 @@ class EmailService {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final timeFormat = DateFormat('HH:mm');
 
+    final imagePath = await getImagePath();
     final userBody = '''
-      <div>
-        <h1>Booking Confirmation</h1>
+      <div style="background-color: royalblue; color: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; font-family: Arial, sans-serif;">
+          <div style="text-align: center;">
+          <img src="$imagePath" alt="V1Rentals Image" style="max-width: 100%; max-height: 100px; border-radius: 10px; margin-bottom: 20px;">
+        </div>
+        <h1 style="text-align: center;">Booking Confirmation</h1>
         <p>Dear $userFullName,</p>
         <p>Thank you for your booking. Here are the details:</p>
-        <div>
-          <img src="${booking.imageUrl}" alt="Vehicle Image" style="width:100%; height:auto;">
+        <div style="text-align: center;">
+          <img src="${booking.imageUrl}" alt="Vehicle Image" style="max-width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
         </div>
-        <div style="font-size: 20px; font-weight: bold; flex: 1;">${booking.vehicleDescription}</div>
-        <div> Supplier: $vendorBusinessName</div>
-        <div> Pick-up: ${booking.pickupLocation}</div>
-        <div> Drop-off: ${booking.dropoffLocation}</div>
-        <div> Pick-up Date/Time: ${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</div>
-        <div> Drop-off Date/Time: ${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</div>
-        <div> Payment Method: ${booking.paymentMethod}</div>
-        ${lastFourDigits != null ? '<div>- Visa ending in $lastFourDigits</div>' : ''}
-        <div> Total Price: USD\$${booking.totalPrice.toStringAsFixed(2)}</div>
+        <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">${booking.vehicleDescription}</div>
+        <div style="margin-bottom: 5px;"><strong>Supplier:</strong> $vendorBusinessName</div>
+        <div style="margin-bottom: 5px;"><strong>Pick-up:</strong> ${booking.pickupLocation}</div>
+        <div style="margin-bottom: 5px;"><strong>Drop-off:</strong> ${booking.dropoffLocation}</div>
+        <div style="margin-bottom: 5px;"><strong>Pick-up Date/Time:</strong> ${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</div>
+        <div style="margin-bottom: 5px;"><strong>Drop-off Date/Time:</strong> ${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</div>
+        <div style="margin-bottom: 5px;"><strong>Payment Method:</strong> ${booking.paymentMethod}</div>
+        ${lastFourDigits != null ? '<div style="margin-bottom: 5px;">- Visa ending in $lastFourDigits</div>' : ''}
+        <div style="margin-bottom: 5px;"><strong>Total Price:</strong> USD\$${booking.totalPrice.toStringAsFixed(2)}</div>
       </div>
     ''';
 
     final vendorBody = '''
-      <div>
-        <h1>New Booking Received</h1>
+      <div style="background-color: royalblue; color: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; font-family: Arial, sans-serif;">
+        <h1 style="text-align: center;">New Booking Received</h1>
         <p>Dear $vendorBusinessName,</p>
         <p>You have received a new booking. Here are the details:</p>
-        <div>
-          <img src="${booking.imageUrl}" alt="Vehicle Image" style="width:100%; height:auto;">
+        <div style="text-align: center;">
+          <img src="${booking.imageUrl}" alt="Vehicle Image" style="max-width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
         </div>
-        <div style="font-size: 20px; font-weight: bold; flex: 1;">${booking.vehicleDescription}</div>
-        <div> Renter: $userFullName</div>
-        <div> Pick-up: ${booking.pickupLocation}</div>
-        <div> Drop-off: ${booking.dropoffLocation}</div>
-        <div> Pick-up Date/Time: ${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</div>
-        <div> Drop-off Date/Time: ${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</div>
-        <div> Total Price: USD\$${booking.totalPrice.toStringAsFixed(2)}</div>
+        <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">${booking.vehicleDescription}</div>
+        <div style="margin-bottom: 5px;"><strong>Renter:</strong> $userFullName</div>
+        <div style="margin-bottom: 5px;"><strong>Pick-up:</strong> ${booking.pickupLocation}</div>
+        <div style="margin-bottom: 5px;"><strong>Drop-off:</strong> ${booking.dropoffLocation}</div>
+        <div style="margin-bottom: 5px;"><strong>Pick-up Date/Time:</strong> ${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</div>
+        <div style="margin-bottom: 5px;"><strong>Drop-off Date/Time:</strong> ${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</div>
+        <div style="margin-bottom: 5px;"><strong>Total Price:</strong> USD\$${booking.totalPrice.toStringAsFixed(2)}</div>
       </div>
     ''';
 
