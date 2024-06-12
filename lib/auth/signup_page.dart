@@ -150,7 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.grey[100],
+      //backgroundColor: Colors.grey[100],
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(

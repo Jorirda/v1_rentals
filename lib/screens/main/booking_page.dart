@@ -17,6 +17,7 @@ import 'package:v1_rentals/locations/dropoff_location.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/services/location_service.dart';
 import 'package:v1_rentals/locations/pickup_location.dart';
+import 'package:v1_rentals/widgets/custom_stepper.dart';
 
 import '../../providers/notification_provider.dart';
 
@@ -868,6 +869,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLastStep = currentStep == getSteps().length - 1;
     return Scaffold(
       appBar: AppBar(
         title: Text(S.of(context).book_your_vehicle),
@@ -905,39 +907,38 @@ class _BookingScreenState extends State<BookingScreen> {
           });
         },
         controlsBuilder: (context, details) {
-          final isLastStep = currentStep == getSteps().length - 1;
-          return Container(
-            margin: EdgeInsets.only(top: 50),
-            child: Row(
-              children: [
-                if (currentStep != 0)
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: details.onStepCancel,
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          foregroundColor: Colors.white),
-                      child: Text(S.of(context).back),
-                    ),
-                  ),
-                SizedBox(
-                  width: 12,
-                ),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: details.onStepContinue,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Colors.white),
-                    child: Text(isLastStep
-                        ? S.of(context).confirm
-                        : S.of(context).next),
-                  ),
-                ),
-              ],
-            ),
-          );
+          return Container(); // Return an empty container since we are using a custom bottom navigation bar
         },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+          child: CustomStepperControls(
+            currentStep: currentStep,
+            onStepContinue: () {
+              final isLastStep = currentStep == getSteps().length - 1;
+              if (isLastStep) {
+                print('Completed');
+                // send data to firebase
+                sendBookingDataToFirebase(booking);
+              } else {
+                setState(() {
+                  if (currentStep < getSteps().length - 1) {
+                    currentStep++;
+                  }
+                });
+              }
+            },
+            onStepCancel: () {
+              setState(() {
+                if (currentStep > 0) {
+                  currentStep--;
+                }
+              });
+            },
+            isLastStep: isLastStep,
+          ),
+        ),
       ),
     );
   }

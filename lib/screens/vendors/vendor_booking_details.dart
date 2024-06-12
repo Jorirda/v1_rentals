@@ -406,7 +406,7 @@ class _VendorBookingDetailsScreenState
                               'Are you sure you want to decline this booking?'),
                           actions: [
                             TextButton(
-                              onPressed: () async {
+                              onPressed: () {
                                 Navigator.of(context).pop();
                               },
                               child: Text('Cancel'),
@@ -418,9 +418,22 @@ class _VendorBookingDetailsScreenState
                                   await updateBookingStatusAndNotify(
                                       widget.booking.id,
                                       BookingStatus.cancelled);
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Booking declined'),
+                                    ),
+                                  );
                                 } catch (e) {
-                                  // Handle error, e.g., show a snackbar or dialog
-                                  print('Error declining booking: $e');
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          Text('Error declining booking: $e'),
+                                    ),
+                                  );
                                 }
                               },
                               child: Text('Confirm'),
@@ -452,7 +465,8 @@ class _VendorBookingDetailsScreenState
                               'Are you sure you want to accept this booking?'),
                           actions: [
                             TextButton(
-                              onPressed: () async {
+                              onPressed: () {
+                                Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                               },
                               child: Text('Cancel'),
@@ -464,9 +478,21 @@ class _VendorBookingDetailsScreenState
                                   await updateBookingStatusAndNotify(
                                       widget.booking.id,
                                       BookingStatus.inProgress);
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Booking accepted'),
+                                    ),
+                                  );
                                 } catch (e) {
-                                  // Handle error, e.g., show a snackbar or dialog
-                                  print('Error accepting booking: $e');
+                                  Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          Text('Error accepting booking: $e'),
+                                    ),
+                                  );
                                 }
                               },
                               child: Text('Confirm'),

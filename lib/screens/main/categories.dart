@@ -1,10 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/home_model.dart';
-import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
+import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -13,7 +12,7 @@ class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({Key? key, this.selectedBrand}) : super(key: key);
 
   @override
-  _CategoriesScreenState createState() => _CategoriesScreenState();
+  _CategoriesScreenState createState() => _CategoriesScreenState(selectedBrand);
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen>
@@ -21,217 +20,206 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   static const String allBrands = 'All Brands';
 
   late String _selectedBrand;
+  late int _selectedRailIndex;
   late int _selectedTabIndex;
+  String searchQuery = '';
+  TextEditingController searchController = TextEditingController();
   late TabController _tabController;
-  List<Vehicle> _vehicles = [];
-  List<Vehicle> _filteredVehicles = [];
-  final TextEditingController _searchController = TextEditingController();
-  bool _isLoading = true;
-  bool _hasError = false;
+  final List<RecommendModel> _recommendBrands =
+      RecommendModel.getRecommendedBrands();
+  late Map<String, int> _brandToRailIndex;
+
+  _CategoriesScreenState(String? selectedBrand) {
+    _selectedBrand = selectedBrand ?? allBrands;
+    _selectedRailIndex = 0;
+    _selectedTabIndex = 0;
+  }
 
   @override
   void initState() {
     super.initState();
-
-    _selectedBrand = widget.selectedBrand ?? allBrands;
-    _selectedTabIndex = 0;
     _tabController = TabController(length: CarType.values.length, vsync: this);
-    _loadVehicles();
+
+    _brandToRailIndex = {
+      allBrands: 0,
+      for (int i = 0; i < _recommendBrands.length; i++)
+        _recommendBrands[i].brand.getTranslation(): i + 1,
+    };
+
+    _selectedRailIndex = _brandToRailIndex[_selectedBrand] ?? 0;
   }
 
-  Future<void> _loadVehicles() async {
-    try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('vehicles').get();
-      setState(() {
-        _vehicles =
-            querySnapshot.docs.map((doc) => Vehicle.fromMap(doc)).toList();
-        _isLoading = false;
-        _filterVehicles();
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _hasError = true;
-      });
-      print('Error loading vehicles: $e');
-    }
-  }
-
-  void _filterVehicles() {
-    setState(() {
-      String searchText = _searchController.text.toLowerCase();
-      CarType selectedCarType = CarType.values[_selectedTabIndex];
-
-      _filteredVehicles = _vehicles.where((vehicle) {
-        bool matchesBrand = _selectedBrand == allBrands ||
-            vehicle.brand.toString().split('.').last == _selectedBrand;
-        bool matchesCarType = selectedCarType == CarType.all ||
-            vehicle.carType == selectedCarType;
-        bool matchesSearch =
-            vehicle.overview.toLowerCase().contains(searchText);
-
-        return matchesBrand && matchesCarType && matchesSearch;
-      }).toList();
-    });
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    searchController.dispose();
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Stack(
-            alignment: Alignment.centerRight,
-            children: [
-              TextField(
-                controller: _searchController,
+    return DefaultTabController(
+      length: CarType.values.length,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: TextField(
+                controller: searchController,
+                style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: Colors.red,
+                  ),
                   hintText: S.of(context).search_for_vehicles,
+                  hintStyle: const TextStyle(color: Colors.grey),
                   border: InputBorder.none,
                   contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 ),
-                onChanged: (value) => _filterVehicles(),
-              ),
-              IconButton(
-                icon: const Icon(Icons.search, color: Colors.red),
-                onPressed: () => _filterVehicles(),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: Row(
-        children: [
-          SingleChildScrollView(
-            child: IntrinsicHeight(
-              child: NavigationRail(
-                selectedIndex:
-                    _selectedBrand == allBrands ? 0 : _getSelectedIndex(),
-                onDestinationSelected: (int index) {
+                onChanged: (value) {
                   setState(() {
-                    _selectedBrand = index == 0
-                        ? allBrands
-                        : Brand.values[index - 1].toString().split('.').last;
-                    _filterVehicles();
+                    searchQuery = value;
                   });
                 },
-                labelType: NavigationRailLabelType.selected,
-                destinations: [
-                  NavigationRailDestination(
-                    icon: const Icon(Icons.car_rental),
-                    label: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(S.of(context).all_brands),
-                    ),
-                  ),
-                  ...RecommendModel.getRecommendedBrands()
-                      .map((RecommendModel brand) {
-                    return NavigationRailDestination(
-                      icon: _buildBrandImage(brand.iconPath),
-                      label: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(brand.brand
-                            .getTranslation()), // Updated translation
-                      ),
-                    );
-                  }),
-                ],
-                selectedLabelTextStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-                unselectedLabelTextStyle: const TextStyle(color: Colors.grey),
               ),
             ),
           ),
-          Expanded(
-            flex: 4,
-            child: Column(
-              children: [
-                TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  tabs: CarType.values.map((CarType type) {
-                    return Tab(
-                        text: type.getTranslation()); // Updated translation
-                  }).toList(),
-                  onTap: (int index) {
+          bottom: TabBar(
+            controller: _tabController,
+            isScrollable: true,
+            tabs: CarType.values.map((CarType type) {
+              return Tab(text: type.getTranslation());
+            }).toList(),
+            onTap: (int index) {
+              setState(() {
+                _selectedTabIndex = index;
+              });
+            },
+            labelColor: Theme.of(context).primaryColor,
+            unselectedLabelColor: Colors.grey,
+          ),
+        ),
+        body: Row(
+          children: [
+            SingleChildScrollView(
+              child: IntrinsicHeight(
+                child: NavigationRail(
+                  selectedIndex: _selectedRailIndex,
+                  onDestinationSelected: (int index) {
                     setState(() {
-                      _selectedTabIndex = index;
-                      _filterVehicles();
+                      _selectedRailIndex = index;
+                      _selectedTabIndex = 0;
+                      _selectedBrand = index == 0
+                          ? allBrands
+                          : _recommendBrands[index - 1].brand.getTranslation();
                     });
                   },
-                  labelColor: Theme.of(context).primaryColor,
-                  unselectedLabelColor: Colors.grey,
+                  labelType: NavigationRailLabelType.selected,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.directions_car),
+                      label: Text(S.of(context).all_brands),
+                    ),
+                    ..._recommendBrands.map((brand) {
+                      return NavigationRailDestination(
+                        icon: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: Image.asset(brand.iconPath)),
+                        label: Text(brand.brand.getTranslation()),
+                      );
+                    }).toList(),
+                  ],
                 ),
-                Expanded(
-                  child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _hasError
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(S.of(context).error_loading_vehicles),
-                                  ElevatedButton(
-                                    onPressed: _loadVehicles,
-                                    child: Text('Retry'),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : _filteredVehicles.isEmpty
-                              ? Center(
-                                  child: Text(S.of(context).no_vehicles_found))
-                              : SingleChildScrollView(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Column(
-                                        children: [_buildVehicleList(context)]),
-                                  ),
-                                ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            VerticalDivider(width: 1),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('vehicles')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text(S.of(context).no_vehicles_found),
+                      );
+                    }
+                    final vehicles = snapshot.data!.docs
+                        .map((doc) => Vehicle.fromMap(doc))
+                        .toList()
+                        .where((vehicle) =>
+                            (vehicle.brand
+                                    .getTranslation()
+                                    .toLowerCase()
+                                    .contains(searchQuery.toLowerCase()) ||
+                                vehicle.model
+                                    .toLowerCase()
+                                    .contains(searchQuery.toLowerCase()) ||
+                                vehicle.carType.name
+                                    .toLowerCase()
+                                    .contains(searchQuery.toLowerCase())) &&
+                            (_selectedBrand == allBrands ||
+                                vehicle.brand.name ==
+                                    _selectedBrand.toLowerCase()))
+                        .toList();
+                    return TabBarView(
+                      controller: _tabController,
+                      children: CarType.values.map((carType) {
+                        final filteredVehicles = carType == CarType.all
+                            ? vehicles
+                            : vehicles
+                                .where((vehicle) => vehicle.carType == carType)
+                                .toList();
+                        return buildVehicleList(filteredVehicles);
+                      }).toList(),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  int _getSelectedIndex() {
-    return Brand.values
-            .indexWhere((b) => b.toString().split('.').last == _selectedBrand) +
-        1;
-  }
-
-  Widget _buildBrandImage(String assetPath) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: Image.asset(assetPath),
-    );
-  }
-
-  Widget _buildVehicleList(BuildContext context) {
-    return Column(
-      children: _filteredVehicles.map((vehicle) {
+  Widget buildVehicleList(List<Vehicle> vehicles) {
+    if (vehicles.isEmpty) {
+      return Center(child: Text(S.of(context).no_vehicles_found));
+    }
+    return ListView.builder(
+      itemCount: vehicles.length,
+      itemBuilder: (context, index) {
+        final vehicle = vehicles[index];
         return Column(
           children: [
+            const SizedBox(height: 20),
             Material(
               elevation: 4,
               color: Theme.of(context).colorScheme.primaryContainer,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+                  borderRadius: BorderRadius.circular(8)),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 onTap: () {
@@ -242,94 +230,69 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                     ),
                   );
                 },
-                child: SizedBox(
-                  width: 300,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 120,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 150,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
                             image: NetworkImage(vehicle.imageUrl),
-                            fit: BoxFit.cover,
+                            fit: BoxFit.cover),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${vehicle.brand.getTranslation()} ${vehicle.model} ${vehicle.modelYear}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
-                        ),
+                          const Divider(),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.car_rental),
+                                  const SizedBox(width: 4),
+                                  Text(vehicle.getCarTypeString()),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.settings),
+                                  const SizedBox(width: 4),
+                                  Text(vehicle.getTransmissionTypeString()),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.monetization_on),
+                                  const SizedBox(width: 4),
+                                  Text('${vehicle.pricePerDay}/Day'),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                Text(
-                                  '${vehicle.brand.getTranslation()} ${vehicle.model}',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15),
-                                ),
-                              ],
-                            ),
-                            const Divider(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.settings,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      vehicle.getTransmissionTypeString(),
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.star,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      vehicle.rating.toString(),
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'USD\$${vehicle.pricePerDay}/${S.of(context).day}',
-                                  style: const TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
             const SizedBox(height: 30),
           ],
         );
-      }).toList(),
+      },
     );
   }
 }

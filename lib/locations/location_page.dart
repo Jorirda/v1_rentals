@@ -293,23 +293,23 @@ class _LocationScreenState extends State<LocationScreen> {
             showSubtitles: true,
             showDeleteButton: true, // Show delete button for history
           ),
-          _buildListSection(
-            locationProvider.popularLocations
-                .map((location) => SearchHistory(
-                      locationName: location,
-                      address: '',
-                      latitude: 0.0,
-                      longitude: 0.0,
-                    ))
-                .toList(),
-            S.of(context).popular_locations,
-            Icons.star,
-            (index) {
-              // Implement the onTap functionality if needed
-            },
-            showDeleteButton:
-                false, // Do not show delete button for popular locations
-          ),
+          // _buildListSection(
+          //   locationProvider.popularLocations
+          //       .map((location) => SearchHistory(
+          //             locationName: location,
+          //             address: '',
+          //             latitude: 0.0,
+          //             longitude: 0.0,
+          //           ))
+          //       .toList(),
+          //   S.of(context).popular_locations,
+          //   Icons.star,
+          //   (index) {
+          //     // Implement the onTap functionality if needed
+          //   },
+          //   showDeleteButton:
+          //       false, // Do not show delete button for popular locations
+          // ),
         ],
       ),
       backgroundColor: Colors.grey[100],

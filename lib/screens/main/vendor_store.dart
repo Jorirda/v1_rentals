@@ -140,7 +140,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
                         Spacer(),
                         ElevatedButton(
                           onPressed: () {},
-                          child: Text(S.of(context).follow),
+                          child: Text('${S.of(context).follow} +'),
                         ),
                       ],
                     ),

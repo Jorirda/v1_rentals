@@ -27,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin<HomeScreen> {
   @override
   bool get wantKeepAlive => true; // Keep state alive across tab switches
 
@@ -390,13 +390,14 @@ class _HomeScreenState extends State<HomeScreen>
                       return InkWell(
                         onTap: () {
                           print(
-                              'Tapped on brand: ${recommendBrands[index].brand}'); // Debug print
+                              'Tapped on brand: ${recommendBrands[index].brand.name}'); // Debug print
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => CategoriesScreen(
-                                selectedBrand:
-                                    recommendBrands[index].brand.name,
+                                selectedBrand: recommendBrands[index]
+                                    .brand
+                                    .getTranslation(),
                               ),
                             ),
                           );

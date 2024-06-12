@@ -246,6 +246,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         ElevatedButton(
                             onPressed: () {},
@@ -415,6 +416,15 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       ),
                       SizedBox(height: 20),
                       Divider(),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            S.of(context).features,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
                       SizedBox(height: 10),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,

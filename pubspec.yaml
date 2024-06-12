@@ -115,6 +115,7 @@ flutter:
     - assets/images/google_pay_icon.png
     - assets/images/paypal_icon.png
     - assets/images/apple_pay_icon.png
+    - assets/images/car_model_default.png
     - assets/rec-images/audi-logo.png
     - assets/rec-images/dodge-logo.png
     - assets/rec-images/ford-logo.png
@@ -132,7 +133,7 @@ flutter:
     - assets/rec-images/kia-logo.png
     - assets/languages/united-kingdom-flag.png
     - assets/languages/china-flag.png
-
+ 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

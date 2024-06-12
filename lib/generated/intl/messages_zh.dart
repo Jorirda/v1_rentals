@@ -124,11 +124,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "email": MessageLookupByLibrary.simpleMessage("电子邮件"),
         "ending_in": MessageLookupByLibrary.simpleMessage("以..结尾"),
         "english": MessageLookupByLibrary.simpleMessage("英语"),
+        "enter_color": MessageLookupByLibrary.simpleMessage("请输入颜色"),
         "enter_dropoff_location":
             MessageLookupByLibrary.simpleMessage("输入还车地点"),
         "enter_model": MessageLookupByLibrary.simpleMessage("请输入车型"),
         "enter_model_year": MessageLookupByLibrary.simpleMessage("请输入型号年份"),
         "enter_num_seats": MessageLookupByLibrary.simpleMessage("请输入座位数量"),
+        "enter_overview": MessageLookupByLibrary.simpleMessage("请输入概览"),
         "enter_pickup_location": MessageLookupByLibrary.simpleMessage("输入取车地点"),
         "enter_price_per_day": MessageLookupByLibrary.simpleMessage("请输入每日价格"),
         "error_loading_vehicles":
@@ -193,6 +195,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("请输入您的电子邮件"),
         "please_enter_your_password":
             MessageLookupByLibrary.simpleMessage("请输入您的密码"),
+        "please_select_brand": MessageLookupByLibrary.simpleMessage("请选择品牌"),
         "popular_locations": MessageLookupByLibrary.simpleMessage("热门地点"),
         "popular_vehicles": MessageLookupByLibrary.simpleMessage("热门车辆"),
         "price_per_day": MessageLookupByLibrary.simpleMessage("每日价格"),

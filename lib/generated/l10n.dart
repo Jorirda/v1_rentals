@@ -2140,6 +2140,36 @@ class S {
     );
   }
 
+  /// `Please select a brand`
+  String get please_select_brand {
+    return Intl.message(
+      'Please select a brand',
+      name: 'please_select_brand',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter the color`
+  String get enter_color {
+    return Intl.message(
+      'Please enter the color',
+      name: 'enter_color',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter an overview`
+  String get enter_overview {
+    return Intl.message(
+      'Please enter an overview',
+      name: 'enter_overview',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Popular Vehicles`
   String get popular_vehicles {
     return Intl.message(

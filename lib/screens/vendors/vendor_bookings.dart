@@ -7,7 +7,7 @@ import 'package:v1_rentals/screens/vendors/vendor_booking_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 
 class VendorBookings extends StatefulWidget {
-  const VendorBookings({Key? key}) : super(key: key);
+  const VendorBookings({super.key});
 
   @override
   _VendorBookingsState createState() => _VendorBookingsState();
@@ -72,7 +72,7 @@ class _VendorBookingsState extends State<VendorBookings>
       stream: AuthService().getVendorBookingsStream(status),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));

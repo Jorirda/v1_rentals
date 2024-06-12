@@ -11,8 +11,26 @@ import 'package:v1_rentals/services/location_service.dart';
 class LocationProvider with ChangeNotifier {
   final LocationService _locationService = LocationService();
   CustomUser? _currentUser;
-  final List<String> _popularLocations = [
-    'Grantley Adams International Airport'
+  final List<Locations> _popularLocations = [
+    Locations(
+      locationName: 'Grantley Adams International Airport',
+      address: 'Seawell, Christ Church, Barbados',
+      latitude: 13.074603,
+      longitude: -59.492456,
+    ),
+    Locations(
+      locationName: 'Bridgetown',
+      address: 'Bridgetown, Barbados',
+      latitude: 13.10732,
+      longitude: -59.62021,
+    ),
+    Locations(
+      locationName: 'Oistins',
+      address: 'Oistins, Barbados',
+      latitude: 13.0675,
+      longitude: -59.551,
+    ),
+    // Add more popular locations as needed
   ]; // Define a list of popular locations
   List<SearchHistory> _searchHistory = [];
   String _currentLocation = '';
@@ -23,7 +41,7 @@ class LocationProvider with ChangeNotifier {
   String? _currentAddress;
 
   // Getters
-  List<String> get popularLocations => _popularLocations;
+  List<Locations> get popularLocations => _popularLocations;
   List<SearchHistory> get searchHistory => _searchHistory;
   String get currentLocation => _currentLocation;
   LatLng get currentPosition => _currentPosition;
@@ -76,7 +94,7 @@ class LocationProvider with ChangeNotifier {
         final Placemark place = placemarks.first;
 
         // Fetch place details from Google Places API
-        final String apiKey = LocationService.apiKey;
+        const String apiKey = LocationService.apiKey;
         final String url =
             'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_currentLatLng!.latitude},${_currentLatLng!.longitude}&radius=50&key=$apiKey';
 
@@ -115,10 +133,17 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveSearchHistory(SearchHistory history) async {
+  Future<void> saveSearchHistory(SearchHistory newHistory) async {
     if (_currentUser?.userId != null) {
-      await _locationService.saveSearchHistory(_currentUser!.userId!, history);
-      _searchHistory.insert(0, history);
+      // Remove any existing history with the same location name or address
+      _searchHistory.removeWhere((history) =>
+          history.locationName == newHistory.locationName ||
+          history.address == newHistory.address);
+
+      // Save the new history entry
+      await _locationService.saveSearchHistory(
+          _currentUser!.userId!, newHistory);
+      _searchHistory.insert(0, newHistory);
       notifyListeners();
     }
   }

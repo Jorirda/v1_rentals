@@ -144,6 +144,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "ending_in": MessageLookupByLibrary.simpleMessage("ending in"),
         "english": MessageLookupByLibrary.simpleMessage("English"),
+        "enter_color":
+            MessageLookupByLibrary.simpleMessage("Please enter the color"),
         "enter_dropoff_location":
             MessageLookupByLibrary.simpleMessage("Enter drop-off location"),
         "enter_model": MessageLookupByLibrary.simpleMessage(
@@ -152,6 +154,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter the model year"),
         "enter_num_seats": MessageLookupByLibrary.simpleMessage(
             "Please enter the number of seats"),
+        "enter_overview":
+            MessageLookupByLibrary.simpleMessage("Please enter an overview"),
         "enter_pickup_location":
             MessageLookupByLibrary.simpleMessage("Enter pick-up location"),
         "enter_price_per_day": MessageLookupByLibrary.simpleMessage(
@@ -234,6 +238,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter your email"),
         "please_enter_your_password":
             MessageLookupByLibrary.simpleMessage("Please enter your password"),
+        "please_select_brand":
+            MessageLookupByLibrary.simpleMessage("Please select a brand"),
         "popular_locations":
             MessageLookupByLibrary.simpleMessage("Popular Locations"),
         "popular_vehicles":

@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -34,12 +36,14 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
   late FuelType _selectedFuelType;
   late TransmissionType _selectedTransmissionType;
   Brand? _selectedBrand;
+  final String _defaultImagePath = 'assets/images/car_model_default.png';
 
   File? _pickedImage;
-
+  late List<int> _yearsList;
   @override
   void initState() {
     super.initState();
+    _yearsList = _generateYearsList(1980); // Example: Start from 1980
     _brandController = TextEditingController();
     _modelController = TextEditingController();
     _modelYearController = TextEditingController();
@@ -64,6 +68,14 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
     _overviewController.dispose();
     _imageUrlController.dispose();
     super.dispose();
+  }
+
+  List<int> _generateYearsList(int startYear) {
+    int currentYear = DateTime.now().year;
+    return List<int>.generate(
+            currentYear - startYear + 1, (index) => startYear + index)
+        .reversed
+        .toList();
   }
 
   Future<File> _compressImage(File imageFile) async {
@@ -123,6 +135,18 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
               FirebaseFirestore.instance.collection('vehicles').doc().id;
 
           print('Vehicle Document ID:  $vehicleId');
+
+          // Check if an image is selected, if not use the default image
+          if (_pickedImage == null) {
+            // Load the default image from assets
+            final ByteData bytes = await rootBundle.load(_defaultImagePath);
+            final Uint8List list = bytes.buffer.asUint8List();
+            final tempDir = await getTemporaryDirectory();
+            final tempFile = File('${tempDir.path}/default_vehicle.jpg');
+            await tempFile.writeAsBytes(list, flush: true);
+            _pickedImage = tempFile;
+          }
+
           // Upload image to Firebase Storage
           final storageRef = FirebaseStorage.instance
               .ref()
@@ -306,6 +330,12 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                       child: Text(brand.toString().split('.').last),
                     );
                   }).toList(),
+                  validator: (value) {
+                    if (_selectedBrand == null) {
+                      return S.of(context).please_select_brand;
+                    }
+                    return null;
+                  },
                 ),
                 TextFormField(
                   controller: _brandController,
@@ -323,12 +353,23 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                     return null;
                   },
                 ),
-                TextFormField(
-                  controller: _modelYearController,
+                DropdownButtonFormField<int>(
                   decoration:
                       InputDecoration(labelText: S.of(context).model_year),
+                  value: int.tryParse(_modelYearController.text),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _modelYearController.text = newValue.toString();
+                    });
+                  },
+                  items: _yearsList.map((int year) {
+                    return DropdownMenuItem<int>(
+                      value: year,
+                      child: Text(year.toString()),
+                    );
+                  }).toList(),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null) {
                       return S.of(context).enter_model_year;
                     }
                     return null;

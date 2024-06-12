@@ -107,25 +107,19 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
       ),
-      body: Stack(children: [
-        // Background image
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: _backgroundImage,
-              fit: BoxFit.fitHeight,
-            ),
-          ),
-        ),
-        SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(
+                height: 50,
+              ),
               SizedBox(
                 height: 150,
                 child: Image.asset('assets/images/v1-rentals-logo.png'),
               ),
               SizedBox(
-                height: 200,
+                height: 50,
               ),
               Padding(
                 padding:
@@ -256,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ]),
+      ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Column(

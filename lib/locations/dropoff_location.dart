@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:v1_rentals/models/locations_model.dart';
@@ -109,6 +110,7 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
     return Consumer<LocationProvider>(
       builder: (context, locationProvider, child) {
         final searchHistory = locationProvider.searchHistory;
+        final popularLocations = locationProvider.popularLocations;
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,6 +123,7 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
                     TextButton(
                       onPressed: _getCurrentLocation,
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(Icons.location_on, color: Colors.red),
                           const SizedBox(width: 5),
@@ -134,29 +137,6 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
                         ],
                       ),
                     ),
-                    const VerticalDivider(
-                      width: 1,
-                      thickness: 1,
-                      color: Colors.grey,
-                      indent: 10,
-                      endIndent: 10,
-                    ),
-                    // TextButton(
-                    //   onPressed: () {},
-                    //   child: Row(
-                    //     children: [
-                    //       const Icon(Icons.map_sharp, color: Colors.red),
-                    //       const SizedBox(width: 5),
-                    //       Text(
-                    //         'Use Map',
-                    //         style: TextStyle(
-                    //           fontWeight: FontWeight.bold,
-                    //           color: Theme.of(context).colorScheme.primary,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -176,6 +156,21 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        // Clear all search history
+                        locationProvider.clearSearchHistory();
+                      },
+                      child: Text(
+                        S.of(context).clear,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
                       ),
                     ),
                   ],
@@ -203,14 +198,23 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
                               color: Theme.of(context).colorScheme.primary),
                         ),
                         subtitle: Text(location.address),
+                        trailing: IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            // Delete the search history item
+                            locationProvider
+                                .deleteSearchHistoryItem(location.id!);
+                          },
+                        ),
                         onTap: () {
-                          setState(() {
-                            _searchController.text = location.locationName;
-                            searchHistory.removeAt(index);
-                            searchHistory.insert(0, location);
-                            _showSearchHistory = false;
-                          });
-                          _getSuggestions(location.locationName);
+                          _showConfirmationBottomSheet(
+                            location.locationName,
+                            LatLng(location.latitude, location.longitude),
+                            location.address,
+                          );
                         },
                       );
                     },
@@ -218,10 +222,74 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
                   ),
                 ),
               ),
+              _buildPopularLocations(popularLocations),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPopularLocations(List<Locations> popularLocations) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.star,
+                  color: Colors.red,
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  S.of(context).popular_locations,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: popularLocations.length,
+              itemBuilder: (context, index) {
+                final location = popularLocations[index];
+                return ListTile(
+                  leading: const Icon(
+                    Icons.location_on_outlined,
+                    color: Colors.red,
+                  ),
+                  title: Text(
+                    location.locationName,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary),
+                  ),
+                  subtitle: Text(location.address ?? ''),
+                  onTap: () {
+                    setState(() {
+                      _searchController.text = location.locationName;
+                      _showSearchHistory = false;
+                    });
+                    _getSuggestions(location.locationName);
+                  },
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -318,7 +386,7 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    Locations dropoffLocation = Locations(
+                    Locations DropoffLocation = Locations(
                       locationName: selectedLocation,
                       address: address,
                       latitude: selectedLatLng.latitude,
@@ -326,17 +394,17 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
                     );
 
                     await _locationProvider
-                        .saveDropoffLocation(dropoffLocation);
+                        .saveDropoffLocation(DropoffLocation);
 
                     // Close the bottom sheet
                     Navigator.pop(context);
                     // Return the selected location to the previous screen
                     Navigator.pop(context, selectedLocation);
                   } catch (e) {
-                    print('Error saving dropoff location: $e');
+                    print('Error saving Dropoff location: $e');
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Error saving dropoff location')),
+                          content: Text('Error saving Dropoff location')),
                     );
                   }
                 },
@@ -360,14 +428,30 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
 
     try {
       final LatLng currentLatLng = await _locationProvider.getCurrentLocation();
-      await _locationProvider.updatePosition(currentLatLng); // Corrected line
-      setState(() {
-        _isLoading = false;
-      });
-      _showConfirmationBottomSheet(
-          'Current Location', // Use a generic label or fetch the address separately if needed
+      await _locationProvider.updatePosition(currentLatLng);
+
+      // Perform reverse geocoding to get the address
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        currentLatLng.latitude,
+        currentLatLng.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        final Placemark place = placemarks.first;
+        final String currentLocation = '${place.name}';
+        final String address = '${place.locality}, ${place.country}';
+        setState(() {
+          _isLoading = false;
+        });
+
+        _showConfirmationBottomSheet(
+          currentLocation,
           currentLatLng,
-          'Current Location');
+          address,
+        );
+      } else {
+        throw Exception('No address found');
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -416,7 +500,11 @@ class _SetDropoffLocationScreenState extends State<SetDropoffLocationScreen> {
               ? const Center(child: CircularProgressIndicator())
               : Expanded(
                   child: _showSearchHistory
-                      ? _buildSearchHistory()
+                      ? Column(
+                          children: [
+                            _buildSearchHistory(),
+                          ],
+                        )
                       : _buildSuggestionsList(),
                 ),
         ],
