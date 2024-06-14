@@ -24,6 +24,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "accept": MessageLookupByLibrary.simpleMessage("Accept"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "account_screen_title": MessageLookupByLibrary.simpleMessage("Account"),
         "add_card": MessageLookupByLibrary.simpleMessage("Add Card"),
@@ -57,6 +58,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "bookingStatusInProgress":
             MessageLookupByLibrary.simpleMessage("In Progress"),
         "bookingStatusPending": MessageLookupByLibrary.simpleMessage("Pending"),
+        "booking_accepted":
+            MessageLookupByLibrary.simpleMessage("Booking Accepted"),
+        "booking_completed":
+            MessageLookupByLibrary.simpleMessage("Booking Completed"),
+        "booking_declined":
+            MessageLookupByLibrary.simpleMessage("Booking Declined"),
         "booking_details":
             MessageLookupByLibrary.simpleMessage("Booking Details"),
         "booking_id": MessageLookupByLibrary.simpleMessage("Booking ID"),
@@ -107,10 +114,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "clear": MessageLookupByLibrary.simpleMessage("Clear"),
         "client": MessageLookupByLibrary.simpleMessage("Client"),
         "color": MessageLookupByLibrary.simpleMessage("Color"),
+        "complete": MessageLookupByLibrary.simpleMessage("Complete"),
         "completed": MessageLookupByLibrary.simpleMessage("Completed"),
         "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
         "confirm_card_changes": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to save changes to this card?"),
+        "confirm_decline_booking": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to decline this booking?"),
+        "confirm_delete_notification": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to delete this notification?"),
         "confirm_dropoff_location":
             MessageLookupByLibrary.simpleMessage("Confirm Dropoff Location"),
         "confirm_pickup_location":
@@ -126,6 +138,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "date_of_birth": MessageLookupByLibrary.simpleMessage("Date of Birth"),
         "day": MessageLookupByLibrary.simpleMessage("Day"),
         "days_ago": MessageLookupByLibrary.simpleMessage("days ago"),
+        "decline": MessageLookupByLibrary.simpleMessage("Decline"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "driver_license_number":
             MessageLookupByLibrary.simpleMessage("Driver\'s License Number"),
@@ -160,8 +173,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Enter pick-up location"),
         "enter_price_per_day": MessageLookupByLibrary.simpleMessage(
             "Please enter the price per day"),
+        "error_declining_booking":
+            MessageLookupByLibrary.simpleMessage("Error declining booking"),
+        "error_fetching_bookings":
+            MessageLookupByLibrary.simpleMessage("Error fetching bookings"),
         "error_loading_vehicles":
             MessageLookupByLibrary.simpleMessage("Error loading vehicles."),
+        "error_processing_booking":
+            MessageLookupByLibrary.simpleMessage("Error processing booking"),
         "expiry_date": MessageLookupByLibrary.simpleMessage("Expiry Date"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
         "features": MessageLookupByLibrary.simpleMessage("Features"),
@@ -182,6 +201,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Issuing Country"),
         "just_now": MessageLookupByLibrary.simpleMessage("Just now"),
         "language": MessageLookupByLibrary.simpleMessage("Language"),
+        "last_30_days": MessageLookupByLibrary.simpleMessage("Last 30 Days"),
+        "last_7_days": MessageLookupByLibrary.simpleMessage("Last 7 Days"),
         "locations": MessageLookupByLibrary.simpleMessage("Locations"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "logout": MessageLookupByLibrary.simpleMessage("Logout"),
@@ -193,8 +214,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "minutes_ago": MessageLookupByLibrary.simpleMessage("minutes ago"),
         "model": MessageLookupByLibrary.simpleMessage("Model"),
         "model_year": MessageLookupByLibrary.simpleMessage("Model Year"),
+        "month_ago": MessageLookupByLibrary.simpleMessage("month ago"),
+        "months_ago": MessageLookupByLibrary.simpleMessage("months ago"),
         "my_bookings": MessageLookupByLibrary.simpleMessage("My Bookings"),
         "my_location": MessageLookupByLibrary.simpleMessage("My Location"),
+        "new_title": MessageLookupByLibrary.simpleMessage("New"),
         "next": MessageLookupByLibrary.simpleMessage("Next"),
         "no_bookings_found":
             MessageLookupByLibrary.simpleMessage("No bookings found."),
@@ -210,6 +234,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "no_vehicles_found":
             MessageLookupByLibrary.simpleMessage("No vehicles found."),
         "not_a_member": MessageLookupByLibrary.simpleMessage("Not a member?"),
+        "notification_deleted":
+            MessageLookupByLibrary.simpleMessage("Notification deleted."),
         "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
         "ongoing": MessageLookupByLibrary.simpleMessage("Ongoing"),
         "other_payment_method":
@@ -288,6 +314,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "tax_identification_number":
             MessageLookupByLibrary.simpleMessage("Tax Identification Number"),
         "title": MessageLookupByLibrary.simpleMessage("V1 Rentals"),
+        "today": MessageLookupByLibrary.simpleMessage("Today"),
         "total_price": MessageLookupByLibrary.simpleMessage("Total Price"),
         "total_rental_price":
             MessageLookupByLibrary.simpleMessage("Total Rental Price"),

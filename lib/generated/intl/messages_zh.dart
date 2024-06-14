@@ -24,6 +24,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "accept": MessageLookupByLibrary.simpleMessage("接受"),
         "account": MessageLookupByLibrary.simpleMessage("账户"),
         "account_screen_title": MessageLookupByLibrary.simpleMessage("账户"),
         "add_card": MessageLookupByLibrary.simpleMessage("添加卡"),
@@ -48,6 +49,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "bookingStatusCompleted": MessageLookupByLibrary.simpleMessage("已完成"),
         "bookingStatusInProgress": MessageLookupByLibrary.simpleMessage("进行中"),
         "bookingStatusPending": MessageLookupByLibrary.simpleMessage("待处理"),
+        "booking_accepted": MessageLookupByLibrary.simpleMessage("预订已接受"),
+        "booking_completed": MessageLookupByLibrary.simpleMessage("预订已完成"),
+        "booking_declined": MessageLookupByLibrary.simpleMessage("预订已拒绝"),
         "booking_details": MessageLookupByLibrary.simpleMessage("预订详情"),
         "booking_id": MessageLookupByLibrary.simpleMessage("预订编号"),
         "booking_time": MessageLookupByLibrary.simpleMessage("预订时间"),
@@ -93,10 +97,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "clear": MessageLookupByLibrary.simpleMessage("清除"),
         "client": MessageLookupByLibrary.simpleMessage("客户"),
         "color": MessageLookupByLibrary.simpleMessage("颜色"),
+        "complete": MessageLookupByLibrary.simpleMessage("完成"),
         "completed": MessageLookupByLibrary.simpleMessage("已完成"),
         "confirm": MessageLookupByLibrary.simpleMessage("确认"),
         "confirm_card_changes":
             MessageLookupByLibrary.simpleMessage("您确定要保存此卡的更改吗？"),
+        "confirm_decline_booking":
+            MessageLookupByLibrary.simpleMessage("您确定要拒绝此预订吗？"),
+        "confirm_delete_notification":
+            MessageLookupByLibrary.simpleMessage("您确定要删除此通知吗？"),
         "confirm_dropoff_location":
             MessageLookupByLibrary.simpleMessage("确认送达地点"),
         "confirm_pickup_location":
@@ -110,6 +119,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "date_of_birth": MessageLookupByLibrary.simpleMessage("出生日期"),
         "day": MessageLookupByLibrary.simpleMessage("天"),
         "days_ago": MessageLookupByLibrary.simpleMessage("天前"),
+        "decline": MessageLookupByLibrary.simpleMessage("拒绝"),
         "delete": MessageLookupByLibrary.simpleMessage("删除"),
         "driver_license_number": MessageLookupByLibrary.simpleMessage("驾驶证号"),
         "drop_off": MessageLookupByLibrary.simpleMessage("还车"),
@@ -133,8 +143,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "enter_overview": MessageLookupByLibrary.simpleMessage("请输入概览"),
         "enter_pickup_location": MessageLookupByLibrary.simpleMessage("输入取车地点"),
         "enter_price_per_day": MessageLookupByLibrary.simpleMessage("请输入每日价格"),
+        "error_declining_booking":
+            MessageLookupByLibrary.simpleMessage("错误拒绝预订"),
+        "error_fetching_bookings":
+            MessageLookupByLibrary.simpleMessage("错误获取预订"),
         "error_loading_vehicles":
             MessageLookupByLibrary.simpleMessage("载入车辆时出错."),
+        "error_processing_booking":
+            MessageLookupByLibrary.simpleMessage("错误处理预订"),
         "expiry_date": MessageLookupByLibrary.simpleMessage("到期日期"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
         "features": MessageLookupByLibrary.simpleMessage("特征"),
@@ -154,6 +170,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "issuing_country": MessageLookupByLibrary.simpleMessage("签发国家"),
         "just_now": MessageLookupByLibrary.simpleMessage("刚刚"),
         "language": MessageLookupByLibrary.simpleMessage("语言"),
+        "last_30_days": MessageLookupByLibrary.simpleMessage("Last 30 Days"),
+        "last_7_days": MessageLookupByLibrary.simpleMessage("Last 7 Days"),
         "locations": MessageLookupByLibrary.simpleMessage("地点"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "logout": MessageLookupByLibrary.simpleMessage("登出"),
@@ -164,8 +182,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "minutes_ago": MessageLookupByLibrary.simpleMessage("分钟前"),
         "model": MessageLookupByLibrary.simpleMessage("型号"),
         "model_year": MessageLookupByLibrary.simpleMessage("车型年份"),
+        "month_ago": MessageLookupByLibrary.simpleMessage("个月前"),
+        "months_ago": MessageLookupByLibrary.simpleMessage("个月前"),
         "my_bookings": MessageLookupByLibrary.simpleMessage("我的预订"),
         "my_location": MessageLookupByLibrary.simpleMessage("我的位置"),
+        "new_title": MessageLookupByLibrary.simpleMessage("New"),
         "next": MessageLookupByLibrary.simpleMessage("下一步"),
         "no_bookings_found": MessageLookupByLibrary.simpleMessage("未找到预订."),
         "no_business_name": MessageLookupByLibrary.simpleMessage("无商家名称"),
@@ -174,6 +195,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "no_user_logged_in": MessageLookupByLibrary.simpleMessage("没有用户登录"),
         "no_vehicles_found": MessageLookupByLibrary.simpleMessage("未找到车辆."),
         "not_a_member": MessageLookupByLibrary.simpleMessage("不是会员？"),
+        "notification_deleted": MessageLookupByLibrary.simpleMessage("通知已删除"),
         "notifications": MessageLookupByLibrary.simpleMessage("通知"),
         "ongoing": MessageLookupByLibrary.simpleMessage("进行中"),
         "other_payment_method": MessageLookupByLibrary.simpleMessage("其他付款方式"),
@@ -231,6 +253,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "take_photo": MessageLookupByLibrary.simpleMessage("拍照"),
         "tax_identification_number": MessageLookupByLibrary.simpleMessage("税号"),
         "title": MessageLookupByLibrary.simpleMessage("V1租赁"),
+        "today": MessageLookupByLibrary.simpleMessage("今天"),
         "total_price": MessageLookupByLibrary.simpleMessage("总价"),
         "total_rental_price": MessageLookupByLibrary.simpleMessage("租赁总价"),
         "transaction_details": MessageLookupByLibrary.simpleMessage("交易详情"),

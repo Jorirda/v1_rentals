@@ -163,47 +163,49 @@ class _HomeScreenState extends State<HomeScreen>
                                       style: const TextStyle(fontSize: 18),
                                     ),
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 10, left: 20),
-                              child: Row(
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LocationScreen(),
-                                        ),
-                                      );
-                                    },
-                                    style: TextButton.styleFrom(
-                                        foregroundColor: Colors.white),
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.location_on,
-                                          color: Colors.red,
-                                        ),
-                                        Tooltip(
-                                          message: _currentUser?.address ??
-                                              S.of(context).your_location,
-                                          child: Text(
-                                            _truncateAddress(
-                                                    _currentUser?.address) ??
-                                                S.of(context).your_location,
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                          ),
-                                        ),
-                                        const Icon(Icons.arrow_drop_down),
-                                      ],
+                            SizedBox(
+                                width:
+                                    20), // Add some space between CircleAvatar and TextButton
+                            Flexible(
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LocationScreen(),
                                     ),
-                                  ),
-                                ],
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                    foregroundColor: Colors.white),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: Colors.red,
+                                    ),
+                                    Flexible(
+                                      child: Tooltip(
+                                        message: _currentUser?.address ??
+                                            S.of(context).your_location,
+                                        child: Text(
+                                          _truncateAddress(
+                                                  _currentUser?.address) ??
+                                              S.of(context).your_location,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                      ),
+                                    ),
+                                    const Icon(Icons.arrow_drop_down),
+                                  ],
+                                ),
                               ),
                             ),
+                            SizedBox(
+                                width:
+                                    10), // Add some space between TextButton and IconButton
                             Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100),
@@ -219,8 +221,9 @@ class _HomeScreenState extends State<HomeScreen>
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                const NotificationScreen()),
+                                          builder: (context) =>
+                                              const NotificationScreen(),
+                                        ),
                                       );
                                     },
                                     icon: Icon(

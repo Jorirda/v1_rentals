@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:v1_rentals/auth/notification_service.dart';
+import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/services/auth_service.dart';
 

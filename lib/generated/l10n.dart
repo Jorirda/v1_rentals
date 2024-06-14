@@ -710,6 +710,16 @@ class S {
     );
   }
 
+  /// `Decline`
+  String get decline {
+    return Intl.message(
+      'Decline',
+      name: 'decline',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Total Price`
   String get total_price {
     return Intl.message(
@@ -1470,6 +1480,76 @@ class S {
     );
   }
 
+  /// `Booking Accepted`
+  String get booking_accepted {
+    return Intl.message(
+      'Booking Accepted',
+      name: 'booking_accepted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Booking Completed`
+  String get booking_completed {
+    return Intl.message(
+      'Booking Completed',
+      name: 'booking_completed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Booking Declined`
+  String get booking_declined {
+    return Intl.message(
+      'Booking Declined',
+      name: 'booking_declined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to decline this booking?`
+  String get confirm_decline_booking {
+    return Intl.message(
+      'Are you sure you want to decline this booking?',
+      name: 'confirm_decline_booking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error processing booking`
+  String get error_processing_booking {
+    return Intl.message(
+      'Error processing booking',
+      name: 'error_processing_booking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error declining booking`
+  String get error_declining_booking {
+    return Intl.message(
+      'Error declining booking',
+      name: 'error_declining_booking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error fetching bookings`
+  String get error_fetching_bookings {
+    return Intl.message(
+      'Error fetching bookings',
+      name: 'error_fetching_bookings',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Unknown`
   String get unknown {
     return Intl.message(
@@ -1665,6 +1745,26 @@ class S {
     return Intl.message(
       'Delete',
       name: 'delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Accept`
+  String get accept {
+    return Intl.message(
+      'Accept',
+      name: 'accept',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete`
+  String get complete {
+    return Intl.message(
+      'Complete',
+      name: 'complete',
       desc: '',
       args: [],
     );
@@ -1930,6 +2030,26 @@ class S {
     );
   }
 
+  /// `Notification deleted.`
+  String get notification_deleted {
+    return Intl.message(
+      'Notification deleted.',
+      name: 'notification_deleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this notification?`
+  String get confirm_delete_notification {
+    return Intl.message(
+      'Are you sure you want to delete this notification?',
+      name: 'confirm_delete_notification',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Mark as read`
   String get mark_as_read {
     return Intl.message(
@@ -2040,6 +2160,16 @@ class S {
     );
   }
 
+  /// `Today`
+  String get today {
+    return Intl.message(
+      'Today',
+      name: 'today',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Just now`
   String get just_now {
     return Intl.message(
@@ -2070,11 +2200,61 @@ class S {
     );
   }
 
+  /// `month ago`
+  String get month_ago {
+    return Intl.message(
+      'month ago',
+      name: 'month_ago',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `months ago`
+  String get months_ago {
+    return Intl.message(
+      'months ago',
+      name: 'months_ago',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `days ago`
   String get days_ago {
     return Intl.message(
       'days ago',
       name: 'days_ago',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New`
+  String get new_title {
+    return Intl.message(
+      'New',
+      name: 'new_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last 7 Days`
+  String get last_7_days {
+    return Intl.message(
+      'Last 7 Days',
+      name: 'last_7_days',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last 30 Days`
+  String get last_30_days {
+    return Intl.message(
+      'Last 30 Days',
+      name: 'last_30_days',
       desc: '',
       args: [],
     );

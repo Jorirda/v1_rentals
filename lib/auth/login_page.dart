@@ -26,9 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   var _isAuthenticating = false;
   bool _obscureText = true;
 
-  final AssetImage _backgroundImage =
-      AssetImage('assets/images/car-rental-bg3.jpg');
-
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -66,13 +63,13 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _formKey.currentState?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
-    precacheImage(_backgroundImage, context);
     return Scaffold(
       appBar: AppBar(
         title: Text(

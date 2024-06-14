@@ -1,42 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationModel {
-  String title;
-  String body;
-  DateTime timestamp;
-  String userImageURL;
-  String vehicleImageURL;
-  String bookingId; // Add this field
+  final String id; // Add this line
+  final String title;
+  final String body;
+  final String userImageURL;
+  final String vehicleImageURL;
+  final String bookingId;
+  final DateTime timestamp;
 
   NotificationModel({
+    required this.id, // Add this line
     required this.title,
     required this.body,
-    required this.timestamp,
     required this.userImageURL,
     required this.vehicleImageURL,
-    required this.bookingId, // Initialize this field
+    required this.bookingId,
+    required this.timestamp,
   });
 
-  factory NotificationModel.fromSnapshot(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory NotificationModel.fromMap(
+      Map<String, dynamic> data, String documentId) {
     return NotificationModel(
-      title: data['title'] ?? '',
-      body: data['body'] ?? '',
+      id: documentId, // Add this line
+      title: data['title'],
+      body: data['body'],
+      userImageURL: data['userImageURL'],
+      vehicleImageURL: data['vehicleImageURL'],
+      bookingId: data['bookingId'],
       timestamp: (data['timestamp'] as Timestamp).toDate(),
-      userImageURL: data['userImageURL'] ?? '',
-      vehicleImageURL: data['vehicleImageURL'] ?? '',
-      bookingId: data['bookingId'] ?? '', // Retrieve this field
-    );
-  }
-
-  factory NotificationModel.fromMap(Map<String, dynamic> data) {
-    return NotificationModel(
-      title: data['title'] ?? '',
-      body: data['body'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
-      userImageURL: data['userImageURL'] ?? '',
-      vehicleImageURL: data['vehicleImageURL'] ?? '',
-      bookingId: data['bookingId'] ?? '', // Retrieve this field
     );
   }
 
@@ -44,10 +36,10 @@ class NotificationModel {
     return {
       'title': title,
       'body': body,
-      'timestamp': timestamp,
       'userImageURL': userImageURL,
       'vehicleImageURL': vehicleImageURL,
-      'bookingId': bookingId, // Add this field
+      'bookingId': bookingId,
+      'timestamp': timestamp,
     };
   }
 }

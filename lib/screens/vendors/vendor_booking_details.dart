@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/services/auth_service.dart';
-import 'package:v1_rentals/auth/notification_service.dart';
+import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:intl/intl.dart';
@@ -57,6 +57,11 @@ class _VendorBookingDetailsScreenState
           userBody = 'Your booking has been accepted by the vendor.';
           vendorTitle = 'Booking Accepted';
           vendorBody = 'You have accepted the booking.';
+        } else if (status == BookingStatus.completed) {
+          userTitle = 'Booking Completed';
+          userBody = 'Your booking has been completed by the vendor.';
+          vendorTitle = 'Booking Completed';
+          vendorBody = 'You have completed the booking.';
         }
 
         await pushNotificationService.sendNotification(
@@ -153,7 +158,7 @@ class _VendorBookingDetailsScreenState
                             height: 20,
                           ),
                           Text(
-                            '${S.of(context).rental_vehicle} : ${vehicleSnapshot['brand']}', // Example field from vehicle document
+                            '${S.of(context).rental_vehicle} : ${widget.booking.vehicleDescription}', // Example field from vehicle document
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
@@ -174,7 +179,8 @@ class _VendorBookingDetailsScreenState
                                           CarDetailsScreen(vehicle)),
                                 );
                               } catch (e) {
-                                print('Error fetching vehicle details: $e');
+                                print(
+                                    '${S.of(context).error_loading_vehicles}: $e');
                                 // Handle error, e.g., show a snackbar or dialog
                               }
                             },
@@ -278,8 +284,12 @@ class _VendorBookingDetailsScreenState
                             children: [
                               Text(S.of(context).pick_up_location),
                               Spacer(),
-                              Text(
-                                ' ${widget.booking.pickupLocation}',
+                              Flexible(
+                                child: Text(
+                                  ' ${widget.booking.pickupLocation}',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                ),
                               ),
                             ],
                           ),
@@ -289,8 +299,12 @@ class _VendorBookingDetailsScreenState
                             children: [
                               Text(S.of(context).drop_off_location),
                               Spacer(),
-                              Text(
-                                '${widget.booking.dropoffLocation}',
+                              Flexible(
+                                child: Text(
+                                  '${widget.booking.dropoffLocation}',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                ),
                               ),
                             ],
                           ),
@@ -389,7 +403,8 @@ class _VendorBookingDetailsScreenState
         ),
       ),
       bottomNavigationBar: Visibility(
-        visible: widget.booking.status == BookingStatus.pending,
+        visible: widget.booking.status == BookingStatus.pending ||
+            widget.booking.status == BookingStatus.inProgress,
         child: BottomAppBar(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -401,28 +416,31 @@ class _VendorBookingDetailsScreenState
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Decline'),
+                          title: Text(S.of(context).decline),
                           content: Text(
-                              'Are you sure you want to decline this booking?'),
+                            S.of(context).confirm_decline_booking,
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text('Cancel'),
+                              child: Text(S.of(context).cancel),
                             ),
                             TextButton(
                               onPressed: () async {
                                 try {
                                   // Update booking status to "cancelled" and send notifications
                                   await updateBookingStatusAndNotify(
-                                      widget.booking.id,
-                                      BookingStatus.cancelled);
+                                    widget.booking.id,
+                                    BookingStatus.cancelled,
+                                  );
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Booking declined'),
+                                      content:
+                                          Text(S.of(context).booking_declined),
                                     ),
                                   );
                                 } catch (e) {
@@ -430,29 +448,27 @@ class _VendorBookingDetailsScreenState
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content:
-                                          Text('Error declining booking: $e'),
+                                      content: Text(
+                                          '${S.of(context).error_declining_booking}: $e'),
                                     ),
                                   );
                                 }
                               },
-                              child: Text('Confirm'),
+                              child: Text(S.of(context).confirm),
                             ),
                           ],
                         );
                       },
                     );
                   },
-                  child: Text('Decline'),
+                  child: Text(S.of(context).decline),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
                 ),
               ),
-              SizedBox(
-                width: 10,
-              ),
+              SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
@@ -460,53 +476,80 @@ class _VendorBookingDetailsScreenState
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Confirm'),
+                          title: Text(
+                              widget.booking.status == BookingStatus.pending
+                                  ? S.of(context).accept
+                                  : S.of(context).complete),
                           content: Text(
-                              'Are you sure you want to accept this booking?'),
+                            'Are you sure you want to ${widget.booking.status == BookingStatus.pending ? S.of(context).accept : S.of(context).complete} this booking?',
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                Navigator.of(context).pop();
                               },
-                              child: Text('Cancel'),
+                              child: Text(S.of(context).cancel),
                             ),
                             TextButton(
                               onPressed: () async {
                                 try {
-                                  // Update booking status to "inProgress" and send notifications
-                                  await updateBookingStatusAndNotify(
+                                  // Update booking status and send notifications
+                                  if (widget.booking.status ==
+                                      BookingStatus.pending) {
+                                    await updateBookingStatusAndNotify(
                                       widget.booking.id,
-                                      BookingStatus.inProgress);
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pop();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Booking accepted'),
-                                    ),
-                                  );
+                                      BookingStatus.inProgress,
+                                    );
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            S.of(context).booking_accepted),
+                                      ),
+                                    );
+                                  } else if (widget.booking.status ==
+                                      BookingStatus.inProgress) {
+                                    await updateBookingStatusAndNotify(
+                                      widget.booking.id,
+                                      BookingStatus.completed,
+                                    );
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            S.of(context).booking_completed),
+                                      ),
+                                    );
+                                  }
                                 } catch (e) {
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content:
-                                          Text('Error accepting booking: $e'),
+                                      content: Text(
+                                          '${S.of(context).error_processing_booking}: $e'),
                                     ),
                                   );
                                 }
                               },
-                              child: Text('Confirm'),
+                              child: Text(S.of(context).confirm),
                             ),
                           ],
                         );
                       },
                     );
                   },
-                  child: Text('Accept'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor:
+                        widget.booking.status == BookingStatus.pending
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.green,
                     foregroundColor: Colors.white,
                   ),
+                  child: Text(widget.booking.status == BookingStatus.pending
+                      ? S.of(context).accept
+                      : S.of(context).complete),
                 ),
               ),
             ],

@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:v1_rentals/services/auth_service.dart';
-import 'package:v1_rentals/auth/notification_service.dart';
+import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/models/notification_model.dart';
 
 class NotificationProvider with ChangeNotifier {
@@ -12,6 +14,7 @@ class NotificationProvider with ChangeNotifier {
   bool _hasNewNotification = false;
   int _notificationCount = 0;
   String? userId;
+  StreamSubscription? _notificationSubscription;
 
   NotificationProvider({this.userId}) {
     if (userId != null) {
@@ -34,7 +37,8 @@ class NotificationProvider with ChangeNotifier {
 
   Future<void> _loadNotifications() async {
     if (userId == null) return;
-    FirebaseFirestore.instance
+    _notificationSubscription?.cancel();
+    _notificationSubscription = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('notifications')
@@ -42,7 +46,8 @@ class NotificationProvider with ChangeNotifier {
         .snapshots()
         .listen((snapshot) {
       _notifications = snapshot.docs.map((doc) {
-        return NotificationModel.fromMap(doc.data());
+        return NotificationModel.fromMap(
+            doc.data() as Map<String, dynamic>, doc.id);
       }).toList();
       _hasNewNotification = true;
       _notificationCount = _notifications.length;
@@ -60,6 +65,24 @@ class NotificationProvider with ChangeNotifier {
     _notificationCount++;
     _hasNewNotification = true;
     notifyListeners();
+  }
+
+  Future<void> removeNotification(String notificationId) async {
+    if (userId == null) return;
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .doc(notificationId)
+          .delete();
+      _notifications
+          .removeWhere((notification) => notification.id == notificationId);
+      _notificationCount--;
+      notifyListeners();
+    } catch (e) {
+      print("Failed to delete notification: $e");
+    }
   }
 
   void markAsRead() {
@@ -91,5 +114,11 @@ class NotificationProvider with ChangeNotifier {
     } catch (e) {
       print('Error sending vendor notification: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _notificationSubscription?.cancel();
+    super.dispose();
   }
 }

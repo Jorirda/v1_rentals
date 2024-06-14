@@ -69,7 +69,7 @@ class _BookingScreenState extends State<BookingScreen> {
       userFullName: '', // You will need to fetch this value
       vehicleId: widget.vehicle.id,
       vehicleDescription:
-          '${widget.vehicle.brand} ${widget.vehicle.modelYear}', // Assuming vehicle has a modelYear property
+          '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model} ${widget.vehicle.modelYear}', // Assuming vehicle has a modelYear property
       vendorId: widget.vehicle.vendorId,
       vendorEmail: '', // You will need to fetch this value
       vendorBusinessName: '', // You will need to fetch this value
@@ -378,6 +378,12 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                     ),
                     controller: pickupLocationController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return S.of(context).enter_pickup_location;
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -420,6 +426,12 @@ class _BookingScreenState extends State<BookingScreen> {
                       ),
                     ),
                     controller: dropoffLocationController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return S.of(context).enter_dropoff_location;
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -996,7 +1008,7 @@ class _BookingScreenState extends State<BookingScreen> {
         timestamp: DateTime.now(),
         userImageURL: vendorImageURL, // Vendor image for the user
         vehicleImageURL: booking.imageUrl,
-        bookingId: bookingId, // Add this field
+        bookingId: bookingId, id: '', // Add this field
       );
 
       NotificationModel vendorNotification = NotificationModel(
@@ -1005,7 +1017,7 @@ class _BookingScreenState extends State<BookingScreen> {
         timestamp: DateTime.now(),
         userImageURL: userImageURL, // User image for the vendor
         vehicleImageURL: booking.imageUrl,
-        bookingId: bookingId, // Add this field
+        bookingId: bookingId, id: '', // Add this field
       );
 
       // Add notifications to Firestore

@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/clients/edit_bookings.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
-import 'package:v1_rentals/auth/notification_service.dart';
+import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 
 class ClientBookingDetailsScreen extends StatefulWidget {
@@ -401,7 +401,8 @@ class _ClientBookingDetailsScreenState
         ),
       ),
       bottomNavigationBar: Visibility(
-        visible: widget.booking.status == BookingStatus.pending,
+        visible: widget.booking.status == BookingStatus.pending ||
+            widget.booking.status == BookingStatus.inProgress,
         child: BottomAppBar(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

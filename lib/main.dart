@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth_wrapper.dart';
-import 'package:v1_rentals/auth/notification_service.dart';
+import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/providers/favorites_provider.dart';
 import 'package:v1_rentals/providers/vehicle_provider.dart';
 import 'package:v1_rentals/l10n/locale_provider.dart';
