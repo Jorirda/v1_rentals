@@ -7,6 +7,7 @@ import 'package:v1_rentals/providers/account_provider.dart';
 import 'package:v1_rentals/screens/account/edit_account.dart';
 import 'package:v1_rentals/screens/account/languages/languages.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/payment_overview.dart';
+import 'package:v1_rentals/widgets/stripe_payment.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -84,7 +85,14 @@ class _AccountScreenState extends State<AccountScreen> {
               AccountMenuWidget(
                 title: localization.address_book,
                 icon: Icons.book_rounded,
-                onPress: () {},
+                onPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentScreen(),
+                    ),
+                  );
+                },
                 textColor: null,
               ),
 

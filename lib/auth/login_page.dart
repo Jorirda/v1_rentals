@@ -52,9 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
         // Handle login errors
         print("Error logging in: $e");
       } finally {
-        setState(() {
-          _isAuthenticating = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isAuthenticating = false;
+          });
+        }
       }
     }
   }
@@ -63,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _formKey.currentState?.dispose();
     super.dispose();
   }
 

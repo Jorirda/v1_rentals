@@ -25,6 +25,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:v1_rentals/generated/l10n.dart'; //  import the generated localization file
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 // Define a top-level function to handle background messages
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -34,12 +35,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY']!;
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   AccountDataProvider().fetchUserData();
   // Load environment variables from the .env file
-  await dotenv.load(fileName: ".env");
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
