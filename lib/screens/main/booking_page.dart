@@ -17,7 +17,9 @@ import 'package:v1_rentals/locations/dropoff_location.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/services/location_service.dart';
 import 'package:v1_rentals/locations/pickup_location.dart';
+import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/widgets/custom_stepper.dart';
+import 'package:v1_rentals/widgets/stripe_payment.dart';
 
 import '../../providers/notification_provider.dart';
 
@@ -61,7 +63,10 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   void initState() {
     super.initState();
-
+    final DateTime now = DateTime.now();
+    final DateTime initialPickupDate = DateTime(now.year, now.month, now.day);
+    final DateTime initialDropoffDate =
+        initialPickupDate.add(Duration(days: 1));
     booking = Booking(
       id: FirebaseFirestore.instance.collection('bookings').doc().id,
       userId: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -69,14 +74,14 @@ class _BookingScreenState extends State<BookingScreen> {
       userFullName: '', // You will need to fetch this value
       vehicleId: widget.vehicle.id,
       vehicleDescription:
-          '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model} ${widget.vehicle.modelYear}', // Assuming vehicle has a modelYear property
+          '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model} ${widget.vehicle.modelYear}',
       vendorId: widget.vehicle.vendorId,
       vendorEmail: '', // You will need to fetch this value
       vendorBusinessName: '', // You will need to fetch this value
       vendorContactInformation: '', // You will need to fetch this value
-      pickupDate: DateTime.now(),
+      pickupDate: initialPickupDate,
       pickupTime: TimeOfDay.fromDateTime(DateTime.now()),
-      dropoffDate: DateTime.now().add(Duration(days: 1)),
+      dropoffDate: initialDropoffDate,
       dropoffTime:
           TimeOfDay.fromDateTime(DateTime.now().add(Duration(days: 1))),
       pickupLocation: '',
@@ -96,6 +101,16 @@ class _BookingScreenState extends State<BookingScreen> {
     fetchVendorInformation(widget.vehicle
         .vendorId); // Fetch vendor information by passing vehicle vendorId
     _fetchSearchHistory();
+    _calculateTotalPrice();
+  }
+
+  void _calculateTotalPrice() {
+    final int differenceInDays =
+        booking.dropoffDate.difference(booking.pickupDate).inDays;
+    setState(() {
+      booking.totalPrice = differenceInDays * widget.vehicle.pricePerDay;
+      print(differenceInDays);
+    });
   }
 
   @override
@@ -209,461 +224,322 @@ class _BookingScreenState extends State<BookingScreen> {
       Step(
         state: currentStep > 0 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 0,
-        title: Text(S.of(context).reserve),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        title: Text(
+          S.of(context).reserve,
+        ),
+        content: Center(
+          child: SingleChildScrollView(
+            // Use SingleChildScrollView to handle overflow
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.arrow_circle_up,
-                  color: Colors.red,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  S.of(context).pick_up,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Theme.of(context).colorScheme.primary),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.date_range,
-                      color: Theme.of(context).colorScheme.primary,
+                Row(
+                  children: [
+                    Icon(
+                      Icons.arrow_circle_up,
+                      color: Colors.red,
+                      size: 30,
                     ),
-                    title: Text(
-                      S.of(context).pickup_date,
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      S.of(context).pick_up,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    subtitle: Text(
-                      '${booking.pickupDate.day}/${booking.pickupDate.month}/${booking.pickupDate.year}',
-                    ),
-                    onTap: () => _selectPickupDate(context),
-                  ),
+                  ],
                 ),
-                Expanded(
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.access_time,
-                      color: Theme.of(context).colorScheme.primary,
+                SizedBox(
+                  height: 20,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      leading: Icon(
+                        Icons.date_range,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(
+                        S.of(context).pickup_date,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${booking.pickupDate.day}/${booking.pickupDate.month}/${booking.pickupDate.year}',
+                      ),
+                      onTap: () => _selectPickupDate(context),
                     ),
-                    title: Text(
-                      S.of(context).pickup_time,
+                    ListTile(
+                      leading: Icon(
+                        Icons.access_time,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(
+                        S.of(context).pickup_time,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize:
+                              20, // Increase the font size of the time text
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${booking.pickupTime.hour}:${booking.pickupTime.minute}',
+                      ),
+                      onTap: () => _selectPickupTime(context),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Divider(),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.arrow_circle_down,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      S.of(context).drop_off,
                       style: TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 15.9),
-                    ),
-                    subtitle: Text(
-                      '${booking.pickupTime.hour}:${booking.pickupTime.minute}',
-                    ),
-                    onTap: () => _selectPickupTime(context),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.arrow_circle_down,
-                  color: Colors.red,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  S.of(context).drop_off,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Theme.of(context).colorScheme.primary),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.date_range,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(
-                      S.of(context).dropoff_date,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      '${booking.dropoffDate.day}/${booking.dropoffDate.month}/${booking.dropoffDate.year}',
-                    ),
-                    onTap: () => _selectDropoffDate(context),
-                  ),
-                ),
-                Expanded(
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.access_time,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(
-                      S.of(context).dropoff_time,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      '${booking.dropoffTime.hour}:${booking.dropoffTime.minute}',
-                    ),
-                    onTap: () => _selectDropoffTime(context),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Divider(),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  color: Colors.red,
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  S.of(context).locations,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Theme.of(context).colorScheme.primary),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              S.of(context).pick_up_location,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16, // Adjust font size for better readability
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: S.of(context).enter_pickup_location,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        fontWeight: FontWeight.bold,
+                        fontSize:
+                            30, // Increase the font size of the drop-off text
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    controller: pickupLocationController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return S.of(context).enter_pickup_location;
-                      }
-                      return null;
-                    },
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: IconButton(
-                    onPressed: () => _selectPickupLocation(context),
-                    icon: const Icon(
-                      Icons.my_location,
-                      color: Colors.white,
-                    ),
-                  ),
+                SizedBox(
+                  height: 20,
                 ),
-              ],
-            ),
-            const SizedBox(
-                height:
-                    20), // Add spacing between pick-up and drop-off sections
-            Text(
-              S.of(context).drop_off_location,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16, // Adjust font size for better readability
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      hintText: S.of(context).enter_dropoff_location,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ListTile(
+                      leading: Icon(
+                        Icons.date_range,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
+                      title: Text(
+                        S.of(context).dropoff_date,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${booking.dropoffDate.day}/${booking.dropoffDate.month}/${booking.dropoffDate.year}',
+                      ),
+                      onTap: () => _selectDropoffDate(context),
                     ),
-                    controller: dropoffLocationController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return S.of(context).enter_dropoff_location;
-                      }
-                      return null;
-                    },
-                  ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.access_time,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(
+                        S.of(context).dropoff_time,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${booking.dropoffTime.hour}:${booking.dropoffTime.minute}',
+                      ),
+                      onTap: () => _selectDropoffTime(context),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: IconButton(
-                    onPressed: () => _selectDropoffLocation(context),
-                    icon: const Icon(
-                      Icons.my_location,
-                      color: Colors.white,
-                    ),
-                  ),
+                const SizedBox(
+                  height: 20,
                 ),
               ],
             ),
-            Row(
-              children: [
-                Checkbox(
-                  value: setSameLocation,
-                  onChanged: (value) {
-                    setState(() {
-                      setSameLocation = value!;
-                      if (setSameLocation) {
-                        if (pickupLocationController.text.isEmpty &&
-                            dropoffLocationController.text.isNotEmpty) {
-                          pickupLocationController.text =
-                              dropoffLocationController.text;
-                        } else if (dropoffLocationController.text.isEmpty &&
-                            pickupLocationController.text.isNotEmpty) {
-                          dropoffLocationController.text =
-                              pickupLocationController.text;
-                        }
-                      }
-                    });
-                  },
-                ),
-                Text(
-                  S.of(context).set_pickup_drop_off,
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
       Step(
         state: currentStep > 1 ? StepState.complete : StepState.indexed,
         isActive: currentStep >= 1,
-        title: Text(S.of(context).payment),
-        content: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${S.of(context).total_rental_price} : USD\$150.00',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                S.of(context).choose_payment_method,
-                style: TextStyle(
-                    fontSize: 20,
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          S.of(context).your_credit_debit,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Divider(),
-                        if (userCards.isNotEmpty) ...[
-                          // Display radio tiles for user's payment cards
-                          ...userCards
-                              .map((card) => buildPaymentCardRadioTile(card)),
-                        ] else ...[
-                          Center(
-                            child: Text(S.of(context).no_card_found),
-                          ),
-                        ],
-                        // Display default option for adding a new card if no cards are available
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddPaymentCardScreen(),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.add,
-                                color: Colors.grey,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Icon(
-                                Icons.credit_card,
-                                color: Colors.black,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                S.of(context).add_credit_debit,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Icon(
-                                Icons.navigate_next,
-                              ),
-                              Container(
-                                width: 32,
-                                height: 32,
-                                child:
-                                    Image.asset('assets/images/visa_icon.png'),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Container(
-                                width: 32,
-                                height: 32,
-                                child: Image.asset(
-                                    'assets/images/mastercard_icon.png'),
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          S.of(context).other_payment_method,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Divider(),
-                        // ListView for other payment methods
-                        Column(
-                          children: [
-                            // PayPal payment option
-                            RadioListTile<PaymentMethod>(
-                              title: Text(
-                                'PayPal',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              ),
-                              value: PaymentMethod.PayPal,
-                              groupValue: _selectedPaymentMethod,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedPaymentMethod = value;
-                                  _selectedPaymentCard = null;
-                                });
-                              },
-                              secondary:
-                                  Image.asset('assets/images/paypal_icon.png'),
-                            ),
-                            // Apple Pay payment option
-                            RadioListTile<PaymentMethod>(
-                              title: Text(
-                                'Apple Pay',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              ),
-                              value: PaymentMethod.ApplePay,
-                              groupValue: _selectedPaymentMethod,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedPaymentMethod = value;
-                                  _selectedPaymentCard = null;
-                                });
-                              },
-                              secondary: Image.asset(
-                                  'assets/images/apple_pay_icon.png'),
-                            ),
-                            // Google Pay payment option
-                            RadioListTile<PaymentMethod>(
-                              title: Text(
-                                'Google Pay',
-                                style: TextStyle(fontWeight: FontWeight.w500),
-                              ),
-                              value: PaymentMethod.GooglePay,
-                              groupValue: _selectedPaymentMethod,
-                              onChanged: (value) {
-                                setState(() {
-                                  _selectedPaymentMethod = value;
-                                  _selectedPaymentCard = null;
-                                });
-                              },
-                              secondary: Image.asset(
-                                  'assets/images/google_pay_icon.png'),
-                            ),
-                          ],
-                        ),
-                      ],
+        title: Text(
+          S.of(context).locations,
+        ),
+        content: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 30,
                     ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      S.of(context).locations,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  S.of(context).pick_up_location,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintText: S.of(context).enter_pickup_location,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        controller: pickupLocationController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return S.of(context).enter_pickup_location;
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        onPressed: () => _selectPickupLocation(context),
+                        icon: const Icon(
+                          Icons.my_location,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Text(
+                  S.of(context).drop_off_location,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          hintText: S.of(context).enter_dropoff_location,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        controller: dropoffLocationController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return S.of(context).enter_dropoff_location;
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        onPressed: () => _selectDropoffLocation(context),
+                        icon: const Icon(
+                          Icons.my_location,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: setSameLocation,
+                      onChanged: (value) {
+                        setState(() {
+                          setSameLocation = value!;
+                          if (setSameLocation) {
+                            if (pickupLocationController.text.isEmpty &&
+                                dropoffLocationController.text.isNotEmpty) {
+                              pickupLocationController.text =
+                                  dropoffLocationController.text;
+                            } else if (dropoffLocationController.text.isEmpty &&
+                                pickupLocationController.text.isNotEmpty) {
+                              dropoffLocationController.text =
+                                  pickupLocationController.text;
+                            }
+                          }
+                        });
+                      },
+                    ),
+                    Flexible(
+                      child: Text(S.of(context).set_pickup_drop_off,
+                          style: TextStyle(fontSize: 15),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2
+                          // Adjust font size for better readability
+                          ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -704,129 +580,183 @@ class _BookingScreenState extends State<BookingScreen> {
 
   // Method to generate the summary widget
   Widget _buildSummaryWidget() {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Column(
+      children: [
+        Card(
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  S.of(context).summary,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Row(
+                  children: [
+                    Text(
+                      S.of(context).summary,
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Icon(
+                      Icons.notes,
+                      size: 30,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Divider(),
+                // Display vehicle image
+                Container(
+                  height: 200, // Adjust the height as needed
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: NetworkImage(widget.vehicle.imageUrl),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                SizedBox(
-                  width: 5,
+                Divider(),
+                const SizedBox(height: 10),
+                // Display car name
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).rental_vehicle}:',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    Flexible(
+                      child: Text(
+                        '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model} ${widget.vehicle.modelYear}',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                      ),
+                    )
+                  ],
                 ),
-                Icon(Icons.notes),
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).rental_supplier}: ',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(booking.vendorBusinessName)
+                  ],
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).renter}: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(booking.userFullName)
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Divider(),
+                // Display pick-up date and time
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).pick_up}: ',
+                    ),
+                    Spacer(),
+                    Text(
+                        '${DateFormat('yyyy-MM-dd').format(booking.pickupDate)} at ${booking.pickupTime.format(context)}')
+                  ],
+                ),
+                const SizedBox(height: 5),
+                // Display drop-off date and time
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).drop_off}: ',
+                    ),
+                    Spacer(),
+                    Text(
+                        '${DateFormat('yyyy-MM-dd').format(booking.dropoffDate)} at ${booking.dropoffTime.format(context)}'),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                // Display pick-up location
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).pick_up_location}:',
+                    ),
+                    Spacer(),
+                    Flexible(
+                        child: Text(' ${pickupLocationController.text}',
+                            overflow: TextOverflow.ellipsis, maxLines: 3)),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                // Display drop-off location
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).drop_off_location}: ',
+                    ),
+                    Spacer(),
+                    Flexible(
+                      child: Text(dropoffLocationController.text,
+                          overflow: TextOverflow.ellipsis, maxLines: 3),
+                    ),
+                  ],
+                ),
+
+                Divider(),
+                // Display total price
+                Row(
+                  children: [
+                    Text(
+                      '${S.of(context).total_price}: ',
+                    ),
+                    Spacer(),
+                    Text(
+                      'USD\$${booking.totalPrice.toStringAsFixed(2)}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 20),
+                    )
+                  ],
+                ),
               ],
             ),
-            SizedBox(height: 10),
-            Divider(),
-            // Display vehicle image
-            Container(
-              height: 200, // Adjust the height as needed
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                image: DecorationImage(
-                  image: NetworkImage(widget.vehicle.imageUrl),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Display car name
-            Text(
-              '${S.of(context).rental_vehicle}: ${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model} ${widget.vehicle.modelYear}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              '${S.of(context).rental_supplier}: ${booking.vendorBusinessName}',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              '${S.of(context).renter}: ${booking.userFullName}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Divider(),
-            // Display pick-up date and time
-            Text(
-              '${S.of(context).pick_up}: ${DateFormat('yyyy-MM-dd').format(booking.pickupDate)} at ${booking.pickupTime.format(context)}',
-            ),
-            const SizedBox(height: 5),
-            // Display drop-off date and time
-            Text(
-              '${S.of(context).drop_off}: ${DateFormat('yyyy-MM-dd').format(booking.dropoffDate)} at ${booking.dropoffTime.format(context)}',
-            ),
-            const SizedBox(height: 5),
-            // Display pick-up location
-            Text(
-              '${S.of(context).pick_up_location}: ${pickupLocationController.text}',
-            ),
-            const SizedBox(height: 5),
-            // Display drop-off location
-            Text(
-              '${S.of(context).drop_off_location}: ${dropoffLocationController.text}',
-            ),
-            const SizedBox(height: 10),
-            const Divider(),
-            // Display selected payment method and card information
-            Text(
-              '${S.of(context).payment_method} : ${_selectedPaymentMethod?.toString().split('.').last ?? 'N/A'}',
-            ),
-            if (_selectedPaymentCard != null) ...[
-              Text(
-                'Bank Card: - Visa ${S.of(context).ending_in} ${_selectedPaymentCard?.lastFourDigits}',
-              ),
-            ],
-            const Divider(),
-            const SizedBox(height: 10),
-            // Display total price
-            Text(
-              '${S.of(context).total_price}: USD\$${booking.totalPrice.toStringAsFixed(2)}',
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-            ),
-          ],
+          ),
         ),
-      ),
+        CheckboxListTile(
+          title: Text("I accept the terms and conditions."),
+          value: true,
+          onChanged: (bool? value) {
+            // Handle acceptance of terms
+          },
+        ),
+      ],
     );
   }
 
-  Widget buildPaymentCardRadioTile(PaymentCard card) {
-    return RadioListTile<PaymentCard>(
-      title: Text(
-        'Visa ${S.of(context).ending_in} .. ${card.lastFourDigits}',
-        style: TextStyle(fontWeight: FontWeight.w500),
-      ),
-      subtitle: Text('${S.of(context).card_holder}: ${card.cardHolderName}'),
-      value: card,
-      groupValue: _selectedPaymentCard,
-      secondary: Image.asset('assets/images/credit-card.png'),
-      onChanged: (value) {
-        setState(() {
-          _selectedPaymentMethod = PaymentMethod.Card;
-          _selectedPaymentCard = value;
-        });
-      },
-    );
-  }
-
+  // Date and Time Selection Methods
   Future<void> _selectPickupDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -837,7 +767,12 @@ class _BookingScreenState extends State<BookingScreen> {
     if (picked != null && picked != booking.pickupDate) {
       setState(() {
         booking.pickupDate = picked;
+        // Ensure dropoff date is after pickup date
+        if (!picked.isBefore(booking.dropoffDate)) {
+          booking.dropoffDate = picked.add(Duration(days: 1));
+        }
       });
+      _calculateTotalPrice();
     }
   }
 
@@ -845,13 +780,14 @@ class _BookingScreenState extends State<BookingScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: booking.dropoffDate,
-      firstDate: DateTime.now(),
+      firstDate: booking.pickupDate.add(Duration(days: 1)),
       lastDate: DateTime(DateTime.now().year + 1),
     );
     if (picked != null && picked != booking.dropoffDate) {
       setState(() {
         booking.dropoffDate = picked;
       });
+      _calculateTotalPrice();
     }
   }
 
@@ -919,7 +855,7 @@ class _BookingScreenState extends State<BookingScreen> {
           });
         },
         controlsBuilder: (context, details) {
-          return Container(); // Return an empty container since we are using a custom bottom navigation bar
+          return Container();
         },
       ),
       bottomNavigationBar: BottomAppBar(
@@ -1001,45 +937,18 @@ class _BookingScreenState extends State<BookingScreen> {
       String userImageURL = userSnapshot['imageURL'] ?? '';
       String vendorImageURL = vendorSnapshot['imageURL'] ?? '';
 
-      // Create notifications for user and vendor
-      NotificationModel userNotification = NotificationModel(
-        title: 'Booking Confirmation',
-        body: 'Your booking has been confirmed.',
-        timestamp: DateTime.now(),
-        userImageURL: vendorImageURL, // Vendor image for the user
-        vehicleImageURL: booking.imageUrl,
-        bookingId: bookingId, id: '', // Add this field
+      // Create and send notifications for the initial booking request status
+      await pushNotificationService.createAndSendNotification(
+        booking.userId,
+        booking.vendorId,
+        bookingId,
+        userImageURL,
+        vendorImageURL,
+        booking.imageUrl,
+        'sent',
       );
 
-      NotificationModel vendorNotification = NotificationModel(
-        title: 'New Booking',
-        body: 'You have received a new booking.',
-        timestamp: DateTime.now(),
-        userImageURL: userImageURL, // User image for the vendor
-        vehicleImageURL: booking.imageUrl,
-        bookingId: bookingId, id: '', // Add this field
-      );
-
-      // Add notifications to Firestore
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(booking.userId)
-          .collection('notifications')
-          .add(userNotification.toMap());
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(booking.vendorId)
-          .collection('notifications')
-          .add(vendorNotification.toMap());
-
-      // Send notifications to user and vendor using NotificationProvider
-      final notificationProvider =
-          Provider.of<NotificationProvider>(context, listen: false);
-      await notificationProvider.sendUserNotification(booking.userId);
-      await notificationProvider.sendVendorNotification(booking.vendorId);
-
-      // Send booking confirmation emails to user and vendor
+      // // Send booking confirmation emails to user and vendor
       // EmailService emailService = EmailService();
       // await emailService.sendBookingEmails(
       //   booking.userEmail ?? '',
@@ -1047,7 +956,6 @@ class _BookingScreenState extends State<BookingScreen> {
       //   booking.userFullName,
       //   booking.vendorBusinessName,
       //   booking,
-      //   _selectedPaymentCard?.lastFourDigits,
       // );
 
       // Show success SnackBar
@@ -1064,7 +972,7 @@ class _BookingScreenState extends State<BookingScreen> {
       print('Error sending booking data to Firebase: $e');
       // Show error message if booking data couldn't be saved
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Failed to save booking. Please try again.'),
           backgroundColor: Colors.red,
         ),

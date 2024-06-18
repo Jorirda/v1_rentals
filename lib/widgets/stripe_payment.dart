@@ -3,27 +3,19 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:v1_rentals/models/booking_model.dart';
+import 'package:v1_rentals/providers/booking_provider.dart';
+import 'package:v1_rentals/providers/notification_provider.dart';
+import 'package:v1_rentals/services/notification_service.dart';
 
-class PaymentScreen extends StatefulWidget {
-  @override
-  _PaymentScreenState createState() => _PaymentScreenState();
-}
+class PaymentHandler {
+  final String _secretKey = dotenv.env['STRIPE_SECRET_KEY'] ?? '';
 
-class _PaymentScreenState extends State<PaymentScreen> {
-  bool _ready = false;
-  String? _clientSecret;
-  String? _ephemeralKey;
-  String? _customerId;
-
-  @override
-  void initState() {
-    super.initState();
-    createStripeCustomer();
-  }
-
-  Future<void> createStripeCustomer() async {
-    const String stripeSecretKey =
-        'sk_test_51PPcUVJWp34Kh7YONAnVxd0B3igBW11qJutEUxjgRH3xMA240l7Gu8u5XeLwcJ8DT8DbxdSX9x4Ou8RqtsgJqDcp00F61kJE3u'; // Replace with your actual Stripe secret key
+  Future<void> createStripeCustomer(
+      BuildContext context, String bookingId, int amount) async {
+    final String stripeSecretKey = _secretKey;
     const String stripeApiVersion = '2024-04-10';
 
     try {
@@ -49,9 +41,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         },
       );
       final customerBody = json.decode(customerResponse.body);
-      _customerId = customerBody['id'];
+      final customerId = customerBody['id'];
 
-      if (_customerId == null) {
+      if (customerId == null) {
         throw Exception("Failed to create customer");
       }
 
@@ -64,13 +56,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
           'Stripe-Version': stripeApiVersion,
         },
         body: {
-          'customer': _customerId!,
+          'customer': customerId,
         },
       );
       final ephemeralKeyBody = json.decode(ephemeralKeyResponse.body);
-      _ephemeralKey = ephemeralKeyBody['secret'];
+      final ephemeralKey = ephemeralKeyBody['secret'];
 
-      if (_ephemeralKey == null) {
+      if (ephemeralKey == null) {
         throw Exception("Failed to create ephemeral key");
       }
 
@@ -82,41 +74,57 @@ class _PaymentScreenState extends State<PaymentScreen> {
           'Authorization': 'Bearer $stripeSecretKey',
         },
         body: {
-          'amount': '1099',
+          'amount':
+              (amount * 100).toInt().toString(), // Example amount, in cents
           'currency': 'usd',
-          'customer': _customerId!,
+          'customer': customerId,
         },
       );
       final paymentIntentBody = json.decode(paymentIntentResponse.body);
-      _clientSecret = paymentIntentBody['client_secret'];
+      final clientSecret = paymentIntentBody['client_secret'];
 
-      if (_clientSecret == null) {
+      if (clientSecret == null) {
         throw Exception("Failed to create payment intent");
       }
 
       // Initialize the payment sheet
-      await initPaymentSheet();
+      await initPaymentSheet(
+        context,
+        clientSecret: clientSecret,
+        ephemeralKey: ephemeralKey,
+        customerId: customerId,
+        bookingId: bookingId,
+      );
 
-      setState(() {
-        _ready = true;
-      });
+      // Present the payment sheet
+      await presentPaymentSheet(context, bookingId);
+
+      // Close the loading dialog
+      Navigator.of(context).pop();
     } catch (e) {
       print("Error: $e");
+      Navigator.of(context).pop(); // Close the loading dialog in case of error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
     }
   }
 
-  Future<void> initPaymentSheet() async {
+  Future<void> initPaymentSheet(
+    BuildContext context, {
+    required String clientSecret,
+    required String ephemeralKey,
+    required String customerId,
+    required String bookingId,
+  }) async {
     try {
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           customFlow: false,
-          merchantDisplayName: 'Flutter Stripe Store Demo',
-          paymentIntentClientSecret: _clientSecret!,
-          customerEphemeralKeySecret: _ephemeralKey!,
-          customerId: _customerId!,
+          merchantDisplayName: 'V1Rentals',
+          paymentIntentClientSecret: clientSecret,
+          customerEphemeralKeySecret: ephemeralKey,
+          customerId: customerId,
           googlePay: const PaymentSheetGooglePay(
             merchantCountryCode: 'US',
             currencyCode: 'usd',
@@ -133,31 +141,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Payment Screen'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _ready
-              ? () async {
-                  try {
-                    await Stripe.instance.presentPaymentSheet();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Payment successful!')),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Payment failed: $e')),
-                    );
-                  }
-                }
-              : null,
-          child: Text('Make Payment'),
-        ),
-      ),
-    );
+  Future<void> presentPaymentSheet(BuildContext context, bookingId) async {
+    try {
+      await Stripe.instance.presentPaymentSheet();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment successful!')),
+      );
+
+      // // Send a notification to the user
+      // await pushNotificationService.sendNotification(
+      //   'Payment Successful',
+      //   'Your payment was processed successfully.',
+      //   (await FirebaseAuth.instance.currentUser)?.uid ?? '',
+      // );
+
+      // Update booking status in database and send notifications
+      final bookingProvider =
+          Provider.of<BookingProvider>(context, listen: false);
+      final booking = await bookingProvider.getBookingById(bookingId);
+
+      if (booking != null) {
+        await bookingProvider.updateBookingStatusAndNotify(
+          booking.id,
+          BookingStatus.inProgress,
+          booking.userId,
+          booking.vendorId,
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment failed: Payment was cancelled.')),
+      );
+    }
   }
 }

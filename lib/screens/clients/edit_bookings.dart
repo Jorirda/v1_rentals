@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:v1_rentals/locations/dropoff_location.dart';
+import 'package:v1_rentals/locations/pickup_location.dart';
+import 'package:v1_rentals/models/search_history_model.dart';
+import 'package:v1_rentals/models/user_model.dart';
+import 'package:v1_rentals/services/location_service.dart';
 import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/services/auth_service.dart';
@@ -22,6 +27,16 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
   late String _pickupLocation;
   late String _dropoffLocation;
 
+  final AuthService _authService = AuthService();
+
+  final List<SearchHistory> _searchHistory =
+      []; // Update to store SearchHistory objects
+
+  final LocationService _locationService = LocationService();
+
+  // TextEditingControllers for the locations
+  late TextEditingController _pickupLocationController;
+  late TextEditingController _dropoffLocationController;
   @override
   void initState() {
     super.initState();
@@ -31,6 +46,78 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
     _dropoffTime = widget.booking.dropoffTime;
     _pickupLocation = widget.booking.pickupLocation;
     _dropoffLocation = widget.booking.dropoffLocation;
+
+    // Initialize TextEditingControllers with initial values
+    _pickupLocationController = TextEditingController(text: _pickupLocation);
+    _dropoffLocationController = TextEditingController(text: _dropoffLocation);
+
+    _fetchSearchHistory();
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the TextEditingControllers
+    _pickupLocationController.dispose();
+    _dropoffLocationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchSearchHistory() async {
+    try {
+      CustomUser? currentUser = await _authService.getCurrentUser();
+      if (currentUser != null && currentUser.userId != null) {
+        List<SearchHistory> searchHistory =
+            await _locationService.getSearchHistory(currentUser.userId!);
+        setState(() {
+          _searchHistory
+            ..clear()
+            ..addAll(
+                searchHistory.reversed); // Reverse the list and add all items
+        });
+      }
+    } catch (e) {
+      print('Error fetching search history: $e');
+    }
+  }
+
+  Future<void> _selectPickupLocation(BuildContext context) async {
+    // Navigate to SetPickupLocationScreen
+    final selectedLocation = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SetPickupLocationScreen(
+          historyLocations: _searchHistory,
+        ),
+      ),
+    );
+
+    if (selectedLocation != null) {
+      print('Selected Pickup Location: $selectedLocation'); // Debug print
+      setState(() {
+        _pickupLocation = selectedLocation;
+        _pickupLocationController.text = selectedLocation;
+      });
+    }
+  }
+
+  Future<void> _selectDropoffLocation(BuildContext context) async {
+    // Navigate to SetDropoffLocationScreen
+    final selectedLocation = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SetDropoffLocationScreen(
+          historyLocations: _searchHistory,
+        ),
+      ),
+    );
+
+    if (selectedLocation != null) {
+      print('Selected Dropoff Location: $selectedLocation'); // Debug print
+      setState(() {
+        _dropoffLocation = selectedLocation;
+        _dropoffLocationController.text = selectedLocation;
+      });
+    }
   }
 
   @override
@@ -44,20 +131,20 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pick-up Date and Time'),
+            SectionTitle(title: 'Pick-up Date and Time'),
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: DateFormat('yyyy-MM-dd').format(_pickupDate),
-                    ),
+                  child: CustomTextField(
+                    labelText: 'Pick-up Date',
+                    value: DateFormat('yyyy-MM-dd').format(_pickupDate),
                     onTap: () async {
                       final DateTime? picked = await showDatePicker(
                         context: context,
                         initialDate: _pickupDate,
-                        firstDate: DateTime.now(),
+                        firstDate: DateTime.now().isBefore(_pickupDate)
+                            ? DateTime.now()
+                            : _pickupDate,
                         lastDate: DateTime(2100),
                       );
                       if (picked != null && picked != _pickupDate) {
@@ -66,18 +153,13 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
-                      labelText: 'Pick-up Date',
-                    ),
                   ),
                 ),
                 SizedBox(width: 16.0),
                 Expanded(
-                  child: TextFormField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: _pickupTime.format(context),
-                    ),
+                  child: CustomTextField(
+                    labelText: 'Pick-up Time',
+                    value: _pickupTime.format(context),
                     onTap: () async {
                       final TimeOfDay? picked = await showTimePicker(
                         context: context,
@@ -89,23 +171,18 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
-                      labelText: 'Pick-up Time',
-                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16.0),
-            Text('Drop-off Date and Time'),
+            SizedBox(height: 40),
+            SectionTitle(title: 'Drop-off Date and Time'),
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: DateFormat('yyyy-MM-dd').format(_dropoffDate),
-                    ),
+                  child: CustomTextField(
+                    labelText: 'Drop-off Date',
+                    value: DateFormat('yyyy-MM-dd').format(_dropoffDate),
                     onTap: () async {
                       final DateTime? picked = await showDatePicker(
                         context: context,
@@ -119,18 +196,13 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
-                      labelText: 'Drop-off Date',
-                    ),
                   ),
                 ),
                 SizedBox(width: 16.0),
                 Expanded(
-                  child: TextFormField(
-                    readOnly: true,
-                    controller: TextEditingController(
-                      text: _dropoffTime.format(context),
-                    ),
+                  child: CustomTextField(
+                    labelText: 'Drop-off Time',
+                    value: _dropoffTime.format(context),
                     onTap: () async {
                       final TimeOfDay? picked = await showTimePicker(
                         context: context,
@@ -142,43 +214,83 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
                         });
                       }
                     },
-                    decoration: InputDecoration(
-                      labelText: 'Drop-off Time',
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 30),
+            SectionTitle(title: 'Pickup and Drop-off Location'),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomTextField(
+                      labelText: 'Pick-up Location',
+                      controller: _pickupLocationController),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    onPressed: () => _selectPickupLocation(context),
+                    icon: const Icon(
+                      Icons.my_location,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ],
             ),
             SizedBox(height: 16.0),
-            TextFormField(
-              initialValue: _pickupLocation,
-              onChanged: (value) {
-                setState(() {
-                  _pickupLocation = value;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Pick-up Location',
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomTextField(
+                    labelText: 'Drop-off Location',
+
+                    controller:
+                        _dropoffLocationController, // Use the controller
+                    onTap: () => _selectDropoffLocation(context),
+                    onChanged: (value) {
+                      setState(() {
+                        _dropoffLocation = value;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    onPressed: () => _selectDropoffLocation(context),
+                    icon: const Icon(
+                      Icons.my_location,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 16.0),
-            TextFormField(
-              initialValue: _dropoffLocation,
-              onChanged: (value) {
-                setState(() {
-                  _dropoffLocation = value;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Drop-off Location',
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  _showConfirmationDialog();
+                },
+                child: Text('SAVE CHANGES'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  textStyle: TextStyle(fontSize: 18),
+                ),
               ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                _showConfirmationDialog();
-              },
-              child: Text('Save'),
             ),
           ],
         ),
@@ -276,5 +388,64 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       // Show an error message to the user
       // You can use a snackbar, toast, or another method to display the error
     }
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  final String title;
+
+  const SectionTitle({Key? key, required this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        title,
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Theme.of(context).colorScheme.primary),
+      ),
+    );
+  }
+}
+
+class CustomTextField extends StatelessWidget {
+  final String labelText;
+  final String? value;
+  final Function()? onTap;
+  final Function(String)? onChanged;
+
+  final TextEditingController? controller;
+
+  const CustomTextField({
+    Key? key,
+    required this.labelText,
+    this.value,
+    this.onTap,
+    this.onChanged,
+    this.controller,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      readOnly: onTap != null,
+      controller: controller ??
+          (value != null ? TextEditingController(text: value) : null),
+      onTap: onTap,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blueAccent),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey),
+        ),
+      ),
+    );
   }
 }

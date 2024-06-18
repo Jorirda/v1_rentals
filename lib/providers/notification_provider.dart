@@ -100,17 +100,20 @@ class NotificationProvider with ChangeNotifier {
     }
   }
 
-  Future<void> sendUserNotification(String userId) async {
+  Future<void> sendUserNotification(
+      String userId, String title, String body) async {
     try {
-      await _pushNotificationService.sendUserNotification(userId);
+      await _pushNotificationService.sendUserNotification(userId, title, body);
     } catch (e) {
       print('Error sending user notification: $e');
     }
   }
 
-  Future<void> sendVendorNotification(String vendorId) async {
+  Future<void> sendVendorNotification(
+      String vendorId, String title, String body) async {
     try {
-      await _pushNotificationService.sendVendorNotification(vendorId);
+      await _pushNotificationService.sendVendorNotification(
+          vendorId, title, body);
     } catch (e) {
       print('Error sending vendor notification: $e');
     }

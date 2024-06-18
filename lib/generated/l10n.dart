@@ -1480,6 +1480,16 @@ class S {
     );
   }
 
+  /// `Accepted`
+  String get bookingStatusAccepted {
+    return Intl.message(
+      'Accepted',
+      name: 'bookingStatusAccepted',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Booking Accepted`
   String get booking_accepted {
     return Intl.message(
@@ -1760,6 +1770,16 @@ class S {
     );
   }
 
+  /// `Accepted`
+  String get accepted {
+    return Intl.message(
+      'Accepted',
+      name: 'accepted',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Complete`
   String get complete {
     return Intl.message(
@@ -1995,6 +2015,16 @@ class S {
     return Intl.message(
       'Price Per Day',
       name: 'price_per_day',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pay Now`
+  String get pay_now {
+    return Intl.message(
+      'Pay Now',
+      name: 'pay_now',
       desc: '',
       args: [],
     );

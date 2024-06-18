@@ -28,7 +28,9 @@ class NotificationModel {
       userImageURL: data['userImageURL'],
       vehicleImageURL: data['vehicleImageURL'],
       bookingId: data['bookingId'],
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      timestamp: data['timestamp'] != null
+          ? (data['timestamp'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 

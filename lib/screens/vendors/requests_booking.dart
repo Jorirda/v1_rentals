@@ -149,13 +149,15 @@ class RequestedBookingsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '${S.of(context).total_price}: ',
-                              style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w600),
+                              "${S.of(context).total_price}: ", // Translate total price label
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
                             ),
+                            Spacer(),
                             Text(
-                              '\$${booking.totalPrice.toStringAsFixed(2)}',
-                              style: TextStyle(color: Colors.red, fontSize: 20),
+                              'USD\$${booking.totalPrice.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 20),
                             ),
                           ],
                         ),

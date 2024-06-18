@@ -90,6 +90,8 @@ extension BookingStatusExtension on BookingStatus {
         return S.current.bookingStatusPending;
       case BookingStatus.inProgress:
         return S.current.bookingStatusInProgress;
+      case BookingStatus.accepted:
+        return S.current.bookingStatusAccepted;
       default:
         return S.current.bookingStatusPending;
     }

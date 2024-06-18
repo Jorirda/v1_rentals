@@ -20,7 +20,7 @@ class _VendorBookingsState extends State<VendorBookings>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   Future<Map<String, dynamic>> getVendorInfo(String vendorId) async {
@@ -46,9 +46,11 @@ class _VendorBookingsState extends State<VendorBookings>
               child: Text(S.of(context).manage_requests))
         ],
         bottom: TabBar(
+          isScrollable: true,
           controller: _tabController,
           tabs: [
             Tab(text: S.of(context).all),
+            Tab(text: S.of(context).accepted),
             Tab(text: S.of(context).ongoing),
             Tab(text: S.of(context).completed),
             Tab(text: S.of(context).cancelled),
@@ -59,6 +61,7 @@ class _VendorBookingsState extends State<VendorBookings>
         controller: _tabController,
         children: [
           buildBookingList(BookingStatus.all),
+          buildBookingList(BookingStatus.accepted),
           buildBookingList(BookingStatus.inProgress),
           buildBookingList(BookingStatus.completed),
           buildBookingList(BookingStatus.cancelled),
@@ -199,10 +202,11 @@ class _VendorBookingsState extends State<VendorBookings>
                           Text(
                             S.of(context).total_price + ": ",
                             style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w600),
+                                fontSize: 20, fontWeight: FontWeight.w600),
                           ),
+                          Spacer(),
                           Text(
-                            '\$${booking.totalPrice.toStringAsFixed(2)}',
+                            'USD\$${booking.totalPrice.toStringAsFixed(2)}',
                             style: TextStyle(color: Colors.red, fontSize: 20),
                           ),
                         ],

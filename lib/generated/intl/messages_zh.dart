@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "accept": MessageLookupByLibrary.simpleMessage("接受"),
+        "accepted": MessageLookupByLibrary.simpleMessage("已接受"),
         "account": MessageLookupByLibrary.simpleMessage("账户"),
         "account_screen_title": MessageLookupByLibrary.simpleMessage("账户"),
         "add_card": MessageLookupByLibrary.simpleMessage("添加卡"),
@@ -44,6 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "back": MessageLookupByLibrary.simpleMessage("返回"),
         "book_now": MessageLookupByLibrary.simpleMessage("立即预订"),
         "book_your_vehicle": MessageLookupByLibrary.simpleMessage("预订您的车辆"),
+        "bookingStatusAccepted": MessageLookupByLibrary.simpleMessage("已接受"),
         "bookingStatusAll": MessageLookupByLibrary.simpleMessage("所有"),
         "bookingStatusCancelled": MessageLookupByLibrary.simpleMessage("已取消"),
         "bookingStatusCompleted": MessageLookupByLibrary.simpleMessage("已完成"),
@@ -202,6 +204,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "other_services": MessageLookupByLibrary.simpleMessage("其他服务"),
         "overview": MessageLookupByLibrary.simpleMessage("概述"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "pay_now": MessageLookupByLibrary.simpleMessage("立即付款"),
         "payment": MessageLookupByLibrary.simpleMessage("付款"),
         "payment_method": MessageLookupByLibrary.simpleMessage("支付方式"),
         "payment_options": MessageLookupByLibrary.simpleMessage("支付选项"),

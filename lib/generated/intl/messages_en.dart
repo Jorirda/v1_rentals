@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "accept": MessageLookupByLibrary.simpleMessage("Accept"),
+        "accepted": MessageLookupByLibrary.simpleMessage("Accepted"),
         "account": MessageLookupByLibrary.simpleMessage("Account"),
         "account_screen_title": MessageLookupByLibrary.simpleMessage("Account"),
         "add_card": MessageLookupByLibrary.simpleMessage("Add Card"),
@@ -50,6 +51,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "book_now": MessageLookupByLibrary.simpleMessage("Book Now"),
         "book_your_vehicle":
             MessageLookupByLibrary.simpleMessage("Book Your Vehicle"),
+        "bookingStatusAccepted":
+            MessageLookupByLibrary.simpleMessage("Accepted"),
         "bookingStatusAll": MessageLookupByLibrary.simpleMessage("All"),
         "bookingStatusCancelled":
             MessageLookupByLibrary.simpleMessage("Cancelled"),
@@ -244,6 +247,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Other services"),
         "overview": MessageLookupByLibrary.simpleMessage("Overview"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "pay_now": MessageLookupByLibrary.simpleMessage("Pay Now"),
         "payment": MessageLookupByLibrary.simpleMessage("Payment"),
         "payment_method":
             MessageLookupByLibrary.simpleMessage("Payment Method"),

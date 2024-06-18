@@ -20,7 +20,7 @@ class ClientBookings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // Number of tabs
+      length: 5, // Number of tabs
       child: Scaffold(
         appBar: AppBar(
           title: Text(S.of(context).my_bookings), // Translate title
@@ -40,8 +40,10 @@ class ClientBookings extends StatelessWidget {
             )
           ],
           bottom: TabBar(
+            isScrollable: true,
             tabs: [
               Tab(text: S.of(context).all), // Translate tab texts
+              Tab(text: S.of(context).accepted),
               Tab(text: S.of(context).ongoing),
               Tab(text: S.of(context).completed),
               Tab(text: S.of(context).cancelled),
@@ -50,7 +52,8 @@ class ClientBookings extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            buildBookingList(BookingStatus.all), // Pass locale provider
+            buildBookingList(BookingStatus.all),
+            buildBookingList(BookingStatus.accepted), // Pass locale provider
             buildBookingList(
               BookingStatus.inProgress,
             ),
@@ -155,7 +158,7 @@ class ClientBookings extends StatelessWidget {
                                   style: TextStyle(color: Colors.grey),
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  height: 10,
                                 ),
                                 Row(
                                   children: [
@@ -196,12 +199,13 @@ class ClientBookings extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            "${S.of(context).total_price} : ", // Translate total price label
+                            "${S.of(context).total_price}: ", // Translate total price label
                             style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w600),
+                                fontSize: 20, fontWeight: FontWeight.w600),
                           ),
+                          Spacer(),
                           Text(
-                            '\$${booking.totalPrice.toStringAsFixed(2)}',
+                            'USD\$${booking.totalPrice.toStringAsFixed(2)}',
                             style: const TextStyle(
                                 color: Colors.red, fontSize: 20),
                           ),

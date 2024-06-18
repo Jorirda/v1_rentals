@@ -44,12 +44,12 @@ class EmailService {
   }
 
   Future<void> sendBookingEmails(
-      String userEmail,
-      String vendorEmail,
-      String userFullName,
-      String vendorBusinessName,
-      Booking booking,
-      String? lastFourDigits) async {
+    String userEmail,
+    String vendorEmail,
+    String userFullName,
+    String vendorBusinessName,
+    Booking booking,
+  ) async {
     const userSubject = 'Booking Confirmation';
     const vendorSubject = 'New Booking Received';
 
@@ -74,8 +74,7 @@ class EmailService {
         <div style="margin-bottom: 5px;"><strong>Drop-off:</strong> ${booking.dropoffLocation}</div>
         <div style="margin-bottom: 5px;"><strong>Pick-up Date/Time:</strong> ${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</div>
         <div style="margin-bottom: 5px;"><strong>Drop-off Date/Time:</strong> ${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</div>
-        <div style="margin-bottom: 5px;"><strong>Payment Method:</strong> ${booking.paymentMethod}</div>
-        ${lastFourDigits != null ? '<div style="margin-bottom: 5px;">- Visa ending in $lastFourDigits</div>' : ''}
+       
         <div style="margin-bottom: 5px;"><strong>Total Price:</strong> USD\$${booking.totalPrice.toStringAsFixed(2)}</div>
       </div>
     ''';

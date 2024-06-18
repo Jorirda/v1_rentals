@@ -7,6 +7,7 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:v1_rentals/models/notification_model.dart';
 
 class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
@@ -140,13 +141,14 @@ class PushNotificationService {
     }
   }
 
-  Future<void> sendUserNotification(String userId) async {
+  Future<void> sendUserNotification(
+      String userId, String title, String body) async {
     try {
       String? fcmToken = await _getUserFcmToken(userId);
       if (fcmToken != null) {
         await sendNotification(
-          'Booking Request Sent',
-          'Your booking request has been sent for confirmation to the vendor.',
+          title,
+          body,
           fcmToken,
         );
         print('Notification sent to user');
@@ -158,13 +160,14 @@ class PushNotificationService {
     }
   }
 
-  Future<void> sendVendorNotification(String vendorId) async {
+  Future<void> sendVendorNotification(
+      String vendorId, String title, String body) async {
     try {
       String? fcmToken = await _getUserFcmToken(vendorId);
       if (fcmToken != null) {
         await sendNotification(
-          'New Booking',
-          'You have a new booking.',
+          title,
+          body,
           fcmToken,
         );
         print('Notification sent to vendor');
@@ -191,6 +194,98 @@ class PushNotificationService {
       print('Error getting user FCM token: $e');
       return null;
     }
+  }
+
+  Future<void> createAndSendNotification(
+    String userId,
+    String vendorId,
+    String bookingId,
+    String userImageURL,
+    String vendorImageURL,
+    String vehicleImageURL,
+    String status,
+  ) async {
+    // Define titles and bodies based on the status
+    String userTitle = '';
+    String userBody = '';
+    String vendorTitle = '';
+    String vendorBody = '';
+
+    switch (status) {
+      case 'sent':
+        userTitle = 'Booking Request Successfully sent';
+        userBody =
+            'Your booking request has been sent to the vendor for confirmation.';
+        vendorTitle = 'New Booking';
+        vendorBody = 'You have received a new booking from a client.';
+        break;
+      case 'accepted':
+        userTitle = 'Booking Accepted';
+        userBody =
+            'Your booking has been accepted by the vendor. Please complete the payment to proceed.';
+        vendorTitle = 'Booking Accepted';
+        vendorBody = 'You have accepted the booking.';
+        break;
+      case 'inProgress':
+        userTitle = 'Booking Confirmed';
+        userBody =
+            'Your payment was successful and your booking is now confirmed.';
+        vendorTitle = 'Booking Confirmed';
+        vendorBody = 'A booking has been confirmed after payment.';
+        break;
+      case 'completed':
+        userTitle = 'Booking Completed';
+        userBody = 'Your booking has been completed by the vendor.';
+        vendorTitle = 'Booking Completed';
+        vendorBody = 'You have completed the booking.';
+        break;
+      case 'cancelled':
+        userTitle = 'Booking Cancelled';
+        userBody = 'Your booking has been cancelled.';
+        vendorTitle = 'Booking Cancelled';
+        vendorBody = 'A booking has been cancelled by the user.';
+        break;
+      default:
+        return;
+    }
+
+    // Create notification models
+    NotificationModel userNotification = NotificationModel(
+      title: userTitle,
+      body: userBody,
+      timestamp: DateTime.now(),
+      userImageURL: vendorImageURL,
+      vehicleImageURL: vehicleImageURL,
+      bookingId: bookingId,
+      id: '',
+    );
+
+    NotificationModel vendorNotification = NotificationModel(
+      title: vendorTitle,
+      body: vendorBody,
+      timestamp: DateTime.now(),
+      userImageURL: userImageURL,
+      vehicleImageURL: vehicleImageURL,
+      bookingId: bookingId,
+      id: '',
+    );
+
+    // Add notifications to Firestore
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('notifications')
+        .add(userNotification.toMap());
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(vendorId)
+        .collection('notifications')
+        .add(vendorNotification.toMap());
+
+    // Send push notifications
+    await sendUserNotification(userId, userTitle, userBody);
+    await sendVendorNotification(vendorId, vendorTitle, vendorBody);
   }
 }
 

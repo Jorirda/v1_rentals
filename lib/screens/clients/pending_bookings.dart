@@ -160,12 +160,15 @@ class PendingBookingsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '${S.of(context).total_rental_price} :',
+                              '${S.of(context).total_price} :',
                               style: TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w600),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
+                            Spacer(),
                             Text(
-                              '\$${booking.totalPrice.toStringAsFixed(2)}',
+                              'USD\$${booking.totalPrice.toStringAsFixed(2)}',
                               style: TextStyle(color: Colors.red, fontSize: 20),
                             ),
                           ],

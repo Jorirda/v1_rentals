@@ -5,6 +5,7 @@ import 'package:v1_rentals/models/enum_extensions.dart';
 
 enum BookingStatus {
   all,
+  accepted,
   completed,
   cancelled,
   pending,
@@ -64,8 +65,8 @@ class Booking {
     required this.paymentStatus,
     required this.paymentMethod,
     required this.createdAt,
-    required this.clientImageURL, // Initialize this field
-    required this.vendorImageURL, // Initialize this field
+    required this.clientImageURL,
+    required this.vendorImageURL,
   });
 
   factory Booking.fromSnapshot(DocumentSnapshot doc) {
@@ -96,8 +97,8 @@ class Booking {
       paymentStatus: data['paymentStatus'] ?? false,
       paymentMethod: data['paymentMethod'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
-      clientImageURL: data['clientImageURL'] ?? '', // Retrieve this field
-      vendorImageURL: data['vendorImageURL'] ?? '', // Retrieve this field
+      clientImageURL: data['clientImageURL'] ?? '',
+      vendorImageURL: data['vendorImageURL'] ?? '',
     );
   }
 
@@ -132,8 +133,8 @@ class Booking {
       'paymentStatus': paymentStatus,
       'paymentMethod': paymentMethod,
       'createdAt': createdAt,
-      'clientImageURL': clientImageURL, // Add this field
-      'vendorImageURL': vendorImageURL, // Add this field
+      'clientImageURL': clientImageURL,
+      'vendorImageURL': vendorImageURL,
     };
   }
 

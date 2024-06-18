@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:v1_rentals/services/auth_service.dart';
-import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/providers/booking_provider.dart';
 
 class VendorBookingDetailsScreen extends StatefulWidget {
   final Booking booking;
@@ -33,53 +34,11 @@ class _VendorBookingDetailsScreenState
     _clientFuture = AuthService().getUserData(widget.booking.userId);
   }
 
-  // Method to update booking status and send notifications
-  Future<void> updateBookingStatusAndNotify(
+  Future<void> updateBookingStatus(
       String bookingId, BookingStatus status) async {
-    try {
-      await AuthService().updateBookingStatus(bookingId, status);
-
-      // Send notifications to user and vendor upon confirming cancel or accepting booking
-      if (status == BookingStatus.cancelled ||
-          status == BookingStatus.inProgress) {
-        String userTitle = '';
-        String userBody = '';
-        String vendorTitle = '';
-        String vendorBody = '';
-
-        if (status == BookingStatus.cancelled) {
-          userTitle = 'Booking Declined';
-          userBody = 'Your booking has been declined by the vendor.';
-          vendorTitle = 'Booking Declined';
-          vendorBody = 'You have declined the booking.';
-        } else if (status == BookingStatus.inProgress) {
-          userTitle = 'Booking Accepted';
-          userBody = 'Your booking has been accepted by the vendor.';
-          vendorTitle = 'Booking Accepted';
-          vendorBody = 'You have accepted the booking.';
-        } else if (status == BookingStatus.completed) {
-          userTitle = 'Booking Completed';
-          userBody = 'Your booking has been completed by the vendor.';
-          vendorTitle = 'Booking Completed';
-          vendorBody = 'You have completed the booking.';
-        }
-
-        await pushNotificationService.sendNotification(
-            userTitle,
-            userBody,
-            (await AuthService().getUserData(widget.booking.userId))
-                    ?.fcmToken ??
-                '');
-        await pushNotificationService.sendNotification(
-            vendorTitle,
-            vendorBody,
-            (await AuthService().getUserData(widget.booking.vendorId))
-                    ?.fcmToken ??
-                '');
-      }
-    } catch (e) {
-      throw e;
-    }
+    await Provider.of<BookingProvider>(context, listen: false)
+        .updateBookingStatusAndNotify(
+            bookingId, status, widget.booking.userId, widget.booking.vendorId);
   }
 
   @override
@@ -118,9 +77,7 @@ class _VendorBookingDetailsScreenState
                   ),
 
                   // Display vehicle image
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   Card(
                     elevation: 2,
                     margin: EdgeInsets.zero,
@@ -139,9 +96,7 @@ class _VendorBookingDetailsScreenState
                                     ? NetworkImage(vendor!.imageURL!)
                                     : null,
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
+                              SizedBox(width: 10),
                               Text(
                                 ' ${widget.booking.vendorBusinessName}',
                                 style: TextStyle(
@@ -149,21 +104,15 @@ class _VendorBookingDetailsScreenState
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                           Text(
                               '${S.of(context).booking_id} : ${widget.booking.id}'),
-                          SizedBox(
-                            height: 20,
-                          ),
+                          SizedBox(height: 20),
                           Text(
                             '${S.of(context).rental_vehicle} : ${widget.booking.vehicleDescription}', // Example field from vehicle document
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(
-                            height: 20,
-                          ),
+                          SizedBox(height: 20),
                           GestureDetector(
                             onTap: () async {
                               try {
@@ -231,9 +180,7 @@ class _VendorBookingDetailsScreenState
                             client?.address ?? 'Client Address',
                             style: TextStyle(color: Colors.grey),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -254,9 +201,7 @@ class _VendorBookingDetailsScreenState
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
 
-                          SizedBox(
-                            height: 15,
-                          ),
+                          SizedBox(height: 15),
                           Row(
                             children: [
                               Text(S.of(context).booking_time),
@@ -327,25 +272,6 @@ class _VendorBookingDetailsScreenState
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           SizedBox(height: 15),
-                          // Display payment method
-                          Row(
-                            children: [
-                              Text(S.of(context).payment_method),
-                              Spacer(),
-                              Text(
-                                '${widget.booking.paymentMethod}',
-                              ),
-                            ],
-                          ),
-                          // Display payment card information if available
-                          if (widget.booking.paymentStatus) ...[
-                            Text(
-                              'Bank Card: - Visa ending in ${widget.booking.paymentMethod}', // Example field from booking model
-                            ),
-                          ],
-                          SizedBox(
-                            height: 15,
-                          ),
                           Row(
                             children: [
                               Text(S.of(context).booking_time),
@@ -360,9 +286,7 @@ class _VendorBookingDetailsScreenState
                             S.of(context).amount_information,
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+                          SizedBox(height: 10),
                           Row(
                             children: [
                               Text(S.of(context).total_price),
@@ -383,12 +307,16 @@ class _VendorBookingDetailsScreenState
                           Divider(),
                           Row(
                             children: [
+                              Text(
+                                "${S.of(context).total_price}: ", // Translate total price label
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600),
+                              ),
                               Spacer(),
                               Text(
-                                '${S.of(context).total_rental_price} : \$${widget.booking.totalPrice.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.red),
+                                'USD\$${widget.booking.totalPrice.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                    color: Colors.red, fontSize: 20),
                               ),
                             ],
                           ),
@@ -417,9 +345,7 @@ class _VendorBookingDetailsScreenState
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text(S.of(context).decline),
-                          content: Text(
-                            S.of(context).confirm_decline_booking,
-                          ),
+                          content: Text(S.of(context).confirm_decline_booking),
                           actions: [
                             TextButton(
                               onPressed: () {
@@ -431,10 +357,8 @@ class _VendorBookingDetailsScreenState
                               onPressed: () async {
                                 try {
                                   // Update booking status to "cancelled" and send notifications
-                                  await updateBookingStatusAndNotify(
-                                    widget.booking.id,
-                                    BookingStatus.cancelled,
-                                  );
+                                  await updateBookingStatus(widget.booking.id,
+                                      BookingStatus.cancelled);
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -496,10 +420,8 @@ class _VendorBookingDetailsScreenState
                                   // Update booking status and send notifications
                                   if (widget.booking.status ==
                                       BookingStatus.pending) {
-                                    await updateBookingStatusAndNotify(
-                                      widget.booking.id,
-                                      BookingStatus.inProgress,
-                                    );
+                                    await updateBookingStatus(widget.booking.id,
+                                        BookingStatus.accepted);
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -510,10 +432,8 @@ class _VendorBookingDetailsScreenState
                                     );
                                   } else if (widget.booking.status ==
                                       BookingStatus.inProgress) {
-                                    await updateBookingStatusAndNotify(
-                                      widget.booking.id,
-                                      BookingStatus.completed,
-                                    );
+                                    await updateBookingStatus(widget.booking.id,
+                                        BookingStatus.completed);
                                     Navigator.of(context).pop();
                                     Navigator.of(context).pop();
                                     ScaffoldMessenger.of(context).showSnackBar(
