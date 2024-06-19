@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/providers/booking_provider.dart';
+import 'package:v1_rentals/widgets/shimmer_widget.dart';
 
 class VendorBookingDetailsScreen extends StatefulWidget {
   final Booking booking;
@@ -25,6 +27,7 @@ class _VendorBookingDetailsScreenState
   late Future<DocumentSnapshot> _vehicleFuture;
   late Future<CustomUser?> _vendorFuture;
   late Future<CustomUser?> _clientFuture;
+  late Stream<Duration> _countdownStream;
 
   @override
   void initState() {
@@ -32,6 +35,32 @@ class _VendorBookingDetailsScreenState
     _vehicleFuture = AuthService().getVehicleDocument(widget.booking.vehicleId);
     _vendorFuture = AuthService().getUserData(widget.booking.vendorId);
     _clientFuture = AuthService().getUserData(widget.booking.userId);
+
+    if (widget.booking.status == BookingStatus.accepted &&
+        widget.booking.startTime != null) {
+      _countdownStream = _startCountdownStream();
+    }
+  }
+
+  Stream<Duration> _startCountdownStream() async* {
+    final expirationTime = widget.booking.startTime!.add(Duration(minutes: 2));
+    while (true) {
+      final currentTime = DateTime.now();
+      final timeLeft = expirationTime.difference(currentTime);
+      if (timeLeft.isNegative) {
+        _autoCancelBooking();
+        break;
+      }
+      yield timeLeft;
+      await Future.delayed(Duration(seconds: 1));
+    }
+  }
+
+  Future<void> _autoCancelBooking() async {
+    await updateBookingStatus(widget.booking.id, BookingStatus.cancelled);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Booking has been automatically cancelled.')),
+    );
   }
 
   Future<void> updateBookingStatus(
@@ -76,6 +105,31 @@ class _VendorBookingDetailsScreenState
                         fontSize: 20),
                   ),
 
+                  SizedBox(height: 20),
+                  if (widget.booking.status == BookingStatus.accepted &&
+                      widget.booking.startTime != null)
+                    StreamBuilder<Duration>(
+                      stream: _countdownStream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        final timeLeft = snapshot.data!;
+                        final minutes = timeLeft.inMinutes;
+                        final seconds = timeLeft.inSeconds % 60;
+
+                        return Center(
+                          child: Text(
+                            'Time Remaining for Payment: ${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s',
+                            style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red),
+                          ),
+                        );
+                      },
+                    ),
+
                   // Display vehicle image
                   SizedBox(height: 20),
                   Card(
@@ -93,7 +147,8 @@ class _VendorBookingDetailsScreenState
                                 radius: 30,
                                 backgroundColor: Colors.grey,
                                 backgroundImage: vendor?.imageURL != null
-                                    ? NetworkImage(vendor!.imageURL!)
+                                    ? CachedNetworkImageProvider(
+                                        vendor!.imageURL!)
                                     : null,
                               ),
                               SizedBox(width: 10),
@@ -136,12 +191,16 @@ class _VendorBookingDetailsScreenState
                             child: Container(
                               height: 200, // Adjust the height as needed
                               width: double.infinity,
+                              child: CachedNetworkImage(
+                                imageUrl: widget.booking.imageUrl,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    Center(child: ShimmerWidget()),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                  image: NetworkImage(widget.booking.imageUrl),
-                                  fit: BoxFit.cover,
-                                ),
                               ),
                             ),
                           ),

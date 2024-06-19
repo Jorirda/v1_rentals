@@ -7,6 +7,7 @@ import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/widgets/shimmer_widget.dart';
 
 class VendorStorePage extends StatefulWidget {
   final String vendorId;
@@ -77,7 +78,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
                           height: 90,
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
-                              CircularProgressIndicator(),
+                              const CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
                               Icon(Icons.error),
                         ),
@@ -186,11 +187,13 @@ class _VendorStorePageState extends State<VendorStorePage> {
                       Container(
                         height: 120,
                         width: 120,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(vehicle.imageUrl),
-                            fit: BoxFit.cover,
-                          ),
+                        child: CachedNetworkImage(
+                          imageUrl: vehicle.imageUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              Center(child: CircularProgressIndicator()),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
                       ),
                       SizedBox(width: 12),
@@ -332,7 +335,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.grey[200],
+        color: Colors.white,
       ),
       padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: SingleChildScrollView(
@@ -390,7 +393,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
               shadowColor: Colors.black,
               elevation: 50,
               margin: EdgeInsets.zero,
-              color: Colors.grey[200],
+              color: Colors.grey[100],
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30),
                 child: Row(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
-import 'package:v1_rentals/screens/main/filter_page.dart';
+import 'package:v1_rentals/widgets/filter_page.dart';
 
 class SearchScreen extends StatefulWidget {
   final List<Vehicle> vehicles;
@@ -69,7 +69,6 @@ class _SearchScreenState extends State<SearchScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => FilterPage(
-          initialCarType: null, // Initial values for filters
           initialFuelType: null,
           initialTransmissionType: null,
           initialPriceRange: const RangeValues(0, 1000),

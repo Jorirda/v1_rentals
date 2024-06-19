@@ -32,13 +32,11 @@ class Booking {
   int totalPrice;
   BookingStatus status;
   String imageUrl;
-  bool paymentStatus;
-  String paymentMethod;
   DateTime createdAt;
-  String clientImageURL; // Add this field
-  String vendorImageURL; // Add this field
+  DateTime? startTime; // Add this field
+  String clientImageURL;
+  String vendorImageURL;
 
-  // Date and time format
   static final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   static final DateFormat timeFormat = DateFormat('HH:mm:ss');
 
@@ -62,9 +60,8 @@ class Booking {
     required this.totalPrice,
     required this.status,
     required this.imageUrl,
-    required this.paymentStatus,
-    required this.paymentMethod,
     required this.createdAt,
+    this.startTime, // Initialize it as null
     required this.clientImageURL,
     required this.vendorImageURL,
   });
@@ -94,9 +91,10 @@ class Booking {
         orElse: () => BookingStatus.pending,
       ),
       imageUrl: data['imageUrl'] ?? '',
-      paymentStatus: data['paymentStatus'] ?? false,
-      paymentMethod: data['paymentMethod'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
+      startTime: data['startTime'] != null
+          ? (data['startTime'] as Timestamp).toDate()
+          : null, // Parse startTime
       clientImageURL: data['clientImageURL'] ?? '',
       vendorImageURL: data['vendorImageURL'] ?? '',
     );
@@ -130,9 +128,8 @@ class Booking {
       'totalPrice': totalPrice,
       'status': status.toString().split('.').last,
       'imageUrl': imageUrl,
-      'paymentStatus': paymentStatus,
-      'paymentMethod': paymentMethod,
       'createdAt': createdAt,
+      'startTime': startTime, // Include startTime in the map
       'clientImageURL': clientImageURL,
       'vendorImageURL': vendorImageURL,
     };

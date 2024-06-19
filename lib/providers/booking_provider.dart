@@ -46,7 +46,21 @@ class BookingProvider with ChangeNotifier {
   Future<void> updateBookingStatusAndNotify(String bookingId,
       BookingStatus status, String userId, String vendorId) async {
     try {
-      await updateBookingStatus(bookingId, status);
+      // Prepare the data to update in Firestore
+      final Map<String, dynamic> updateData = {
+        'status': status.toString().split('.').last,
+      };
+
+      if (status == BookingStatus.accepted) {
+        // Update startTime to current time if status is accepted
+        updateData['startTime'] = DateTime.now();
+      }
+
+      // Update the booking status in Firestore
+      await FirebaseFirestore.instance
+          .collection('bookings')
+          .doc(bookingId)
+          .update(updateData);
 
       // Prepare notification messages
       String userTitle = '';

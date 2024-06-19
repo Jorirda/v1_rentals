@@ -10,6 +10,7 @@ import 'package:v1_rentals/screens/clients/client_booking_details.dart';
 import 'package:v1_rentals/screens/vendors/vendor_booking_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:v1_rentals/widgets/shimmer_widget.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -183,7 +184,7 @@ class NotificationScreen extends StatelessWidget {
                     width: 70,
                     height: 70,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => CircularProgressIndicator(),
+                    placeholder: (context, url) => ShimmerWidget(),
                     errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),

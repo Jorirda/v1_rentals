@@ -1,17 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/services/email_service.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
-import 'package:v1_rentals/models/notification_model.dart';
 import 'package:v1_rentals/models/search_history_model.dart';
-import 'package:v1_rentals/models/payment_card_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
-import 'package:v1_rentals/screens/account/payment_overviews/add_payment_card.dart';
 import 'package:intl/intl.dart';
 import 'package:v1_rentals/locations/dropoff_location.dart';
 import 'package:v1_rentals/generated/l10n.dart';
@@ -19,16 +16,6 @@ import 'package:v1_rentals/services/location_service.dart';
 import 'package:v1_rentals/locations/pickup_location.dart';
 import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/widgets/custom_stepper.dart';
-import 'package:v1_rentals/widgets/stripe_payment.dart';
-
-import '../../providers/notification_provider.dart';
-
-enum PaymentMethod {
-  Card,
-  PayPal,
-  ApplePay,
-  GooglePay,
-}
 
 class BookingScreen extends StatefulWidget {
   final Vehicle vehicle;
@@ -45,9 +32,6 @@ class _BookingScreenState extends State<BookingScreen> {
   TextEditingController dropoffLocationController = TextEditingController();
   int currentStep = 0;
   bool setSameLocation = false;
-  List<PaymentCard> userCards = []; // List to hold user's payment cards
-  PaymentMethod? _selectedPaymentMethod;
-  PaymentCard? _selectedPaymentCard;
 
   String? vendorBusinessName;
 
@@ -89,14 +73,12 @@ class _BookingScreenState extends State<BookingScreen> {
       totalPrice: widget.vehicle.pricePerDay,
       imageUrl: widget.vehicle.imageUrl,
       status: BookingStatus.pending,
-      paymentStatus: false,
-      paymentMethod: PaymentMethod.Card.toString(),
+
       createdAt: DateTime.now(),
       clientImageURL: '',
       vendorImageURL: '',
     );
 
-    fetchUserPaymentCards(); // Fetch user's payment cards when the screen initializes
     fetchUserData(); // Fetch user data including full name
     fetchVendorInformation(widget.vehicle
         .vendorId); // Fetch vendor information by passing vehicle vendorId
@@ -552,32 +534,6 @@ class _BookingScreenState extends State<BookingScreen> {
     ];
   }
 
-  Future<void> fetchUserPaymentCards() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Fetch user's cards from Firestore
-        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .collection('cards')
-            .get();
-
-        // Convert QuerySnapshot to List of PaymentCard objects
-        List<PaymentCard> cards = querySnapshot.docs
-            .map((doc) =>
-                PaymentCard.fromMap(doc.data() as Map<String, dynamic>))
-            .toList();
-
-        setState(() {
-          userCards = cards;
-        });
-      }
-    } catch (e) {
-      print('Error fetching user payment cards: $e');
-    }
-  }
-
   // Method to generate the summary widget
   Widget _buildSummaryWidget() {
     return Column(
@@ -616,12 +572,12 @@ class _BookingScreenState extends State<BookingScreen> {
                 Container(
                   height: 200, // Adjust the height as needed
                   width: double.infinity,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.vehicle.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    image: DecorationImage(
-                      image: NetworkImage(widget.vehicle.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
                   ),
                 ),
                 Divider(),
@@ -746,7 +702,7 @@ class _BookingScreenState extends State<BookingScreen> {
           ),
         ),
         CheckboxListTile(
-          title: Text("I accept the terms and conditions."),
+          title: Text(S.of(context).accept_terms),
           value: true,
           onChanged: (bool? value) {
             // Handle acceptance of terms
@@ -902,7 +858,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
       // Set the booking ID and other details in the booking object
       booking.id = bookingId;
-      booking.paymentMethod = _selectedPaymentMethod.toString().split('.').last;
+
       booking.pickupLocation = pickupLocationController.text;
       booking.dropoffLocation = dropoffLocationController.text;
 
@@ -948,19 +904,15 @@ class _BookingScreenState extends State<BookingScreen> {
         'sent',
       );
 
-      // // Send booking confirmation emails to user and vendor
-      // EmailService emailService = EmailService();
-      // await emailService.sendBookingEmails(
-      //   booking.userEmail ?? '',
-      //   booking.vendorEmail ?? '',
-      //   booking.userFullName,
-      //   booking.vendorBusinessName,
-      //   booking,
-      // );
+      // Send booking confirmation emails to user and vendor
+      EmailService emailService = EmailService();
+      await emailService.sendBookingEmails(
+        booking,
+      );
 
       // Show success SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Booking successfully saved.'),
           backgroundColor: Colors.green,
         ),

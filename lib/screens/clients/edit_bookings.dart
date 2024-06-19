@@ -340,8 +340,7 @@ class _EditBookingScreenState extends State<EditBookingScreen> {
       pickupLocation: _pickupLocation,
       dropoffLocation: _dropoffLocation,
       status: widget.booking.status,
-      paymentMethod: widget.booking.paymentMethod,
-      paymentStatus: widget.booking.paymentStatus,
+
       totalPrice: widget.booking.totalPrice,
       createdAt: widget.booking.createdAt,
       userId: widget.booking.userId,

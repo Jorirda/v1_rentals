@@ -13,11 +13,11 @@ class FavoritesProvider with ChangeNotifier {
   List<Vehicle> get filteredFavorites => _filteredFavorites;
   bool get isLoading => _isLoading;
 
-  // Fetch user's favorite vehicles from Firestore
-  Future<void> fetchFavorites() async {
-    _isLoading = true;
-    notifyListeners();
+  FavoritesProvider() {
+    fetchFavorites();
+  }
 
+  Future<void> fetchFavorites() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
       throw Exception('User not logged in');
@@ -44,12 +44,9 @@ class FavoritesProvider with ChangeNotifier {
 
     _favorites = vehicles;
     _filteredFavorites = vehicles;
-
-    _isLoading = false;
     notifyListeners();
   }
 
-  // Filter the favorite vehicles based on search query
   void filterFavorites(String query) {
     if (query.isEmpty) {
       _filteredFavorites = _favorites;
@@ -64,12 +61,10 @@ class FavoritesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Check if a vehicle is in the favorites list
   bool isFavorite(String vehicleId) {
     return _favorites.any((vehicle) => vehicle.id == vehicleId);
   }
 
-  // Add a vehicle to the favorites list
   Future<void> addFavorite(Vehicle vehicle) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
@@ -88,7 +83,6 @@ class FavoritesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Remove a vehicle from the favorites list
   Future<void> removeFavorite(Vehicle vehicle) async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
@@ -107,7 +101,6 @@ class FavoritesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Toggle favorite status of a vehicle
   Future<void> toggleFavorite(Vehicle vehicle) async {
     if (isFavorite(vehicle.id)) {
       await removeFavorite(vehicle);
@@ -116,12 +109,10 @@ class FavoritesProvider with ChangeNotifier {
     }
   }
 
-  // Get the business name of a vendor by vendor ID
   String getBusinessName(String vendorId) {
     return _vendorNames[vendorId] ?? 'Unknown';
   }
 
-  // Fetch and cache vendor names
   Future<void> fetchVendorNames() async {
     final vendorIds = _favorites.map((vehicle) => vehicle.vendorId).toSet();
 
@@ -138,5 +129,6 @@ class FavoritesProvider with ChangeNotifier {
         _vendorNames[vendorId] = 'Unknown';
       }
     }
+    notifyListeners();
   }
 }

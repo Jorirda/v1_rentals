@@ -9,13 +9,6 @@ class EmailService {
   final String _mailgunApiKey = dotenv.env['MAILGUN_API_KEY'] ?? '';
   final String _mailgunDomain = dotenv.env['MAILGUN_DOMAIN'] ?? '';
 
-  Future<String> getImagePath() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final imagePath = '${directory.path}/assets/images/v1-rentals-logo.png';
-
-    return imagePath;
-  }
-
   Future<void> sendEmail(String to, String subject, String body) async {
     final url =
         Uri.parse('https://api.mailgun.net/v3/$_mailgunDomain/messages');
@@ -44,10 +37,6 @@ class EmailService {
   }
 
   Future<void> sendBookingEmails(
-    String userEmail,
-    String vendorEmail,
-    String userFullName,
-    String vendorBusinessName,
     Booking booking,
   ) async {
     const userSubject = 'Booking Confirmation';
@@ -56,48 +45,147 @@ class EmailService {
     final dateFormat = DateFormat('yyyy-MM-dd');
     final timeFormat = DateFormat('HH:mm');
 
-    final imagePath = await getImagePath();
+    final imageUrl =
+        'https://firebasestorage.googleapis.com/v0/b/v1-rentals-test.appspot.com/o/assets%2Fv1-rentals-logo.png?alt=media&token=4a5d4ab1-68e5-432f-8fdb-0fc25ed5a09d';
     final userBody = '''
-      <div style="background-color: royalblue; color: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; font-family: Arial, sans-serif;">
-          <div style="text-align: center;">
-          <img src="$imagePath" alt="V1Rentals Image" style="max-width: 100%; max-height: 100px; border-radius: 10px; margin-bottom: 20px;">
-        </div>
-        <h1 style="text-align: center;">Booking Confirmation</h1>
-        <p>Dear $userFullName,</p>
-        <p>Thank you for your booking. Here are the details:</p>
-        <div style="text-align: center;">
-          <img src="${booking.imageUrl}" alt="Vehicle Image" style="max-width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
-        </div>
-        <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">${booking.vehicleDescription}</div>
-        <div style="margin-bottom: 5px;"><strong>Supplier:</strong> $vendorBusinessName</div>
-        <div style="margin-bottom: 5px;"><strong>Pick-up:</strong> ${booking.pickupLocation}</div>
-        <div style="margin-bottom: 5px;"><strong>Drop-off:</strong> ${booking.dropoffLocation}</div>
-        <div style="margin-bottom: 5px;"><strong>Pick-up Date/Time:</strong> ${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</div>
-        <div style="margin-bottom: 5px;"><strong>Drop-off Date/Time:</strong> ${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</div>
-       
-        <div style="margin-bottom: 5px;"><strong>Total Price:</strong> USD\$${booking.totalPrice.toStringAsFixed(2)}</div>
+  <div style="background-color: #F0F0F0; color: black; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; font-family: Arial, sans-serif;">
+    <div style="text-align: center;">
+      <img src="$imageUrl" alt="V1Rentals Logo" style="max-width: 100%; max-height: 200px; margin-bottom: 20px;">
+    </div>
+    <h1 style="text-align: center; color: #009DFF;"><strong>Booking Confirmation</strong></h1>
+    <p><strong>Dear ${booking.userFullName},</strong></p>
+    <p><strong>Thank you for your booking. Here are the details:</strong></p>
+    <div style="background-color: #FFFFFF; padding: 10px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+      <div style="text-align: center;">
+        <img src="${booking.imageUrl}" alt="Vehicle Image" style="max-width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
+        <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #009DFF;"><strong>${booking.vehicleDescription}</strong></div>
       </div>
-    ''';
+      <div style="background-color: #F9F9F9; padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #E0E0E0;">
+        <table style="width: 100%; border-collapse: collapse; color: black;">
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Supplier:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #333;">${booking.vendorBusinessName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Pick-up:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #333;">${booking.pickupLocation}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Drop-off:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #333;">${booking.dropoffLocation}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Pick-up Date/Time:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #333;">${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Drop-off Date/Time:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #333;">${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Total Price:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #333;">USD\$${booking.totalPrice.toStringAsFixed(2)}</td>
+          </tr>
+        </table>
+      </div>
+      <p style="text-align: center;">You can view your booking details <a href="YOUR_LINK_HERE" style="color: red;">here</a>.</p>
+    </div>
+  </div>
+''';
+
+//     final userBody = '''
+//   <div style="background-color: #212121; color: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; font-family: Arial, sans-serif;">
+//     <div style="text-align: center;">
+//       <img src="$imageUrl" alt="V1Rentals Logo" style="max-width: 100%; max-height: 200px; margin-bottom: 20px;">
+//     </div>
+//     <h1 style="text-align: center;"><strong>Booking Confirmation</strong></h1>
+//     <p><strong>Dear ${booking.userFullName},</strong></p>
+//     <p><strong>Thank you for your booking. Here are the details:</strong></p>
+//     <div style="background-color: #2b2b2b; padding: 10px; border-radius: 10px; margin-bottom: 20px;">
+//       <div style="text-align: center;">
+//         <img src="${booking.imageUrl}" alt="Vehicle Image" style="max-width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
+//          <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;"><strong>${booking.vehicleDescription}</strong></div>
+//       </div>
+//       <div style="background-color: #333; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+//         <table style="width: 100%; border-collapse: collapse; color: white;">
+//           <tr>
+//             <td style="padding: 8px; text-align: left; width: 30%;"><strong>Supplier:</strong></td>
+//             <td style="padding: 8px; text-align: left; color: #ccc;">${booking.vendorBusinessName}</td>
+//           </tr>
+//           <tr>
+//             <td style="padding: 8px; text-align: left; width: 30%;"><strong>Pick-up:</strong></td>
+//             <td style="padding: 8px; text-align: left; color: #ccc;">${booking.pickupLocation}</td>
+//           </tr>
+//           <tr>
+//             <td style="padding: 8px; text-align: left; width: 30%;"><strong>Drop-off:</strong></td>
+//             <td style="padding: 8px; text-align: left; color: #ccc;">${booking.dropoffLocation}</td>
+//           </tr>
+//           <tr>
+//             <td style="padding: 8px; text-align: left; width: 30%;"><strong>Pick-up Date/Time:</strong></td>
+//             <td style="padding: 8px; text-align: left; color: #ccc;">${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</td>
+//           </tr>
+//           <tr>
+//             <td style="padding: 8px; text-align: left; width: 30%;"><strong>Drop-off Date/Time:</strong></td>
+//             <td style="padding: 8px; text-align: left; color: #ccc;">${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</td>
+//           </tr>
+//           <tr>
+//             <td style="padding: 8px; text-align: left; width: 30%;"><strong>Total Price:</strong></td>
+//             <td style="padding: 8px; text-align: left; color: #ccc;">USD\$${booking.totalPrice.toStringAsFixed(2)}</td>
+//           </tr>
+//         </table>
+//       </div>
+//       <p style="text-align: center;">You can view your booking details <a href="YOUR_LINK_HERE" style="color: #1a73e8;">here</a>.</p>
+//     </div>
+//   </div>
+// ''';
 
     final vendorBody = '''
-      <div style="background-color: royalblue; color: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; font-family: Arial, sans-serif;">
-        <h1 style="text-align: center;">New Booking Received</h1>
-        <p>Dear $vendorBusinessName,</p>
-        <p>You have received a new booking. Here are the details:</p>
-        <div style="text-align: center;">
-          <img src="${booking.imageUrl}" alt="Vehicle Image" style="max-width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
-        </div>
-        <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">${booking.vehicleDescription}</div>
-        <div style="margin-bottom: 5px;"><strong>Renter:</strong> $userFullName</div>
-        <div style="margin-bottom: 5px;"><strong>Pick-up:</strong> ${booking.pickupLocation}</div>
-        <div style="margin-bottom: 5px;"><strong>Drop-off:</strong> ${booking.dropoffLocation}</div>
-        <div style="margin-bottom: 5px;"><strong>Pick-up Date/Time:</strong> ${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</div>
-        <div style="margin-bottom: 5px;"><strong>Drop-off Date/Time:</strong> ${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</div>
-        <div style="margin-bottom: 5px;"><strong>Total Price:</strong> USD\$${booking.totalPrice.toStringAsFixed(2)}</div>
+  <div style="background-color: #212121; color: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; font-family: Arial, sans-serif;">
+    <div style="text-align: center;">
+      <img src="$imageUrl" alt="V1Rentals Logo" style="max-width: 100%; max-height: 200px; margin-bottom: 20px;">
+    </div>
+    <h1 style="text-align: center;"><strong>New Booking Received</strong></h1>
+    <p><strong>Dear ${booking.vendorBusinessName},</strong></p>
+    <p><strong>You have received a new booking. Here are the details:</strong></p>
+    <div style="background-color: #2b2b2b; padding: 10px; border-radius: 10px; margin-bottom: 20px;">
+      <div style="text-align: center;">
+        <img src="${booking.imageUrl}" alt="Vehicle Image" style="max-width: 100%; max-height: 200px; border-radius: 10px; margin-bottom: 20px;">
+         <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;"><strong>${booking.vehicleDescription}</strong></div>
       </div>
-    ''';
+      <div style="background-color: #333; padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+        <table style="width: 100%; border-collapse: collapse; color: white;">
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Renter:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #ccc;">${booking.userFullName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Pick-up:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #ccc;">${booking.pickupLocation}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Drop-off:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #ccc;">${booking.dropoffLocation}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Pick-up Date/Time:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #ccc;">${dateFormat.format(booking.pickupDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.pickupTime.hour, booking.pickupTime.minute))}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Drop-off Date/Time:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #ccc;">${dateFormat.format(booking.dropoffDate)} at ${timeFormat.format(DateTime(1, 1, 1, booking.dropoffTime.hour, booking.dropoffTime.minute))}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; text-align: left; width: 30%;"><strong>Total Price:</strong></td>
+            <td style="padding: 8px; text-align: left; color: #ccc;">USD\$${booking.totalPrice.toStringAsFixed(2)}</td>
+          </tr>
+        </table>
+      </div>
+      <p style="text-align: center;">You can view the booking details <a href="YOUR_LINK_HERE" style="color: #1a73e8;">here</a>.</p>
+    </div>
+  </div>
+''';
 
-    await sendEmail(userEmail, userSubject, userBody);
-    await sendEmail(vendorEmail, vendorSubject, vendorBody);
+    await sendEmail(booking.userEmail!, userSubject, userBody);
+    await sendEmail(booking.vendorEmail!, vendorSubject, vendorBody);
   }
 }

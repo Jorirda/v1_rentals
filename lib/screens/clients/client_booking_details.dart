@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,9 +30,7 @@ class _ClientBookingDetailsScreenState
   late Future<DocumentSnapshot> _vehicleFuture;
   late Future<CustomUser?> _vendorFuture;
   late Future<CustomUser?> _clientFuture;
-
-  bool _isCancelLoading = false;
-  bool _isConfirmLoading = false;
+  late Stream<Duration> _countdownStream;
 
   @override
   void initState() {
@@ -38,6 +38,32 @@ class _ClientBookingDetailsScreenState
     _vehicleFuture = AuthService().getVehicleDocument(widget.booking.vehicleId);
     _vendorFuture = AuthService().getUserData(widget.booking.vendorId);
     _clientFuture = AuthService().getUserData(widget.booking.userId);
+
+    if (widget.booking.status == BookingStatus.accepted &&
+        widget.booking.startTime != null) {
+      _countdownStream = _startCountdownStream();
+    }
+  }
+
+  Stream<Duration> _startCountdownStream() async* {
+    final expirationTime = widget.booking.startTime!.add(Duration(minutes: 2));
+    while (true) {
+      final currentTime = DateTime.now();
+      final timeLeft = expirationTime.difference(currentTime);
+      if (timeLeft.isNegative) {
+        _autoCancelBooking();
+        break;
+      }
+      yield timeLeft;
+      await Future.delayed(Duration(seconds: 1));
+    }
+  }
+
+  Future<void> _autoCancelBooking() async {
+    await updateBookingStatus(widget.booking.id, BookingStatus.cancelled);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Booking has been automatically cancelled.')),
+    );
   }
 
   Future<void> updateBookingStatus(
@@ -81,6 +107,30 @@ class _ClientBookingDetailsScreenState
                         color: Theme.of(context).colorScheme.primary,
                         fontSize: 20),
                   ),
+                  SizedBox(height: 20),
+                  if (widget.booking.status == BookingStatus.accepted &&
+                      widget.booking.startTime != null)
+                    StreamBuilder<Duration>(
+                      stream: _countdownStream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        final timeLeft = snapshot.data!;
+                        final minutes = timeLeft.inMinutes;
+                        final seconds = timeLeft.inSeconds % 60;
+
+                        return Center(
+                          child: Text(
+                            'Time left to pay: ${minutes.toString().padLeft(2, '0')}m ${seconds.toString().padLeft(2, '0')}s',
+                            style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red),
+                          ),
+                        );
+                      },
+                    ),
                   SizedBox(height: 20),
                   Card(
                     elevation: 2,
@@ -139,12 +189,16 @@ class _ClientBookingDetailsScreenState
                             child: Container(
                               height: 200, // Adjust the height as needed
                               width: double.infinity,
+                              child: CachedNetworkImage(
+                                imageUrl: widget.booking.imageUrl,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                  image: NetworkImage(widget.booking.imageUrl),
-                                  fit: BoxFit.cover,
-                                ),
                               ),
                             ),
                           ),

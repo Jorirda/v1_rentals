@@ -4,13 +4,11 @@ import 'package:v1_rentals/models/vehicle_model.dart';
 class FilterPage extends StatefulWidget {
   const FilterPage({
     Key? key,
-    required this.initialCarType,
     required this.initialFuelType,
     required this.initialTransmissionType,
     required this.initialPriceRange,
   }) : super(key: key);
 
-  final CarType? initialCarType;
   final FuelType? initialFuelType;
   final TransmissionType? initialTransmissionType;
   final RangeValues initialPriceRange;
@@ -20,7 +18,6 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  late CarType? _selectedCarType;
   late FuelType? _selectedFuelType;
   late TransmissionType? _selectedTransmissionType;
   late RangeValues _priceRange;
@@ -28,7 +25,7 @@ class _FilterPageState extends State<FilterPage> {
   @override
   void initState() {
     super.initState();
-    _selectedCarType = widget.initialCarType;
+
     _selectedFuelType = widget.initialFuelType;
     _selectedTransmissionType = widget.initialTransmissionType;
     _priceRange = widget.initialPriceRange;
@@ -45,30 +42,8 @@ class _FilterPageState extends State<FilterPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Car Type',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              DropdownButtonFormField<CarType>(
-                value: _selectedCarType,
-                onChanged: (CarType? newValue) {
-                  setState(() {
-                    _selectedCarType = newValue;
-                  });
-                },
-                items: CarType.values.map((CarType value) {
-                  return DropdownMenuItem<CarType>(
-                    value: value,
-                    child: Text(value.toString().split('.').last),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
               Text(
                 'Fuel Type',
                 style: TextStyle(
@@ -179,7 +154,6 @@ class _FilterPageState extends State<FilterPage> {
                   onPressed: () {
                     // Apply button functionality
                     Navigator.pop(context, {
-                      'carType': _selectedCarType,
                       'fuelType': _selectedFuelType,
                       'transmissionType': _selectedTransmissionType,
                       'priceRange': _priceRange,

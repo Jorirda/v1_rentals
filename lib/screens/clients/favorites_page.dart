@@ -2,35 +2,38 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
-import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/screens/main/vendor_store.dart';
 import 'package:v1_rentals/providers/favorites_provider.dart';
+import 'package:v1_rentals/widgets/shimmer_widget.dart';
 
 class FavoriteScreen extends StatefulWidget {
-  const FavoriteScreen({Key? key}) : super(key: key);
+  const FavoriteScreen({super.key});
 
   @override
   _FavoriteScreenState createState() => _FavoriteScreenState();
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  late Future<void> _favoritesFuture;
 
   @override
   void initState() {
     super.initState();
     final favoritesProvider =
         Provider.of<FavoritesProvider>(context, listen: false);
-    // Delay the fetchFavorites and fetchVendorNames calls to avoid the setState() or markNeedsBuild() during build error.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      favoritesProvider.fetchFavorites();
-      favoritesProvider.fetchVendorNames();
-    });
+    _favoritesFuture = _fetchData(favoritesProvider);
+
     _searchController.addListener(() {
       favoritesProvider.filterFavorites(_searchController.text.toLowerCase());
     });
+  }
+
+  Future<void> _fetchData(FavoritesProvider favoritesProvider) async {
+    await favoritesProvider.fetchFavorites();
+    await favoritesProvider.fetchVendorNames();
   }
 
   @override
@@ -47,185 +50,213 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       ),
       body: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: S.of(context).search_for_favorite_vehicle,
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: TextField(
+                controller: _searchController,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.red,
+                  ),
+                  hintText: S.of(context).search_for_favorite_vehicle,
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                ),
               ),
             ),
           ),
+          SizedBox(height: 20),
           Expanded(
-            child: Consumer<FavoritesProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return Center(child: CircularProgressIndicator());
+            child: FutureBuilder<void>(
+              future: _favoritesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: ShimmerWidget());
                 }
 
-                if (provider.filteredFavorites.isEmpty) {
-                  return Center(child: Text('No favorites found'));
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error loading favorites'));
                 }
 
-                return ListView.builder(
-                  itemCount: provider.filteredFavorites.length,
-                  itemBuilder: (context, index) {
-                    final vehicle = provider.filteredFavorites[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CarDetailsScreen(vehicle),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        margin: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 2.0),
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => VendorStorePage(
-                                          vendorId: vehicle.vendorId),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.storefront_sharp,
-                                        color: Colors.red),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      provider
-                                          .getBusinessName(vehicle.vendorId),
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                    SizedBox(width: 5),
-                                    const Icon(Icons.arrow_forward),
-                                    const Spacer(),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).primaryColor,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: IconButton(
-                                        icon: Icon(
-                                          provider.isFavorite(vehicle.id)
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          color: Colors.red,
-                                        ),
-                                        onPressed: () {
-                                          provider.toggleFavorite(vehicle);
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                return Consumer<FavoritesProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.filteredFavorites.isEmpty) {
+                      return Center(child: Text('No favorites found'));
+                    }
+
+                    return ListView.builder(
+                      itemCount: provider.filteredFavorites.length,
+                      itemBuilder: (context, index) {
+                        final vehicle = provider.filteredFavorites[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CarDetailsScreen(vehicle),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    width: 150,
-                                    height: 100,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: CachedNetworkImage(
-                                        imageUrl: vehicle.imageUrl,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) =>
-                                            CircularProgressIndicator(),
-                                        errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
-                                      ),
+                            );
+                          },
+                          child: Card(
+                            elevation: 5,
+                            margin: EdgeInsets.all(8),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 2.0),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => VendorStorePage(
+                                              vendorId: vehicle.vendorId),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.storefront_sharp,
+                                            color: Colors.red),
+                                        SizedBox(width: 5),
+                                        Text(
+                                          provider.getBusinessName(
+                                              vehicle.vendorId),
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                        SizedBox(width: 5),
+                                        const Icon(Icons.arrow_forward),
+                                        const Spacer(),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: IconButton(
+                                            icon: Icon(
+                                              provider.isFavorite(vehicle.id)
+                                                  ? Icons.favorite
+                                                  : Icons.favorite_border,
+                                              color: Colors.red,
+                                            ),
+                                            onPressed: () {
+                                              provider.toggleFavorite(vehicle);
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            '${vehicle.brand.getTranslation()} ${vehicle.model} ',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 150,
+                                        height: 100,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: CachedNetworkImage(
+                                            imageUrl: vehicle.imageUrl,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Icon(Icons.error),
                                           ),
-                                          SizedBox(height: 10),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
+                                              Text(
+                                                '${vehicle.brand.getTranslation()} ${vehicle.model} ',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20),
+                                              ),
+                                              SizedBox(height: 10),
                                               Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
                                                 children: [
-                                                  Icon(Icons.settings,
-                                                      color: Theme.of(context)
-                                                          .primaryColor),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    vehicle
-                                                        .getTransmissionTypeString(),
-                                                    style: TextStyle(
-                                                        color: Colors.grey),
+                                                  Row(
+                                                    children: [
+                                                      Icon(Icons.settings,
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .primaryColor),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        vehicle
+                                                            .getTransmissionTypeString(),
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Icon(Icons.star,
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .primaryColor),
+                                                      Text('${vehicle.rating}',
+                                                          style: TextStyle(
+                                                              fontSize: 15)),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
+                                              SizedBox(height: 10),
                                               Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                                 children: [
-                                                  Icon(Icons.star,
-                                                      color: Theme.of(context)
-                                                          .primaryColor),
-                                                  Text('${vehicle.rating}',
-                                                      style: TextStyle(
-                                                          fontSize: 15)),
+                                                  Text(
+                                                    'USD\$${vehicle.pricePerDay}/${S.of(context).day}',
+                                                    style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 20),
+                                                  ),
                                                 ],
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: 10),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'USD\$${vehicle.pricePerDay}/${S.of(context).day}',
-                                                style: TextStyle(
-                                                    color: Colors.red,
-                                                    fontSize: 20),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                SizedBox(height: 20),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     );
                   },
                 );

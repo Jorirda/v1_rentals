@@ -11,6 +11,7 @@ import 'package:v1_rentals/screens/main/booking_page.dart';
 import 'package:v1_rentals/screens/main/vendor_store.dart';
 
 import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/widgets/shimmer_widget.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final Vehicle vehicle;
@@ -261,7 +262,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         ),
       );
     } else {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
   }
 
@@ -377,7 +378,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         children: [
                           Text(
                             '\$${widget.vehicle.pricePerDay}/${S.of(context).day}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 35,
                                 color: Colors.red),
@@ -386,7 +387,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             children: [
                               Text(
                                 widget.vehicle.rating.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 20,
                                   color: Colors.black,
@@ -401,10 +402,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         '${widget.vehicle.brand.getTranslation()} ${widget.vehicle.model}  ${widget.vehicle.modelYear}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                         ),
@@ -414,18 +415,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         maxLines: 3,
                         style: TextStyle(color: Colors.grey),
                       ),
-                      SizedBox(height: 20),
-                      Divider(),
+                      const SizedBox(height: 20),
+                      const Divider(),
                       Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             S.of(context).features,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           )),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -454,18 +455,18 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                               .colorScheme
                                               .primary,
                                         ),
-                                        SizedBox(height: 8),
+                                        const SizedBox(height: 8),
                                         Text(
                                           feature['title'],
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         Text(
                                           feature['subtitle'],
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Colors.grey,
                                           ),
                                         ),
@@ -478,7 +479,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                           }).toList(),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Divider(),
@@ -489,19 +490,19 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Text(
                     S.of(context).vendor,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
                   ),
                 ),
                 buildVendorInfo(),
-                Divider(),
+                const Divider(),
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: Text(
                     S.of(context).reviews,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -549,7 +550,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   ),
                   Text(
                     S.of(context).store,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -567,7 +568,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   ),
                   Text(
                     S.of(context).call,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -585,13 +586,13 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                   ),
                   Text(
                     S.of(context).chat,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 width: 30,
               ),
               Expanded(

@@ -5,6 +5,9 @@ import 'package:v1_rentals/models/home_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
+import 'package:v1_rentals/widgets/filter_page.dart'; // Import the filter page
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:v1_rentals/widgets/shimmer_widget.dart';
 
 class CategoriesScreen extends StatefulWidget {
   final String? selectedBrand;
@@ -29,6 +32,12 @@ class _CategoriesScreenState extends State<CategoriesScreen>
       RecommendModel.getRecommendedBrands();
   late Map<String, int> _brandToRailIndex;
 
+  // Filter variables
+  CarType? _selectedCarType;
+  FuelType? _selectedFuelType;
+  TransmissionType? _selectedTransmissionType;
+  RangeValues _priceRange = RangeValues(0, 1000);
+
   _CategoriesScreenState(String? selectedBrand) {
     _selectedBrand = selectedBrand ?? allBrands;
     _selectedRailIndex = 0;
@@ -51,7 +60,6 @@ class _CategoriesScreenState extends State<CategoriesScreen>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     searchController.dispose();
     _tabController.dispose();
     super.dispose();
@@ -96,6 +104,28 @@ class _CategoriesScreenState extends State<CategoriesScreen>
               ),
             ),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.filter_list),
+              onPressed: () async {
+                final result = await showModalBottomSheet<Map<String, dynamic>>(
+                  context: context,
+                  builder: (context) => FilterPage(
+                    initialFuelType: _selectedFuelType,
+                    initialTransmissionType: _selectedTransmissionType,
+                    initialPriceRange: _priceRange,
+                  ),
+                );
+                if (result != null) {
+                  setState(() {
+                    _selectedFuelType = result['fuelType'];
+                    _selectedTransmissionType = result['transmissionType'];
+                    _priceRange = result['priceRange'];
+                  });
+                }
+              },
+            ),
+          ],
           bottom: TabBar(
             controller: _tabController,
             isScrollable: true,
@@ -155,7 +185,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
+                      return ShimmerWidget();
                     }
                     if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
@@ -168,21 +198,44 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                     final vehicles = snapshot.data!.docs
                         .map((doc) => Vehicle.fromMap(doc))
                         .toList()
-                        .where((vehicle) =>
-                            (vehicle.brand
-                                    .getTranslation()
-                                    .toLowerCase()
-                                    .contains(searchQuery.toLowerCase()) ||
-                                vehicle.model
-                                    .toLowerCase()
-                                    .contains(searchQuery.toLowerCase()) ||
-                                vehicle.carType.name
-                                    .toLowerCase()
-                                    .contains(searchQuery.toLowerCase())) &&
-                            (_selectedBrand == allBrands ||
-                                vehicle.brand.name ==
-                                    _selectedBrand.toLowerCase()))
-                        .toList();
+                        .where((vehicle) {
+                      final matchesQuery = (vehicle.brand
+                              .getTranslation()
+                              .toLowerCase()
+                              .contains(searchQuery.toLowerCase()) ||
+                          vehicle.model
+                              .toLowerCase()
+                              .contains(searchQuery.toLowerCase()) ||
+                          vehicle.carType.name
+                              .toLowerCase()
+                              .contains(searchQuery.toLowerCase()));
+
+                      final matchesBrand = (_selectedBrand == allBrands ||
+                          vehicle.brand.name.toLowerCase() ==
+                              _selectedBrand.toLowerCase());
+
+                      final matchesCarType = (_selectedCarType == null ||
+                          vehicle.carType == _selectedCarType);
+
+                      final matchesFuelType = (_selectedFuelType == null ||
+                          vehicle.fuelType == _selectedFuelType);
+
+                      final matchesTransmissionType =
+                          (_selectedTransmissionType == null ||
+                              vehicle.transmission ==
+                                  _selectedTransmissionType);
+
+                      final matchesPriceRange =
+                          (vehicle.pricePerDay >= _priceRange.start &&
+                              vehicle.pricePerDay <= _priceRange.end);
+
+                      return matchesQuery &&
+                          matchesBrand &&
+                          matchesCarType &&
+                          matchesFuelType &&
+                          matchesTransmissionType &&
+                          matchesPriceRange;
+                    }).toList();
                     return TabBarView(
                       controller: _tabController,
                       children: CarType.values.map((carType) {
@@ -236,10 +289,12 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                     Container(
                       height: 150,
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(vehicle.imageUrl),
-                            fit: BoxFit.cover),
+                      child: CachedNetworkImage(
+                        imageUrl: vehicle.imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            Center(child: ShimmerWidget()),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),
                     Padding(

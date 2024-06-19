@@ -6,6 +6,7 @@ import 'package:v1_rentals/screens/clients/client_booking_details.dart';
 import 'package:v1_rentals/screens/clients/pending_bookings.dart';
 
 import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/widgets/shimmer_widget.dart';
 
 class ClientBookings extends StatelessWidget {
   const ClientBookings({Key? key});
@@ -74,7 +75,7 @@ class ClientBookings extends StatelessWidget {
       stream: AuthService().getCurrentUserBookingsStream(status),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Center(child: ShimmerWidget());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
