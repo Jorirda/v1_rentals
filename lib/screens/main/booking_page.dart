@@ -771,6 +771,25 @@ class _BookingScreenState extends State<BookingScreen> {
     }
   }
 
+  Future<void> _showProcessingDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 20),
+              Text('Processing your booking...'),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLastStep = currentStep == getSteps().length - 1;
@@ -819,12 +838,46 @@ class _BookingScreenState extends State<BookingScreen> {
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
           child: CustomStepperControls(
             currentStep: currentStep,
-            onStepContinue: () {
+            onStepContinue: () async {
               final isLastStep = currentStep == getSteps().length - 1;
               if (isLastStep) {
-                print('Completed');
-                // send data to firebase
-                sendBookingDataToFirebase(booking);
+                final shouldSend = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text(S.of(context).confirm_booking),
+                      content: Text(S.of(context).confirm_booking_dialog),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                          child: Text(S.of(context).cancel),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                          child: Text(S.of(context).confirm),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                if (shouldSend == true) {
+                  _showProcessingDialog(context);
+                  // send data to firebase
+                  await sendBookingDataToFirebase(booking);
+                  Navigator.of(context).pop(); // Close the processing dialog
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Booking completed!')),
+                  );
+                }
               } else {
                 setState(() {
                   if (currentStep < getSteps().length - 1) {
@@ -840,7 +893,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 }
               });
             },
-            isLastStep: isLastStep,
+            isLastStep: currentStep == getSteps().length - 1,
           ),
         ),
       ),

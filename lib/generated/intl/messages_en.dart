@@ -122,6 +122,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "complete": MessageLookupByLibrary.simpleMessage("Complete"),
         "completed": MessageLookupByLibrary.simpleMessage("Completed"),
         "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+        "confirm_booking":
+            MessageLookupByLibrary.simpleMessage("Confirm Booking"),
+        "confirm_booking_dialog": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to complete the booking?"),
         "confirm_card_changes": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to save changes to this card?"),
         "confirm_decline_booking": MessageLookupByLibrary.simpleMessage(

@@ -68,6 +68,7 @@ dependencies:
   path_provider: ^2.1.3
   flutter_stripe: ^10.1.1
   shimmer: ^3.0.0
+  google_sign_in: ^6.2.1
 path_provider:
 flutter_native_splash:
   color: "#ffffff"
@@ -115,6 +116,7 @@ flutter:
     - assets/images/visa_icon.png
     - assets/images/credit-card.png
     - assets/images/google_pay_icon.png
+    - assets/images/google_icon_2.png
     - assets/images/paypal_icon.png
     - assets/images/apple_pay_icon.png
     - assets/images/car_model_default.png

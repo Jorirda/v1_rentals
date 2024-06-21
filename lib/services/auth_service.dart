@@ -3,10 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:v1_rentals/models/booking_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   // Method to update the FCM token in Firestore
   Future<void> updateFcmToken(String userId, String token) async {
     try {
@@ -192,6 +195,57 @@ class AuthService {
     try {
       await _auth.signOut();
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        // The user canceled the sign-in
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      if (user != null) {
+        String userId = user.uid;
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+          // If the user does not exist in Firestore, create a new record
+          CustomUser newUser = CustomUser(
+            userId: userId,
+            fullname: user.displayName ?? 'No Name',
+            email: user.email!,
+            password: '', // Password is not needed for Google sign-in
+            phoneNum: user.phoneNumber ?? '',
+            address: '',
+            userType: UserType.client, // Default userType, change as necessary
+            createdAt: DateTime.now(),
+            imageURL: user.photoURL,
+          );
+          await _firestore.collection('users').doc(userId).set(newUser.toMap());
+        }
+
+        String? token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          await updateFcmToken(userId, token);
+        }
+      }
+    } catch (e) {
+      print('Error signing in with Google: $e');
       rethrow;
     }
   }

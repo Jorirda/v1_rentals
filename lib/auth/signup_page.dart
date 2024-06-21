@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:v1_rentals/providers/theme_provider.dart';
 import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/l10n/locale_provider.dart';
 import 'package:v1_rentals/models/user_model.dart';
@@ -116,12 +117,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            themeProvider.themeMode == ThemeMode.dark
+                ? Icons.dark_mode
+                : Icons.light_mode,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          onPressed: () {
+            themeProvider.setThemeMode(
+              themeProvider.themeMode == ThemeMode.dark
+                  ? ThemeMode.light
+                  : ThemeMode.dark,
+            );
+          },
+        ),
         title: Text(
           S.of(context).sign_up,
           style: TextStyle(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 30,
               fontWeight: FontWeight.bold),
         ),

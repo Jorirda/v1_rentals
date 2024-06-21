@@ -153,7 +153,7 @@ class _ClientBookingDetailsScreenState
                               SizedBox(width: 10),
                               Text(
                                 vendor?.businessName ?? "",
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),
                             ],
@@ -189,16 +189,16 @@ class _ClientBookingDetailsScreenState
                             child: Container(
                               height: 200, // Adjust the height as needed
                               width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               child: CachedNetworkImage(
                                 imageUrl: widget.booking.imageUrl,
                                 fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    Center(child: CircularProgressIndicator()),
+                                placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator()),
                                 errorWidget: (context, url, error) =>
                                     Icon(Icons.error),
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
                               ),
                             ),
                           ),
@@ -320,7 +320,9 @@ class _ClientBookingDetailsScreenState
                               Text(S.of(context).booking_time),
                               Spacer(),
                               Text(
-                                '${DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.booking.createdAt)}', // Specify the desired time format
+                                DateFormat('yyyy-MM-dd HH:mm:ss').format(widget
+                                    .booking
+                                    .createdAt), // Specify the desired time format
                               ),
                             ],
                           ),
@@ -428,7 +430,7 @@ class _ClientBookingDetailsScreenState
                           barrierDismissible:
                               false, // Prevent dialog dismissal on tap outside
                           builder: (BuildContext context) {
-                            return AlertDialog(
+                            return const AlertDialog(
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -469,14 +471,14 @@ class _ClientBookingDetailsScreenState
                       );
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
                   child: Text(
                     widget.booking.status == BookingStatus.accepted
                         ? S.of(context).pay_now
                         : S.of(context).edit,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
                   ),
                 ),
               ),

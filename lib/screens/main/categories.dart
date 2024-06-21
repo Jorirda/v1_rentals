@@ -70,9 +70,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
     return DefaultTabController(
       length: CarType.values.length,
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           title: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -332,7 +330,8 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                                 children: [
                                   const Icon(Icons.monetization_on),
                                   const SizedBox(width: 4),
-                                  Text('${vehicle.pricePerDay}/Day'),
+                                  Text(
+                                      '${vehicle.pricePerDay}/${S.of(context).day}'),
                                 ],
                               ),
                             ],

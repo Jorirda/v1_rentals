@@ -167,7 +167,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 child: Text(
                   S.of(context).add_or_edit_photo,
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -226,15 +226,17 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           padding: const EdgeInsets.only(left: 20),
           child: TextFormField(
             controller: controller,
+            style: TextStyle(color: Theme.of(context).primaryColor),
             decoration: InputDecoration(
               labelText: hintText,
               hintText: hintText,
               border: InputBorder.none,
-              icon: Icon(icon),
+              icon: Icon(icon, color: Theme.of(context).primaryColor),
               labelStyle: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontSize: 20,
               ),
+              hintStyle: TextStyle(color: Theme.of(context).primaryColor),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {

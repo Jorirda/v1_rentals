@@ -237,5 +237,7 @@
     "vehicles_for_you": "Vehicles For You",
     "vehicles_near_you": "Vehicles Near You",
     "features": "Features",
-    "accept_terms": "I accept the terms and conditions."
+    "accept_terms": "I accept the terms and conditions.",
+    "confirm_booking": "Confirm Booking",
+    "confirm_booking_dialog": "Are you sure you want to complete the booking?"
 }

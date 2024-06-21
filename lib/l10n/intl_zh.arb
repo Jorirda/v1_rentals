@@ -236,5 +236,7 @@
     "vehicles_for_you": "为你推荐的车辆",
     "vehicles_near_you": "你附近的车辆",
     "features": "特征",
-    "accept_terms": "我接受了条款和条件。"
+    "accept_terms": "我接受了条款和条件。",
+    "confirm_booking": "确认预订",
+    "confirm_booking_dialog": "您确定要完成预订吗？"
 }

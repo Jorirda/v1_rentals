@@ -21,16 +21,13 @@ class CustomStepperControls extends StatelessWidget {
       children: [
         if (currentStep != 0)
           Expanded(
-            child: SizedBox(
-              height: 50, // Adjust the height as needed
-              child: ElevatedButton(
-                onPressed: onStepCancel,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(S.of(context).back),
+            child: ElevatedButton(
+              onPressed: onStepCancel,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
               ),
+              child: Text(S.of(context).back),
             ),
           ),
         if (currentStep != 0)
@@ -38,16 +35,14 @@ class CustomStepperControls extends StatelessWidget {
             width: 12,
           ),
         Expanded(
-          child: SizedBox(
-            height: 50, // Adjust the height as needed
-            child: ElevatedButton(
-              onPressed: onStepContinue,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-              ),
-              child: Text(isLastStep ? S.of(context).confirm : 'Next'),
+          child: ElevatedButton(
+            onPressed: onStepContinue,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
             ),
+            child:
+                Text(isLastStep ? S.of(context).confirm : S.of(context).next),
           ),
         ),
       ],

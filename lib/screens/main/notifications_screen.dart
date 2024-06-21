@@ -34,6 +34,8 @@ class NotificationScreen extends StatelessWidget {
     final currentUser = authProvider.currentUser;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // notificationProvider.updateUserId(
+      //     currentUser?.userId); // Update userId in NotificationProvider
       notificationProvider.markAsRead();
     });
 

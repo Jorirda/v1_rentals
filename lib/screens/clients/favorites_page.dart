@@ -206,9 +206,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                   Row(
                                                     children: [
                                                       Icon(Icons.settings,
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .primaryColor),
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary),
                                                       const SizedBox(width: 4),
                                                       Text(
                                                         vehicle
@@ -221,9 +222,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                   Row(
                                                     children: [
                                                       Icon(Icons.star,
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .primaryColor),
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary),
                                                       Text('${vehicle.rating}',
                                                           style: TextStyle(
                                                               fontSize: 15)),

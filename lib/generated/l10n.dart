@@ -2429,6 +2429,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Confirm Booking`
+  String get confirm_booking {
+    return Intl.message(
+      'Confirm Booking',
+      name: 'confirm_booking',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to complete the booking?`
+  String get confirm_booking_dialog {
+    return Intl.message(
+      'Are you sure you want to complete the booking?',
+      name: 'confirm_booking_dialog',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

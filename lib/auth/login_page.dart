@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:v1_rentals/providers/theme_provider.dart';
 import 'package:v1_rentals/services/auth_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:v1_rentals/l10n/locale_provider.dart';
 import 'package:v1_rentals/generated/l10n.dart';
+import 'package:v1_rentals/widgets/square_tile.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen(this.showSignUp, {super.key});
@@ -71,12 +73,28 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final localeProvider = Provider.of<LocaleProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            themeProvider.themeMode == ThemeMode.dark
+                ? Icons.dark_mode
+                : Icons.light_mode,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          onPressed: () {
+            themeProvider.setThemeMode(
+              themeProvider.themeMode == ThemeMode.dark
+                  ? ThemeMode.light
+                  : ThemeMode.dark,
+            );
+          },
+        ),
         title: Text(
           S.of(context).login,
           style: TextStyle(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 30,
               fontWeight: FontWeight.bold),
         ),
@@ -117,7 +135,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Image.asset('assets/images/v1-rentals-logo.png'),
               ),
               SizedBox(
-                height: 50,
+                height: 20,
+              ),
+              Text(
+                'Welcome, lets find a vehicle to rent!',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              SizedBox(
+                height: 10,
               ),
               Padding(
                 padding:
@@ -150,15 +175,22 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 20),
                                 child: TextFormField(
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
                                   controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
+                                    hintStyle: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
                                     hintText: S.of(context).email,
                                     border: InputBorder.none,
                                     icon: Icon(
                                       Icons.email,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(context).primaryColor,
                                     ),
                                   ),
                                   validator: (value) {
@@ -197,16 +229,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                   alignment: Alignment.centerRight,
                                   children: [
                                     TextFormField(
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary),
                                       controller: _passwordController,
                                       obscureText: _obscureText,
                                       decoration: InputDecoration(
+                                        hintStyle: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary),
                                         hintText: S.of(context).password,
                                         border: InputBorder.none,
                                         icon: Icon(
                                           Icons.password_rounded,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                          color: Theme.of(context).primaryColor,
                                         ),
                                       ),
                                       validator: (value) {
@@ -223,6 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         _obscureText
                                             ? Icons.visibility_off
                                             : Icons.visibility,
+                                        color: Theme.of(context).primaryColor,
                                       ),
                                       onPressed: () {
                                         setState(() {
@@ -235,6 +274,67 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {},
+                                child: Text('Forgot Password?'),
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          // or continue with
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 25.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 0.5,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  child: Text(
+                                    'Or continue with',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 0.5,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          // google + apple sign in buttons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // google button
+                              SquareTile(
+                                  onTap: () async {
+                                    try {
+                                      await _authService.signInWithGoogle();
+                                      // Navigate to the home screen or show a success message
+                                    } catch (e) {
+                                      // Handle error (e.g., show a snackbar with error message)
+                                      print('Error signing in with Google: $e');
+                                    }
+                                  },
+                                  imagePath: 'assets/images/google_icon_2.png'),
+                            ],
+                          ),
                           const SizedBox(height: 30),
                           if (_isAuthenticating)
                             const CircularProgressIndicator(),
@@ -244,7 +344,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30),
             ],
           ),
         ),

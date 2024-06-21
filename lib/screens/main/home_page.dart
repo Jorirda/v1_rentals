@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).primaryColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -282,7 +282,6 @@ class _HomeScreenState extends State<HomeScreen>
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -356,7 +355,6 @@ class _HomeScreenState extends State<HomeScreen>
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         TextButton(
@@ -394,6 +392,8 @@ class _HomeScreenState extends State<HomeScreen>
                         onTap: () {
                           print(
                               'Tapped on brand: ${recommendBrands[index].brand.name}'); // Debug print
+                          print(
+                              'Tapped on brand translation: ${recommendBrands[index].brand.getTranslation()}');
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -461,7 +461,6 @@ class _HomeScreenState extends State<HomeScreen>
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         TextButton(
@@ -532,7 +531,6 @@ class _HomeScreenState extends State<HomeScreen>
                                                 '${vehicle.brand.getTranslation()} ${vehicle.model}',
                                                 style: TextStyle(
                                                   fontSize: 20,
-                                                  color: Colors.black,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                                 textAlign: TextAlign.center,
@@ -551,7 +549,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   Icon(
                                                     Icons.calendar_today,
                                                     color: Theme.of(context)
-                                                        .primaryColor,
+                                                        .colorScheme
+                                                        .primary,
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
@@ -569,7 +568,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   Icon(
                                                     Icons.settings,
                                                     color: Theme.of(context)
-                                                        .primaryColor,
+                                                        .colorScheme
+                                                        .primary,
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
@@ -585,7 +585,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   Icon(
                                                     Icons.star,
                                                     color: Theme.of(context)
-                                                        .primaryColor,
+                                                        .colorScheme
+                                                        .primary,
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
@@ -650,7 +651,6 @@ class _HomeScreenState extends State<HomeScreen>
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
                           ),
                         ),
                         TextButton(
@@ -721,7 +721,6 @@ class _HomeScreenState extends State<HomeScreen>
                                                 '${vehicle.brand.getTranslation()} ${vehicle.model}',
                                                 style: TextStyle(
                                                   fontSize: 20,
-                                                  color: Colors.black,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                                 textAlign: TextAlign.center,
@@ -740,7 +739,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   Icon(
                                                     Icons.calendar_today,
                                                     color: Theme.of(context)
-                                                        .primaryColor,
+                                                        .colorScheme
+                                                        .primary,
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
@@ -758,7 +758,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   Icon(
                                                     Icons.settings,
                                                     color: Theme.of(context)
-                                                        .primaryColor,
+                                                        .colorScheme
+                                                        .primary,
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
@@ -774,7 +775,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                   Icon(
                                                     Icons.star,
                                                     color: Theme.of(context)
-                                                        .primaryColor,
+                                                        .colorScheme
+                                                        .primary,
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(

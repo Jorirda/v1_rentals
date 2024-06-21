@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/providers/account_provider.dart';
+import 'package:v1_rentals/providers/theme_provider.dart';
 import 'package:v1_rentals/screens/account/edit_account.dart';
 import 'package:v1_rentals/screens/account/languages/languages.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/payment_overview.dart';
@@ -30,7 +31,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final localization = S.of(context);
     final accountDataProvider = Provider.of<AccountDataProvider>(context);
     final user = accountDataProvider.user;
-
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(localization.account),
@@ -75,6 +76,22 @@ class _AccountScreenState extends State<AccountScreen> {
 
               // MENU
 
+              ListTile(
+                title: Text(
+                  'Dark Theme',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Theme.of(context).colorScheme.primary),
+                ),
+                trailing: Switch(
+                  value: themeProvider.themeMode == ThemeMode.dark,
+                  onChanged: (value) {
+                    themeProvider.setThemeMode(
+                      value ? ThemeMode.dark : ThemeMode.light,
+                    );
+                  },
+                ),
+              ),
               AccountMenuWidget(
                 title: localization.settings,
                 icon: Icons.settings,
@@ -155,8 +172,8 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 20),
         Text(
           '${user.fullname}',
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
@@ -225,7 +242,6 @@ class AccountMenuWidget extends StatelessWidget {
         child: const Icon(
           Icons.arrow_forward,
           size: 18,
-          color: Colors.grey,
         ),
       ),
     );

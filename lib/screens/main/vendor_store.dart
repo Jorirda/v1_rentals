@@ -59,7 +59,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
   Widget _buildVendorInfo() {
     if (vendor != null) {
       return Card(
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).primaryColor,
         margin: EdgeInsets.all(16.0),
         elevation: 3,
         child: Padding(
@@ -335,7 +335,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.white,
+        // color: Colors.white,
       ),
       padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: SingleChildScrollView(
@@ -362,7 +362,6 @@ class _VendorStorePageState extends State<VendorStorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         title: Text(S.of(context).store),
         actions: [
           IconButton(
@@ -393,7 +392,7 @@ class _VendorStorePageState extends State<VendorStorePage> {
               shadowColor: Colors.black,
               elevation: 50,
               margin: EdgeInsets.zero,
-              color: Colors.grey[100],
+              // color: Colors.grey[100],
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30),
                 child: Row(

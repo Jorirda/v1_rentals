@@ -103,6 +103,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "complete": MessageLookupByLibrary.simpleMessage("完成"),
         "completed": MessageLookupByLibrary.simpleMessage("已完成"),
         "confirm": MessageLookupByLibrary.simpleMessage("确认"),
+        "confirm_booking": MessageLookupByLibrary.simpleMessage("确认预订"),
+        "confirm_booking_dialog":
+            MessageLookupByLibrary.simpleMessage("您确定要完成预订吗？"),
         "confirm_card_changes":
             MessageLookupByLibrary.simpleMessage("您确定要保存此卡的更改吗？"),
         "confirm_decline_booking":

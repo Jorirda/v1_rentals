@@ -182,7 +182,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   Widget buildVendorInfo() {
     if (vendor != null) {
       return Card(
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).primaryColor,
         margin: const EdgeInsets.all(16.0),
         elevation: 3,
         shape: RoundedRectangleBorder(
@@ -250,8 +250,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         ElevatedButton(
-                            onPressed: () {},
-                            child: Text('${S.of(context).follow} +'))
+                          onPressed: () {},
+                          child: Text('${S.of(context).follow} +'),
+                        )
                       ],
                     ),
                   ],
@@ -269,7 +270,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      // backgroundColor: Colors.grey[100],
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -281,7 +282,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
@@ -314,7 +315,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).primaryColor,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
@@ -343,7 +344,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).primaryColor,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
@@ -390,13 +391,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 20,
-                                  color: Colors.black,
                                 ),
                               ),
                               const SizedBox(width: 4),
                               Icon(
                                 Icons.star,
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ],
                           ),
@@ -515,20 +515,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
       ),
       bottomNavigationBar: Container(
         height: 100, // Adjust height as needed
-        color: Colors.white,
+        // color: Colors.white,
         child: Container(
           padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 1,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
           child: Row(
             children: [
               Column(

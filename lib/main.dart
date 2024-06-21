@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:v1_rentals/auth/auth_wrapper.dart';
+import 'package:v1_rentals/providers/theme_provider.dart';
 import 'package:v1_rentals/services/notification_service.dart';
 import 'package:v1_rentals/providers/favorites_provider.dart';
 import 'package:v1_rentals/providers/vehicle_provider.dart';
@@ -54,6 +55,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AccountDataProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
@@ -96,8 +98,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<LocaleProvider>(
-      builder: (context, localeProvider, child) {
+    return Consumer2<LocaleProvider, ThemeProvider>(
+      builder: (context, localeProvider, themeProvider, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'V1 Rentals',
@@ -107,6 +109,15 @@ class MyApp extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color.fromARGB(255, 0, 157, 255),
+              brightness: Brightness.dark,
+            ),
+            useMaterial3: true,
+          ),
+          themeMode: themeProvider.themeMode,
           locale: localeProvider.locale,
           localizationsDelegates: const [
             S.delegate,

@@ -126,7 +126,6 @@ class _FilterPageState extends State<FilterPage> {
       ),
       bottomSheet: Container(
         height: 100,
-        color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
