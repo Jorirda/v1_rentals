@@ -13,6 +13,7 @@ enum Brand {
   isuzu,
   mazda,
   kia,
+  all,
 }
 
 enum CarType {

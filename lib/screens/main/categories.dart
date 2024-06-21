@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
-import 'package:v1_rentals/models/home_model.dart';
+import 'package:v1_rentals/models/brand_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/screens/main/car_details.dart';
@@ -15,7 +15,7 @@ class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({Key? key, this.selectedBrand}) : super(key: key);
 
   @override
-  _CategoriesScreenState createState() => _CategoriesScreenState(selectedBrand);
+  _CategoriesScreenState createState() => _CategoriesScreenState();
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen>
@@ -38,12 +38,6 @@ class _CategoriesScreenState extends State<CategoriesScreen>
   TransmissionType? _selectedTransmissionType;
   RangeValues _priceRange = RangeValues(0, 1000);
 
-  _CategoriesScreenState(String? selectedBrand) {
-    _selectedBrand = selectedBrand ?? allBrands;
-    _selectedRailIndex = 0;
-    _selectedTabIndex = 0;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -55,6 +49,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
         _recommendBrands[i].brand.getTranslation(): i + 1,
     };
 
+    _selectedBrand = widget.selectedBrand ?? allBrands;
     _selectedRailIndex = _brandToRailIndex[_selectedBrand] ?? 0;
   }
 
@@ -209,7 +204,7 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                               .contains(searchQuery.toLowerCase()));
 
                       final matchesBrand = (_selectedBrand == allBrands ||
-                          vehicle.brand.name.toLowerCase() ==
+                          vehicle.brand.getTranslation().toLowerCase() ==
                               _selectedBrand.toLowerCase());
 
                       final matchesCarType = (_selectedCarType == null ||

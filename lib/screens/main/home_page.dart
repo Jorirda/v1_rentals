@@ -8,7 +8,7 @@ import 'package:v1_rentals/providers/vehicle_provider.dart';
 import 'package:v1_rentals/services/auth_service.dart';
 import 'package:v1_rentals/generated/l10n.dart'; // Import the generated localization file
 import 'package:v1_rentals/models/enum_extensions.dart';
-import 'package:v1_rentals/models/home_model.dart';
+import 'package:v1_rentals/models/brand_model.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/models/vehicle_model.dart';
 import 'package:v1_rentals/providers/notification_provider.dart';
