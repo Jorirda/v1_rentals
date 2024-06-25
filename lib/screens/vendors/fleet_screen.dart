@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:v1_rentals/models/enum_extensions.dart';
@@ -178,10 +179,13 @@ class _FleetScreenState extends State<FleetScreen>
     if (vehicles.isEmpty) {
       return Center(child: Text(S.of(context).no_vehicles_found));
     }
+
+    // Reverse the list to show the latest item at the top
+    List<Vehicle> reversedVehicles = vehicles.reversed.toList();
     return ListView.builder(
       itemCount: vehicles.length,
       itemBuilder: (context, index) {
-        final vehicle = vehicles[index];
+        final vehicle = reversedVehicles[index];
         return Column(
           children: [
             const SizedBox(height: 20),
@@ -204,13 +208,12 @@ class _FleetScreenState extends State<FleetScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(
                       height: 150,
                       width: double.infinity,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(vehicle.imageUrl ?? ''),
-                            fit: BoxFit.cover),
+                      child: CachedNetworkImage(
+                        imageUrl: vehicle.imageUrl ?? '',
+                        fit: BoxFit.cover,
                       ),
                     ),
                     Padding(

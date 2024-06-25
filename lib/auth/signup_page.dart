@@ -20,7 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   UserType _selectedUserType = UserType.client;
-
+  bool _isAuthenticating = false;
   late TextEditingController _fullnameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
@@ -71,6 +71,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isAuthenticating = true;
+      });
+
       _formKey.currentState!.save();
 
       CustomUser user = CustomUser(
@@ -102,6 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               backgroundColor: Colors.green,
             ),
           );
+          ;
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,6 +115,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
             backgroundColor: Colors.red,
           ),
         );
+      } finally {
+        setState(() {
+          _isAuthenticating = false;
+        });
       }
     }
   }
@@ -167,7 +176,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ],
       ),
-      //backgroundColor: Colors.grey[100],
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -206,7 +214,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 25,
                 ),
-
                 ToggleButtons(
                   isSelected: UserType.values.map((UserType userType) {
                     return userType == _selectedUserType;
@@ -237,6 +244,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 20,
                 ),
+                _isAuthenticating
+                    ? CircularProgressIndicator()
+                    : Container(), // Show CircularProgressIndicator if _isAuthenticating is true
               ],
             ),
           ),
@@ -293,96 +303,150 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildClientForm(BuildContext context) {
     return Form(
       key: _formKey,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Full Name Text Field
-            FormTextField(
-              hintText: S.of(context).full_name,
-              keyboardType: TextInputType.text,
-              iconValue: Icons.person,
-              controller: _fullnameController,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            // Email Textfield
-            FormTextField(
-              hintText: S.of(context).email,
-              keyboardType: TextInputType.emailAddress,
-              iconValue: Icons.email,
-              controller: _emailController,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            // Password Textfield
-            FormTextField(
-              hintText: S.of(context).password,
-              iconValue: Icons.password,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              controller: _passwordController,
-            ),
-            const SizedBox(height: 10),
-            // Expiry Date Textfield
-            buildDatePickerField(
-              hintText: S.of(context).date_of_birth,
-              value: _dateOfBirthController.text,
-              icon: Icons.calendar_today,
-              onChanged: (value) {
-                setState(() {
-                  _dateOfBirthController.text = value;
-                });
-              },
-            ),
-            const SizedBox(height: 10),
-            // Phone No. Textfield
-            FormTextField(
-              hintText: S.of(context).phone_number,
-              iconValue: Icons.phone,
-              keyboardType: TextInputType.number,
-              controller: _phoneNumController,
-            ),
-            const SizedBox(height: 10),
-            // Address Textfield
-            FormTextField(
-              hintText: S.of(context).address,
-              iconValue: Icons.add_location_alt_rounded,
-              keyboardType: TextInputType.text,
-              controller: _addressController,
-            ),
-            const SizedBox(height: 10),
-            // Driver License Textfield
-            FormTextField(
-              hintText: S.of(context).driver_license_number,
-              iconValue: Icons.car_rental,
-              keyboardType: TextInputType.text,
-              controller: _driverLicenseNumberController,
-            ),
-            const SizedBox(height: 10),
-            // Issuing Country State Textfield
-            FormTextField(
-              hintText: S.of(context).issuing_country,
-              iconValue: Icons.language,
-              keyboardType: TextInputType.text,
-              controller: _issuingCountryController,
-            ),
-            const SizedBox(height: 10),
-            // Expiry Date Textfield
-            buildDatePickerField(
-              hintText: S.of(context).expiry_date,
-              value: _expiryDateController.text,
-              icon: Icons.calendar_today,
-              onChanged: (value) {
-                setState(() {
-                  _expiryDateController.text = value;
-                });
-              },
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
+      child: Column(
+        children: <Widget>[
+          // Full Name TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).full_name,
+            controller: _fullnameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).full_name_required;
+              }
+              return null;
+            },
+            icon: Icons.person,
+          ),
+          const SizedBox(height: 10),
+          // Email TextField
+          buildTextFormField(
+            keyboardType: TextInputType.emailAddress,
+            hintText: S.of(context).email,
+            controller: _emailController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).email_required;
+              }
+              return null;
+            },
+            icon: Icons.email,
+          ),
+          const SizedBox(height: 10),
+          // Password TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).password,
+            controller: _passwordController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).password_required;
+              }
+              return null;
+            },
+            icon: Icons.lock,
+            obscureText: true,
+          ),
+          const SizedBox(height: 10),
+          // Phone Number TextField
+          buildTextFormField(
+            keyboardType: TextInputType.phone,
+            hintText: S.of(context).phone_number,
+            controller: _phoneNumController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).phone_required;
+              }
+              return null;
+            },
+            icon: Icons.phone,
+          ),
+          const SizedBox(height: 10),
+          // Address TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).address,
+            controller: _addressController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).address_required;
+              }
+              return null;
+            },
+            icon: Icons.location_on,
+          ),
+          const SizedBox(height: 10),
+          // Date of Birth Text Field
+          buildDatePickerField(
+            context: context,
+            hintText: S.of(context).date_of_birth,
+            value: _dateOfBirthController.text,
+            icon: Icons.calendar_today,
+            onChanged: (value) {
+              setState(() {
+                _dateOfBirthController.text = value;
+              });
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).dob_required;
+              }
+              return null;
+            },
+            firstDate:
+                DateTime(1900), // Example: Allowing dates from the year 1900
+          ),
+
+          const SizedBox(height: 10),
+          // Driver License Number TextField
+          buildTextFormField(
+            keyboardType: TextInputType.number,
+            hintText: S.of(context).driver_license_number,
+            controller: _driverLicenseNumberController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).license_required;
+              }
+              return null;
+            },
+            icon: Icons.card_membership,
+          ),
+          const SizedBox(height: 10),
+          // Expiry Date Textfield
+          buildDatePickerField(
+            context: context,
+            hintText: S.of(context).expiry_date,
+            value: _expiryDateController.text,
+            icon: Icons.calendar_today,
+            onChanged: (value) {
+              setState(() {
+                _expiryDateController.text = value;
+              });
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).expiry_date_required;
+              }
+              return null;
+            },
+            firstDate: DateTime(
+                DateTime.now().year), // Allowing dates from the current year
+          ),
+          const SizedBox(height: 10),
+          // Issuing Country TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).issuing_country,
+            controller: _issuingCountryController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).country_required;
+              }
+              return null;
+            },
+            icon: Icons.location_on,
+          ),
+        ],
       ),
     );
   }
@@ -390,87 +454,187 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildVendorForm(BuildContext context) {
     return Form(
       key: _formKey,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Full Name Text Field
-            FormTextField(
-              hintText: S.of(context).full_name,
-              keyboardType: TextInputType.text,
-              iconValue: Icons.person,
-              controller: _fullnameController,
-            ),
-            const SizedBox(height: 10),
-            // Email Textfield
-            FormTextField(
-              hintText: S.of(context).email,
-              keyboardType: TextInputType.emailAddress,
-              iconValue: Icons.email,
-              controller: _emailController,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            // Password Textfield
-            FormTextField(
-              hintText: S.of(context).password,
-              iconValue: Icons.password,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              controller: _passwordController,
-            ),
-            const SizedBox(height: 10),
-            // Phone # Textfield
-            FormTextField(
-              hintText: S.of(context).phone_number,
-              iconValue: Icons.phone,
-              keyboardType: TextInputType.number,
-              controller: _phoneNumController,
-            ),
-            const SizedBox(height: 10),
-            // Business Name Textfield
-            FormTextField(
-              hintText: S.of(context).business_name,
-              iconValue: Icons.business_center,
-              keyboardType: TextInputType.text,
-              controller: _businessNameController,
-            ),
-            const SizedBox(height: 10),
-            // Address Textfield
-            FormTextField(
-              hintText: S.of(context).address,
-              iconValue: Icons.add_location_alt_rounded,
-              keyboardType: TextInputType.text,
-              controller: _addressController,
-            ),
-            const SizedBox(height: 10),
-            // Business Registration Number Textfield
-            FormTextField(
-              hintText: S.of(context).business_registration_number,
-              iconValue: Icons.numbers,
-              keyboardType: TextInputType.text,
-              controller: _businessRegNumController,
-            ),
-            const SizedBox(height: 10),
-            // Tax Identification Number Textfield
-            FormTextField(
-              hintText: S.of(context).tax_identification_number,
-              iconValue: Icons.numbers,
-              keyboardType: TextInputType.text,
-              controller: _taxIdentificationNumController,
-            ),
-            const SizedBox(height: 10),
-          ],
+      child: Column(
+        children: <Widget>[
+          // Full Name TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).full_name,
+            controller: _fullnameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).full_name_required;
+              }
+              return null;
+            },
+            icon: Icons.person,
+          ),
+          const SizedBox(height: 10),
+
+          // Email TextField
+          buildTextFormField(
+            keyboardType: TextInputType.emailAddress,
+            hintText: S.of(context).email,
+            controller: _emailController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).email_required;
+              }
+              return null;
+            },
+            icon: Icons.email,
+          ),
+          const SizedBox(height: 10),
+          // Password TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).password,
+            controller: _passwordController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).password_required;
+              }
+              return null;
+            },
+            icon: Icons.lock,
+            obscureText: true,
+          ),
+          const SizedBox(height: 10),
+          // Phone Number TextField
+          buildTextFormField(
+            keyboardType: TextInputType.phone,
+            hintText: S.of(context).phone_number,
+            controller: _phoneNumController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).phone_required;
+              }
+              return null;
+            },
+            icon: Icons.phone,
+          ),
+          const SizedBox(height: 10),
+          // Address TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).address,
+            controller: _addressController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).address_required;
+              }
+              return null;
+            },
+            icon: Icons.location_on,
+          ),
+          const SizedBox(height: 10),
+          // Business Name TextField
+          buildTextFormField(
+            keyboardType: TextInputType.text,
+            hintText: S.of(context).business_name,
+            controller: _businessNameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).business_name_required;
+              }
+              return null;
+            },
+            icon: Icons.business,
+          ),
+          const SizedBox(height: 10),
+          // Business Registration Number TextField
+          buildTextFormField(
+            keyboardType: TextInputType.number,
+            hintText: S.of(context).business_reg_number,
+            controller: _businessRegNumController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).business_reg_required;
+              }
+              return null;
+            },
+            icon: Icons.app_registration,
+          ),
+          const SizedBox(height: 10),
+          // Tax Identification Number TextField
+          buildTextFormField(
+            keyboardType: TextInputType.number,
+            hintText: S.of(context).tax_identification_number,
+            controller: _taxIdentificationNumController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).tax_identification_required;
+              }
+              return null;
+            },
+            icon: Icons.credit_card,
+          ),
+          const SizedBox(height: 10),
+          // Expiry Date Textfield
+          buildDatePickerField(
+            context: context,
+            hintText: S.of(context).expiry_date,
+            value: _expiryDateController.text,
+            icon: Icons.calendar_today,
+            onChanged: (value) {
+              setState(() {
+                _expiryDateController.text = value;
+              });
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return S.of(context).expiry_date_required;
+              }
+              return null;
+            },
+            firstDate: DateTime(
+                DateTime.now().year), // Allowing dates from the current year
+          ),
+
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTextFormField({
+    required String hintText,
+    required TextEditingController controller,
+    required String? Function(String?) validator,
+    required IconData icon,
+    required TextInputType keyboardType,
+    bool obscureText = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
+      child: TextFormField(
+        keyboardType: keyboardType,
+        controller: controller,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
+          hintText: hintText,
+          hintStyle: TextStyle(color: Colors.grey),
+          prefixIcon: Icon(icon),
+          prefixIconColor: Theme.of(context).colorScheme.primary,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
         ),
+        validator: validator,
       ),
     );
   }
 
   Widget buildDatePickerField({
+    required BuildContext context,
     required String hintText,
     required String value,
     required IconData icon,
+    required String? Function(String?) validator,
     required void Function(String) onChanged,
+    required DateTime firstDate,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
@@ -478,64 +642,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
         controller: TextEditingController(text: value),
         readOnly: true,
         decoration: InputDecoration(
+          fillColor: Colors.white,
+          filled: true,
           hintText: hintText,
+          hintStyle: TextStyle(color: Colors.grey),
           prefixIcon: Icon(icon),
           prefixIconColor: Theme.of(context).colorScheme.primary,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
           ),
         ),
+        validator: validator,
         keyboardType: TextInputType.datetime,
         onTap: () async {
           FocusScope.of(context).requestFocus(FocusNode());
           DateTime? pickedDate = await showDatePicker(
             context: context,
             initialDate: DateTime.now(),
-            firstDate: DateTime(1900),
-            lastDate: DateTime.now(),
+            firstDate: firstDate,
+            lastDate: DateTime(2101),
           );
           if (pickedDate != null) {
-            onChanged(
-                "${pickedDate.month}/${pickedDate.day}/${pickedDate.year}");
+            String formattedDate =
+                "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+            onChanged(formattedDate);
           }
         },
-      ),
-    );
-  }
-}
-
-class FormTextField extends StatelessWidget {
-  final String hintText;
-  final IconData iconValue;
-  final TextInputType keyboardType;
-  final TextEditingController? controller;
-  final bool obscureText;
-
-  const FormTextField({
-    super.key,
-    required this.hintText,
-    required this.iconValue,
-    required this.keyboardType,
-    this.controller,
-    this.obscureText = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: hintText,
-          prefixIcon: Icon(iconValue),
-          prefixIconColor: Theme.of(context).colorScheme.primary,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        keyboardType: keyboardType,
-        obscureText: obscureText,
       ),
     );
   }

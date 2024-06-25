@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import 'package:v1_rentals/auth/auth_wrapper.dart';
 import 'package:v1_rentals/generated/l10n.dart';
 import 'package:v1_rentals/models/user_model.dart';
 import 'package:v1_rentals/providers/account_provider.dart';
@@ -8,7 +10,7 @@ import 'package:v1_rentals/providers/theme_provider.dart';
 import 'package:v1_rentals/screens/account/edit_account.dart';
 import 'package:v1_rentals/screens/account/languages/languages.dart';
 import 'package:v1_rentals/screens/account/payment_overviews/payment_overview.dart';
-import 'package:v1_rentals/widgets/shimmer_widget.dart';
+import 'package:v1_rentals/providers/auth_provider.dart' as app_auth;
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -32,6 +34,8 @@ class _AccountScreenState extends State<AccountScreen> {
     final accountDataProvider = Provider.of<AccountDataProvider>(context);
     final user = accountDataProvider.user;
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final authProvider =
+        Provider.of<app_auth.AuthProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text(localization.account),
@@ -144,8 +148,13 @@ class _AccountScreenState extends State<AccountScreen> {
               AccountMenuWidget(
                 title: localization.logout,
                 icon: Icons.logout,
-                onPress: () {
+                onPress: () async {
                   FirebaseAuth.instance.signOut();
+                  await authProvider.signOut();
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => AuthenticationWrapper()),
+                  );
                 },
                 textColor: Colors.red,
               ),

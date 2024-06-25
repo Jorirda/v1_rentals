@@ -527,13 +527,17 @@ class _HomeScreenState extends State<HomeScreen>
                                         children: [
                                           Row(
                                             children: [
-                                              Text(
-                                                '${vehicle.brand.getTranslation()} ${vehicle.model}',
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
+                                              Flexible(
+                                                child: Text(
+                                                  '${vehicle.brand.getTranslation()} ${vehicle.model}',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                                textAlign: TextAlign.center,
                                               ),
                                             ],
                                           ),
@@ -679,13 +683,16 @@ class _HomeScreenState extends State<HomeScreen>
                 // Vehicles For You SizeBox
                 Consumer<VehicleProvider>(
                   builder: (context, vehicleProvider, _) {
+                    // Shuffle the list of vehicles
+                    List<Vehicle> shuffledVehicles =
+                        vehicleProvider.vehicles.toList()..shuffle();
                     return SizedBox(
                       height: 350,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: vehicleProvider.vehicles.length,
                         itemBuilder: (context, index) {
-                          final vehicle = vehicleProvider.vehicles[index];
+                          final vehicle = shuffledVehicles[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -717,13 +724,17 @@ class _HomeScreenState extends State<HomeScreen>
                                         children: [
                                           Row(
                                             children: [
-                                              Text(
-                                                '${vehicle.brand.getTranslation()} ${vehicle.model}',
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
+                                              Flexible(
+                                                child: Text(
+                                                  '${vehicle.brand.getTranslation()} ${vehicle.model}',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
                                                 ),
-                                                textAlign: TextAlign.center,
                                               ),
                                             ],
                                           ),

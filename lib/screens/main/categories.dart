@@ -293,14 +293,16 @@ class _CategoriesScreenState extends State<CategoriesScreen>
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             '${vehicle.brand.getTranslation()} ${vehicle.model} ${vehicle.modelYear}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                           ),
                           const Divider(),
                           const SizedBox(height: 8),

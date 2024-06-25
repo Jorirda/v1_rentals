@@ -41,6 +41,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_vehicle": MessageLookupByLibrary.simpleMessage("Add Vehicle"),
         "address": MessageLookupByLibrary.simpleMessage("Address"),
         "address_book": MessageLookupByLibrary.simpleMessage("Address Book"),
+        "address_required":
+            MessageLookupByLibrary.simpleMessage("Address is required"),
         "all": MessageLookupByLibrary.simpleMessage("All"),
         "all_brands": MessageLookupByLibrary.simpleMessage("All Brands"),
         "all_vehicles_in_collection":
@@ -89,6 +91,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "brand_alt":
             MessageLookupByLibrary.simpleMessage("Brand (if not in list)"),
         "business_name": MessageLookupByLibrary.simpleMessage("Business Name"),
+        "business_name_required":
+            MessageLookupByLibrary.simpleMessage("Business name is required"),
+        "business_reg_number": MessageLookupByLibrary.simpleMessage(
+            "Business Registration Number"),
+        "business_reg_required": MessageLookupByLibrary.simpleMessage(
+            "Business registration number is required"),
         "business_registration_number": MessageLookupByLibrary.simpleMessage(
             "Business Registration Number"),
         "call": MessageLookupByLibrary.simpleMessage("Call"),
@@ -140,6 +148,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Are you sure you want to remove this card?"),
         "confirm_your_selection":
             MessageLookupByLibrary.simpleMessage("Confirm your selection"),
+        "country_required":
+            MessageLookupByLibrary.simpleMessage("Issuing country is required"),
         "create_account":
             MessageLookupByLibrary.simpleMessage("Create Account"),
         "current_location_address":
@@ -149,6 +159,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "days_ago": MessageLookupByLibrary.simpleMessage("days ago"),
         "decline": MessageLookupByLibrary.simpleMessage("Decline"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+        "dob_required":
+            MessageLookupByLibrary.simpleMessage("Date of birth is required"),
         "driver_license_number":
             MessageLookupByLibrary.simpleMessage("Driver\'s License Number"),
         "drop_off": MessageLookupByLibrary.simpleMessage("Drop-off"),
@@ -164,6 +176,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Edit Payment Card"),
         "edit_vehicle": MessageLookupByLibrary.simpleMessage("Edit vehicle"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "email_invalid":
+            MessageLookupByLibrary.simpleMessage("Email is invalid"),
+        "email_required":
+            MessageLookupByLibrary.simpleMessage("Email is required"),
         "ending_in": MessageLookupByLibrary.simpleMessage("ending in"),
         "english": MessageLookupByLibrary.simpleMessage("English"),
         "enter_color":
@@ -191,16 +207,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "error_processing_booking":
             MessageLookupByLibrary.simpleMessage("Error processing booking"),
         "expiry_date": MessageLookupByLibrary.simpleMessage("Expiry Date"),
+        "expiry_date_required":
+            MessageLookupByLibrary.simpleMessage("Expiry date is required"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
         "features": MessageLookupByLibrary.simpleMessage("Features"),
         "fleet": MessageLookupByLibrary.simpleMessage("Fleet"),
         "follow": MessageLookupByLibrary.simpleMessage("Follow"),
+        "forgot_password":
+            MessageLookupByLibrary.simpleMessage("Forgot Password?"),
         "fuel": MessageLookupByLibrary.simpleMessage("Fuel"),
         "fuelTypeDiesel": MessageLookupByLibrary.simpleMessage("Diesel"),
         "fuelTypeElectric": MessageLookupByLibrary.simpleMessage("Electric"),
         "fuelTypeGasoline": MessageLookupByLibrary.simpleMessage("Gasoline"),
         "fuelTypeHybrid": MessageLookupByLibrary.simpleMessage("Hybrid"),
         "full_name": MessageLookupByLibrary.simpleMessage("Full Name"),
+        "full_name_required":
+            MessageLookupByLibrary.simpleMessage("Full name is required"),
         "hello": MessageLookupByLibrary.simpleMessage("Hello"),
         "help": MessageLookupByLibrary.simpleMessage("Help"),
         "history": MessageLookupByLibrary.simpleMessage("History"),
@@ -212,6 +234,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("Language"),
         "last_30_days": MessageLookupByLibrary.simpleMessage("Last 30 Days"),
         "last_7_days": MessageLookupByLibrary.simpleMessage("Last 7 Days"),
+        "license_required": MessageLookupByLibrary.simpleMessage(
+            "Driver\'s license number is required"),
         "locations": MessageLookupByLibrary.simpleMessage("Locations"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "logout": MessageLookupByLibrary.simpleMessage("Logout"),
@@ -253,6 +277,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Other services"),
         "overview": MessageLookupByLibrary.simpleMessage("Overview"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "password_required":
+            MessageLookupByLibrary.simpleMessage("Password is required"),
+        "passwords_too_short":
+            MessageLookupByLibrary.simpleMessage("Password is too short"),
         "pay_now": MessageLookupByLibrary.simpleMessage("Pay Now"),
         "payment": MessageLookupByLibrary.simpleMessage("Payment"),
         "payment_method":
@@ -264,6 +292,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "pending_request":
             MessageLookupByLibrary.simpleMessage("Pending Requests"),
         "phone_number": MessageLookupByLibrary.simpleMessage("Phone Number"),
+        "phone_required":
+            MessageLookupByLibrary.simpleMessage("Phone number is required"),
         "pick_up": MessageLookupByLibrary.simpleMessage("Pick-up"),
         "pick_up_location":
             MessageLookupByLibrary.simpleMessage("Pick-up Location"),
@@ -314,6 +344,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "set_pickup_location":
             MessageLookupByLibrary.simpleMessage("Set Pickup Location"),
         "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+        "sign_in_method": MessageLookupByLibrary.simpleMessage("Sign in with"),
         "sign_up": MessageLookupByLibrary.simpleMessage("Sign Up"),
         "something_went_wrong":
             MessageLookupByLibrary.simpleMessage("Something went wrong"),
@@ -321,8 +352,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "submit": MessageLookupByLibrary.simpleMessage("Submit"),
         "summary": MessageLookupByLibrary.simpleMessage("Summary"),
         "take_photo": MessageLookupByLibrary.simpleMessage("Take Photo"),
+        "tax_id_required": MessageLookupByLibrary.simpleMessage(
+            "Tax identification number is required"),
         "tax_identification_number":
             MessageLookupByLibrary.simpleMessage("Tax Identification Number"),
+        "tax_identification_required": MessageLookupByLibrary.simpleMessage(
+            "Tax identification number is required"),
         "title": MessageLookupByLibrary.simpleMessage("V1 Rentals"),
         "today": MessageLookupByLibrary.simpleMessage("Today"),
         "total_price": MessageLookupByLibrary.simpleMessage("Total Price"),
@@ -355,6 +390,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Vehicles Near You"),
         "vendor": MessageLookupByLibrary.simpleMessage("Vendor"),
         "view_all": MessageLookupByLibrary.simpleMessage("View All"),
+        "welcome": MessageLookupByLibrary.simpleMessage(
+            "Welcome, let\'s find a vehicle to rent!"),
         "your_credit_debit":
             MessageLookupByLibrary.simpleMessage("Your credit and debit cards"),
         "your_fleet": MessageLookupByLibrary.simpleMessage("Your Fleet"),

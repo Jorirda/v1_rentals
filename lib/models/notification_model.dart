@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationModel {
-  final String id; // Add this line
+  final String id;
   final String title;
   final String body;
   final String userImageURL;
@@ -10,7 +10,7 @@ class NotificationModel {
   final DateTime timestamp;
 
   NotificationModel({
-    required this.id, // Add this line
+    required this.id,
     required this.title,
     required this.body,
     required this.userImageURL,
@@ -22,12 +22,14 @@ class NotificationModel {
   factory NotificationModel.fromMap(
       Map<String, dynamic> data, String documentId) {
     return NotificationModel(
-      id: documentId, // Add this line
-      title: data['title'],
-      body: data['body'],
-      userImageURL: data['userImageURL'],
-      vehicleImageURL: data['vehicleImageURL'],
-      bookingId: data['bookingId'],
+      id: documentId,
+      title: data['title'] ?? 'No Title', // Provide a default value if null
+      body: data['body'] ?? 'No Body', // Provide a default value if null
+      userImageURL:
+          data['userImageURL'] ?? '', // Provide a default value if null
+      vehicleImageURL:
+          data['vehicleImageURL'] ?? '', // Provide a default value if null
+      bookingId: data['bookingId'] ?? '', // Provide a default value if null
       timestamp: data['timestamp'] != null
           ? (data['timestamp'] as Timestamp).toDate()
           : DateTime.now(),

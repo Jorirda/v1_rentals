@@ -282,6 +282,8 @@ class _EditVehicleScreenState extends State<EditVehicleScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteVehicle();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               child: Text(S.of(context).delete),
             ),

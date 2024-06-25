@@ -971,6 +971,14 @@ class _BookingScreenState extends State<BookingScreen> {
         ),
       );
 
+      // Show success SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email successfully sent.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
       // Close the page
       Navigator.of(context).pop();
     } catch (e) {

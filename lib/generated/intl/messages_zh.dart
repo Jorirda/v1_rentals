@@ -37,6 +37,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "add_vehicle": MessageLookupByLibrary.simpleMessage("添加车辆"),
         "address": MessageLookupByLibrary.simpleMessage("地址"),
         "address_book": MessageLookupByLibrary.simpleMessage("地址簿"),
+        "address_required": MessageLookupByLibrary.simpleMessage("地址为必填项"),
         "all": MessageLookupByLibrary.simpleMessage("全部"),
         "all_brands": MessageLookupByLibrary.simpleMessage("所有品牌"),
         "all_vehicles_in_collection":
@@ -73,6 +74,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "brandToyota": MessageLookupByLibrary.simpleMessage("丰田"),
         "brand_alt": MessageLookupByLibrary.simpleMessage("品牌（若列表中没有）"),
         "business_name": MessageLookupByLibrary.simpleMessage("公司名称"),
+        "business_name_required":
+            MessageLookupByLibrary.simpleMessage("公司名称为必填项"),
+        "business_reg_number": MessageLookupByLibrary.simpleMessage("公司注册号码"),
+        "business_reg_required":
+            MessageLookupByLibrary.simpleMessage("公司注册为必填项"),
         "business_registration_number":
             MessageLookupByLibrary.simpleMessage("工商注册号"),
         "call": MessageLookupByLibrary.simpleMessage("呼叫"),
@@ -119,6 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "confirm_remove": MessageLookupByLibrary.simpleMessage("您确定要移除此卡吗？"),
         "confirm_your_selection":
             MessageLookupByLibrary.simpleMessage("确认您的选择"),
+        "country_required": MessageLookupByLibrary.simpleMessage("国家为必填项"),
         "create_account": MessageLookupByLibrary.simpleMessage("创建账户"),
         "current_location_address":
             MessageLookupByLibrary.simpleMessage("当前位置地址"),
@@ -127,6 +134,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "days_ago": MessageLookupByLibrary.simpleMessage("天前"),
         "decline": MessageLookupByLibrary.simpleMessage("拒绝"),
         "delete": MessageLookupByLibrary.simpleMessage("删除"),
+        "dob_required": MessageLookupByLibrary.simpleMessage("出生日期为必填项"),
         "driver_license_number": MessageLookupByLibrary.simpleMessage("驾驶证号"),
         "drop_off": MessageLookupByLibrary.simpleMessage("还车"),
         "drop_off_location": MessageLookupByLibrary.simpleMessage("还车地点"),
@@ -138,6 +146,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "edit_payment_card": MessageLookupByLibrary.simpleMessage("编辑支付卡"),
         "edit_vehicle": MessageLookupByLibrary.simpleMessage("编辑车辆"),
         "email": MessageLookupByLibrary.simpleMessage("电子邮件"),
+        "email_invalid": MessageLookupByLibrary.simpleMessage("电子邮件无效"),
+        "email_required": MessageLookupByLibrary.simpleMessage("电子邮件为必填项"),
         "ending_in": MessageLookupByLibrary.simpleMessage("以..结尾"),
         "english": MessageLookupByLibrary.simpleMessage("英语"),
         "enter_color": MessageLookupByLibrary.simpleMessage("请输入颜色"),
@@ -158,6 +168,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "error_processing_booking":
             MessageLookupByLibrary.simpleMessage("错误处理预订"),
         "expiry_date": MessageLookupByLibrary.simpleMessage("到期日期"),
+        "expiry_date_required":
+            MessageLookupByLibrary.simpleMessage("到期日期为必填项"),
         "favorites": MessageLookupByLibrary.simpleMessage("收藏"),
         "features": MessageLookupByLibrary.simpleMessage("特征"),
         "fleet": MessageLookupByLibrary.simpleMessage("车队"),
@@ -168,6 +180,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "fuelTypeGasoline": MessageLookupByLibrary.simpleMessage("汽油"),
         "fuelTypeHybrid": MessageLookupByLibrary.simpleMessage("混合动力"),
         "full_name": MessageLookupByLibrary.simpleMessage("全名"),
+        "full_name_required": MessageLookupByLibrary.simpleMessage("全名为必填项"),
         "hello": MessageLookupByLibrary.simpleMessage("你好"),
         "help": MessageLookupByLibrary.simpleMessage("帮助"),
         "history": MessageLookupByLibrary.simpleMessage("历史"),
@@ -178,6 +191,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "language": MessageLookupByLibrary.simpleMessage("语言"),
         "last_30_days": MessageLookupByLibrary.simpleMessage("Last 30 Days"),
         "last_7_days": MessageLookupByLibrary.simpleMessage("Last 7 Days"),
+        "license_required": MessageLookupByLibrary.simpleMessage("驾驶执照为必填项"),
         "locations": MessageLookupByLibrary.simpleMessage("地点"),
         "login": MessageLookupByLibrary.simpleMessage("登录"),
         "logout": MessageLookupByLibrary.simpleMessage("登出"),
@@ -208,6 +222,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "other_services": MessageLookupByLibrary.simpleMessage("其他服务"),
         "overview": MessageLookupByLibrary.simpleMessage("概述"),
         "password": MessageLookupByLibrary.simpleMessage("密码"),
+        "password_required": MessageLookupByLibrary.simpleMessage("密码为必填项"),
+        "passwords_too_short": MessageLookupByLibrary.simpleMessage("密码太短"),
         "pay_now": MessageLookupByLibrary.simpleMessage("立即付款"),
         "payment": MessageLookupByLibrary.simpleMessage("付款"),
         "payment_method": MessageLookupByLibrary.simpleMessage("支付方式"),
@@ -215,6 +231,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "payment_overview": MessageLookupByLibrary.simpleMessage("支付概览"),
         "pending_request": MessageLookupByLibrary.simpleMessage("待处理请求"),
         "phone_number": MessageLookupByLibrary.simpleMessage("电话号码"),
+        "phone_required": MessageLookupByLibrary.simpleMessage("电话号码为必填项"),
         "pick_up": MessageLookupByLibrary.simpleMessage("取车"),
         "pick_up_location": MessageLookupByLibrary.simpleMessage("取车地点"),
         "pickup_date": MessageLookupByLibrary.simpleMessage("取车日期"),
@@ -252,13 +269,17 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("将取车和还车设为同一地点"),
         "set_pickup_location": MessageLookupByLibrary.simpleMessage("设置取车地点"),
         "settings": MessageLookupByLibrary.simpleMessage("设置"),
+        "sign_in_method": MessageLookupByLibrary.simpleMessage("使用以下方式登录"),
         "sign_up": MessageLookupByLibrary.simpleMessage("注册"),
         "something_went_wrong": MessageLookupByLibrary.simpleMessage("出了些问题"),
         "store": MessageLookupByLibrary.simpleMessage("商店"),
         "submit": MessageLookupByLibrary.simpleMessage("提交"),
         "summary": MessageLookupByLibrary.simpleMessage("总结"),
         "take_photo": MessageLookupByLibrary.simpleMessage("拍照"),
+        "tax_id_required": MessageLookupByLibrary.simpleMessage("税号为必填项"),
         "tax_identification_number": MessageLookupByLibrary.simpleMessage("税号"),
+        "tax_identification_required":
+            MessageLookupByLibrary.simpleMessage("税务识别号为必填项"),
         "title": MessageLookupByLibrary.simpleMessage("V1租赁"),
         "today": MessageLookupByLibrary.simpleMessage("今天"),
         "total_price": MessageLookupByLibrary.simpleMessage("总价"),
@@ -282,6 +303,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "vehicles_near_you": MessageLookupByLibrary.simpleMessage("你附近的车辆"),
         "vendor": MessageLookupByLibrary.simpleMessage("供应商"),
         "view_all": MessageLookupByLibrary.simpleMessage("查看全部"),
+        "welcome": MessageLookupByLibrary.simpleMessage("欢迎，让我们找到您想要的车辆吧!"),
         "your_credit_debit": MessageLookupByLibrary.simpleMessage("您的信用卡和借记卡"),
         "your_fleet": MessageLookupByLibrary.simpleMessage("您的舰队"),
         "your_location": MessageLookupByLibrary.simpleMessage("您的位置")

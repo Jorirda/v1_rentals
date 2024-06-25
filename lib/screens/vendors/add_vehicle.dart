@@ -40,6 +40,8 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
 
   File? _pickedImage;
   late List<int> _yearsList;
+  bool _isSubmitting = false;
+
   @override
   void initState() {
     super.initState();
@@ -121,6 +123,10 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isSubmitting = true;
+      });
+
       _formKey.currentState!.save();
 
       try {
@@ -217,6 +223,10 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
             backgroundColor: Colors.red,
           ),
         );
+      } finally {
+        setState(() {
+          _isSubmitting = false;
+        });
       }
     }
   }
@@ -455,10 +465,12 @@ class _AddVehicleFormState extends State<AddVehicleForm> {
                       InputDecoration(labelText: S.of(context).overview),
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  child: Text(S.of(context).submit),
-                ),
+                _isSubmitting
+                    ? CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: _submitForm,
+                        child: Text(S.of(context).submit),
+                      ),
               ],
             ),
           ),

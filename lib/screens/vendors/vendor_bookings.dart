@@ -141,10 +141,7 @@ class _VendorBookingsState extends State<VendorBookings>
                                     ),
                                     const Spacer(),
                                     Text(
-                                      '${booking.status}'
-                                          .toString()
-                                          .split('.')
-                                          .last,
+                                      booking.getBookingStatusString(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Theme.of(context)

@@ -2449,6 +2449,196 @@ class S {
       args: [],
     );
   }
+
+  /// `Full name is required`
+  String get full_name_required {
+    return Intl.message(
+      'Full name is required',
+      name: 'full_name_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email is required`
+  String get email_required {
+    return Intl.message(
+      'Email is required',
+      name: 'email_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email is invalid`
+  String get email_invalid {
+    return Intl.message(
+      'Email is invalid',
+      name: 'email_invalid',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password is required`
+  String get password_required {
+    return Intl.message(
+      'Password is required',
+      name: 'password_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password is too short`
+  String get passwords_too_short {
+    return Intl.message(
+      'Password is too short',
+      name: 'passwords_too_short',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone number is required`
+  String get phone_required {
+    return Intl.message(
+      'Phone number is required',
+      name: 'phone_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Address is required`
+  String get address_required {
+    return Intl.message(
+      'Address is required',
+      name: 'address_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Date of birth is required`
+  String get dob_required {
+    return Intl.message(
+      'Date of birth is required',
+      name: 'dob_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Driver's license number is required`
+  String get license_required {
+    return Intl.message(
+      'Driver\'s license number is required',
+      name: 'license_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Expiry date is required`
+  String get expiry_date_required {
+    return Intl.message(
+      'Expiry date is required',
+      name: 'expiry_date_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Issuing country is required`
+  String get country_required {
+    return Intl.message(
+      'Issuing country is required',
+      name: 'country_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Business name is required`
+  String get business_name_required {
+    return Intl.message(
+      'Business name is required',
+      name: 'business_name_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Business Registration Number`
+  String get business_reg_number {
+    return Intl.message(
+      'Business Registration Number',
+      name: 'business_reg_number',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Business registration number is required`
+  String get business_reg_required {
+    return Intl.message(
+      'Business registration number is required',
+      name: 'business_reg_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tax identification number is required`
+  String get tax_identification_required {
+    return Intl.message(
+      'Tax identification number is required',
+      name: 'tax_identification_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tax identification number is required`
+  String get tax_id_required {
+    return Intl.message(
+      'Tax identification number is required',
+      name: 'tax_id_required',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome, let's find a vehicle to rent!`
+  String get welcome {
+    return Intl.message(
+      'Welcome, let\'s find a vehicle to rent!',
+      name: 'welcome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forgot Password?`
+  String get forgot_password {
+    return Intl.message(
+      'Forgot Password?',
+      name: 'forgot_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign in with`
+  String get sign_in_method {
+    return Intl.message(
+      'Sign in with',
+      name: 'sign_in_method',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

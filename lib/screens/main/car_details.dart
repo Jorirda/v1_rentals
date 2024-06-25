@@ -412,7 +412,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                       ),
                       Text(
                         widget.vehicle.overview,
-                        maxLines: 3,
+                        maxLines: 5,
                         style: TextStyle(color: Colors.grey),
                       ),
                       const SizedBox(height: 20),

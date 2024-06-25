@@ -42,10 +42,16 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> signUp(CustomUser user) async {
     await _authService.signUp(user);
+    _status = AuthStatus.authenticated;
+    _currentUser = await _authService.getCurrentUser();
+    notifyListeners();
   }
 
   Future<void> signOut() async {
     await _authService.signOut();
+    _status = AuthStatus.unauthenticated;
+    _currentUser = null;
+    notifyListeners();
   }
 
   void toggleScreens() {
